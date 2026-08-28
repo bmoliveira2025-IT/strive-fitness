@@ -45,6 +45,7 @@ export interface MusikaUser {
     email: string;
     role?: string;
     avatar?: string;
+    image?: string;
     playlists?: MusikaPlaylist[];
     favorites?: string[];
 }
@@ -100,13 +101,33 @@ export const musikaService = {
         }
     },
 
-    // 4. Authenticate via Email + Password
+    // 4. Fetch real-time user profile with playlists and favorites from MusiKA DB
+    async fetchUserProfile(email: string): Promise<MusikaUser | null> {
+        try {
+            const res = await fetch(`${MUSIKA_BASE_URL}/api/auth/profile`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: email.trim().toLowerCase() }),
+            });
+            if (!res.ok) return null;
+            const data = await res.json();
+            if (data.success && data.user) {
+                return data.user;
+            }
+            return null;
+        } catch (e) {
+            console.error('Error fetching MusiKA user profile:', e);
+            return null;
+        }
+    },
+
+    // 5. Authenticate via Email + Password
     async login(email: string, password: string): Promise<{ success: boolean; user?: MusikaUser; error?: string }> {
         try {
             const res = await fetch(`${MUSIKA_BASE_URL}/api/auth/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: email.trim(), password }),
+                body: JSON.stringify({ email: email.trim().toLowerCase(), password }),
             });
 
             const data = await res.json();
@@ -115,8 +136,16 @@ export const musikaService = {
             }
 
             if (data.user) {
-                await this.saveSession(data.user);
-                return { success: true, user: data.user };
+                const userObj: MusikaUser = {
+                    id: data.user.id || data.user._id,
+                    name: data.user.name,
+                    email: data.user.email,
+                    avatar: data.user.image || data.user.avatar,
+                    playlists: Array.isArray(data.user.playlists) ? data.user.playlists : [],
+                    favorites: Array.isArray(data.user.favorites) ? data.user.favorites : [],
+                };
+                await this.saveSession(userObj);
+                return { success: true, user: userObj };
             }
 
             return { success: false, error: 'Resposta inesperada do servidor MusiKA.' };
@@ -125,13 +154,13 @@ export const musikaService = {
         }
     },
 
-    // 5. Register new account
+    // 6. Register new account
     async register(name: string, email: string, password: string): Promise<{ success: boolean; user?: MusikaUser; error?: string }> {
         try {
             const res = await fetch(`${MUSIKA_BASE_URL}/api/auth/register`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: name.trim(), email: email.trim(), password }),
+                body: JSON.stringify({ name: name.trim(), email: email.trim().toLowerCase(), password }),
             });
 
             const data = await res.json();
@@ -140,8 +169,16 @@ export const musikaService = {
             }
 
             if (data.user) {
-                await this.saveSession(data.user);
-                return { success: true, user: data.user };
+                const userObj: MusikaUser = {
+                    id: data.user.id || data.user._id,
+                    name: data.user.name,
+                    email: data.user.email,
+                    avatar: data.user.image || data.user.avatar,
+                    playlists: Array.isArray(data.user.playlists) ? data.user.playlists : [],
+                    favorites: Array.isArray(data.user.favorites) ? data.user.favorites : [],
+                };
+                await this.saveSession(userObj);
+                return { success: true, user: userObj };
             }
 
             return { success: false, error: 'Resposta inesperada do servidor MusiKA.' };
@@ -150,7 +187,7 @@ export const musikaService = {
         }
     },
 
-    // 6. Authenticate via Google OAuth or Web Session
+    // 7. Authenticate via Google OAuth or Web Session
     async loginWithGoogle(): Promise<{ success: boolean; user?: MusikaUser; error?: string }> {
         try {
             const googleAuthUrl = `${MUSIKA_BASE_URL}/api/auth/google`;
@@ -166,29 +203,41 @@ export const musikaService = {
             if (sessRes && sessRes.ok) {
                 const sessData = await sessRes.json();
                 if (sessData.authenticated && sessData.user) {
-                    await this.saveSession(sessData.user);
-                    return { success: true, user: sessData.user };
+                    const userObj: MusikaUser = {
+                        id: sessData.user.id || sessData.user._id,
+                        name: sessData.user.name,
+                        email: sessData.user.email,
+                        avatar: sessData.user.image || sessData.user.avatar,
+                        playlists: Array.isArray(sessData.user.playlists) ? sessData.user.playlists : [],
+                        favorites: Array.isArray(sessData.user.favorites) ? sessData.user.favorites : [],
+                    };
+                    await this.saveSession(userObj);
+                    return { success: true, user: userObj };
                 }
             }
 
             return {
                 success: false,
-                error: 'Login com Google concluído na web. Se sua conta foi conectada, sincronize novamente.',
+                error: 'Login com Google concluído na web. Sincronize suas playlists agora.',
             };
         } catch (e: any) {
             return { success: false, error: e?.message || 'Falha ao autenticar com Google.' };
         }
     },
 
-    // 7. Direct 1-Tap Google Account Linking (using logged Google identity)
+    // 8. Direct 1-Tap Google Account Linking (fetches real user profile from MusiKA DB)
     async connectWithGoogleProfile(googleUser: { name?: string; email: string; avatar?: string }): Promise<{ success: boolean; user?: MusikaUser; error?: string }> {
         try {
+            // First check if profile already exists on MusiKA MongoDB
+            const profile = await this.fetchUserProfile(googleUser.email);
+
             const userObj: MusikaUser = {
-                name: googleUser.name || googleUser.email.split('@')[0],
+                id: profile?.id || profile?._id,
+                name: profile?.name || googleUser.name || googleUser.email.split('@')[0],
                 email: googleUser.email,
-                avatar: googleUser.avatar,
-                playlists: [],
-                favorites: [],
+                avatar: profile?.avatar || profile?.image || googleUser.avatar,
+                playlists: Array.isArray(profile?.playlists) ? profile.playlists : [],
+                favorites: Array.isArray(profile?.favorites) ? profile.favorites : [],
             };
 
             await this.saveSession(userObj);
@@ -198,7 +247,7 @@ export const musikaService = {
         }
     },
 
-    // 8. Fetch songs catalog from OCI storage
+    // 9. Fetch songs catalog from OCI storage
     async fetchSongs(): Promise<MusikaTrack[]> {
         try {
             const res = await fetch(MUSIKA_API_SONGS);
@@ -211,7 +260,7 @@ export const musikaService = {
         }
     },
 
-    // 7. Fetch radio stations
+    // 10. Fetch radio stations
     async fetchStations(): Promise<MusikaStation[]> {
         try {
             const res = await fetch(MUSIKA_API_STATIONS);
@@ -224,7 +273,7 @@ export const musikaService = {
         }
     },
 
-    // 8. Sync favorites or custom playlists
+    // 11. Sync favorites or custom playlists
     async syncData(payload: { playlists?: MusikaPlaylist[]; favorites?: string[] }): Promise<void> {
         try {
             await fetch(`${MUSIKA_BASE_URL}/api/auth/sync`, {
@@ -237,7 +286,7 @@ export const musikaService = {
         }
     },
 
-    // 9. Local favorites storage fallback
+    // 12. Local favorites storage fallback
     async getLocalFavorites(): Promise<string[]> {
         try {
             const raw = await AsyncStorage.getItem(MUSIKA_FAVORITES_STORAGE_KEY);

@@ -34,6 +34,7 @@ export function MusikaLoginModal() {
         loginMusikaWithGoogle,
         connectMusikaWithGoogleProfile,
         logoutMusika,
+        refreshMusikaData,
         userPlaylists,
         favoriteSongIds,
         setSelectedStyle,
@@ -46,8 +47,23 @@ export function MusikaLoginModal() {
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [googleLoading, setGoogleLoading] = useState(false);
+    const [syncLoading, setSyncLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+    const handleSync = async () => {
+        setSyncLoading(true);
+        setErrorMessage(null);
+        setSuccessMessage(null);
+        try {
+            await refreshMusikaData();
+            setSuccessMessage('Playlists e favoritas atualizadas com sucesso!');
+        } catch (e: any) {
+            setErrorMessage('Não foi possível sincronizar no momento.');
+        } finally {
+            setSyncLoading(false);
+        }
+    };
 
     const handleLogin = async () => {
         if (!email.trim() || !password.trim()) {
@@ -460,10 +476,67 @@ export function MusikaLoginModal() {
                                     </View>
                                 )}
 
+                                {/* Feedback Messages in User View */}
+                                {errorMessage && (
+                                    <View
+                                        style={{
+                                            backgroundColor: '#EF444418',
+                                            borderWidth: 1,
+                                            borderColor: '#EF4444',
+                                            padding: 10,
+                                            borderRadius: Radius.md,
+                                            flexDirection: 'row',
+                                            alignItems: 'center',
+                                            gap: 8,
+                                        }}
+                                    >
+                                        <Ionicons name="alert-circle" size={16} color="#EF4444" />
+                                        <Text
+                                            style={{
+                                                color: '#EF4444',
+                                                fontSize: 12,
+                                                fontFamily: FontFamily.sansMedium,
+                                                flex: 1,
+                                            }}
+                                        >
+                                            {errorMessage}
+                                        </Text>
+                                    </View>
+                                )}
+
+                                {successMessage && (
+                                    <View
+                                        style={{
+                                            backgroundColor: '#10B98118',
+                                            borderWidth: 1,
+                                            borderColor: '#10B981',
+                                            padding: 10,
+                                            borderRadius: Radius.md,
+                                            flexDirection: 'row',
+                                            alignItems: 'center',
+                                            gap: 8,
+                                        }}
+                                    >
+                                        <Ionicons name="checkmark-circle" size={16} color="#10B981" />
+                                        <Text
+                                            style={{
+                                                color: '#10B981',
+                                                fontSize: 12,
+                                                fontFamily: FontFamily.sansMedium,
+                                                flex: 1,
+                                            }}
+                                        >
+                                            {successMessage}
+                                        </Text>
+                                    </View>
+                                )}
+
                                 {/* Action Buttons */}
-                                <View style={{ gap: 10, marginTop: 8 }}>
+                                <View style={{ gap: 10, marginTop: 4 }}>
+                                    {/* Sincronizar Agora */}
                                     <TouchableOpacity
-                                        onPress={openMusikaApp}
+                                        onPress={handleSync}
+                                        disabled={syncLoading}
                                         activeOpacity={0.8}
                                         style={{
                                             flexDirection: 'row',
@@ -472,9 +545,40 @@ export function MusikaLoginModal() {
                                             gap: 8,
                                             paddingVertical: 13,
                                             borderRadius: Radius.md,
+                                            backgroundColor: theme.colors.primary,
+                                        }}
+                                    >
+                                        {syncLoading ? (
+                                            <ActivityIndicator size="small" color="#000000" />
+                                        ) : (
+                                            <>
+                                                <Ionicons name="sync" size={18} color="#000000" />
+                                                <Text
+                                                    style={{
+                                                        color: '#000000',
+                                                        fontSize: 14,
+                                                        fontFamily: FontFamily.sansBold,
+                                                    }}
+                                                >
+                                                    Sincronizar Playlists e Favoritas
+                                                </Text>
+                                            </>
+                                        )}
+                                    </TouchableOpacity>
+
+                                    <TouchableOpacity
+                                        onPress={openMusikaApp}
+                                        activeOpacity={0.8}
+                                        style={{
+                                            flexDirection: 'row',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            gap: 8,
+                                            paddingVertical: 12,
+                                            borderRadius: Radius.md,
                                             backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : '#F1F5F9',
                                             borderWidth: 1,
-                                            borderColor: theme.colors.primary + '35',
+                                            borderColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : '#E2E8F0',
                                         }}
                                     >
                                         <Ionicons name="musical-notes" size={18} color={theme.colors.primary} />
@@ -497,7 +601,7 @@ export function MusikaLoginModal() {
                                             alignItems: 'center',
                                             justifyContent: 'center',
                                             gap: 8,
-                                            paddingVertical: 12,
+                                            paddingVertical: 11,
                                             borderRadius: Radius.md,
                                             backgroundColor: '#EF444415',
                                             borderWidth: 1,

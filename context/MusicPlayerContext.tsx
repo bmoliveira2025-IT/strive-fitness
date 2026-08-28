@@ -368,21 +368,44 @@ export function MusicPlayerProvider({ children }: { children: React.ReactNode })
         configureAudioMode();
     }, []);
 
-    // Load initial stored user session & local favorites
+    // Load initial stored user session & local favorites with real-time MusiKA sync
     useEffect(() => {
+        let isMounted = true;
         const initUserSession = async () => {
             const stored = await musikaService.getStoredSession();
-            if (stored) {
+            if (stored && isMounted) {
                 setMusikaUser(stored);
                 if (Array.isArray(stored.favorites)) {
                     setFavoriteSongIds(stored.favorites);
                 }
-            } else {
+
+                // Silently re-sync with MusiKA server to fetch latest playlists & favorites
+                if (stored.email) {
+                    musikaService.fetchUserProfile(stored.email).then(async (fresh) => {
+                        if (fresh && isMounted) {
+                            const merged: MusikaUser = {
+                                ...stored,
+                                ...fresh,
+                                playlists: Array.isArray(fresh.playlists) ? fresh.playlists : stored.playlists || [],
+                                favorites: Array.isArray(fresh.favorites) ? fresh.favorites : stored.favorites || [],
+                            };
+                            setMusikaUser(merged);
+                            if (Array.isArray(fresh.favorites)) {
+                                setFavoriteSongIds(fresh.favorites);
+                            }
+                            await musikaService.saveSession(merged);
+                        }
+                    });
+                }
+            } else if (isMounted) {
                 const localFavs = await musikaService.getLocalFavorites();
                 setFavoriteSongIds(localFavs);
             }
         };
         initUserSession();
+        return () => {
+            isMounted = false;
+        };
     }, []);
 
     // Load full MusiKA catalog & live stations
@@ -674,10 +697,24 @@ export function MusicPlayerProvider({ children }: { children: React.ReactNode })
     };
 
     const refreshMusikaData = async () => {
-        if (!musikaUser) return;
-        const stored = await musikaService.getStoredSession();
-        if (stored) {
-            setMusikaUser(stored);
+        if (!musikaUser?.email) return;
+        try {
+            const fresh = await musikaService.fetchUserProfile(musikaUser.email);
+            if (fresh) {
+                const merged: MusikaUser = {
+                    ...musikaUser,
+                    ...fresh,
+                    playlists: Array.isArray(fresh.playlists) ? fresh.playlists : musikaUser.playlists || [],
+                    favorites: Array.isArray(fresh.favorites) ? fresh.favorites : musikaUser.favorites || [],
+                };
+                setMusikaUser(merged);
+                if (Array.isArray(fresh.favorites)) {
+                    setFavoriteSongIds(fresh.favorites);
+                }
+                await musikaService.saveSession(merged);
+            }
+        } catch (e) {
+            console.error('Error in refreshMusikaData:', e);
         }
     };
 

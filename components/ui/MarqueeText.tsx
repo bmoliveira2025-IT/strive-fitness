@@ -96,11 +96,12 @@ export function MarqueeText({
                     overflow: 'hidden',
                     justifyContent: 'center',
                     minWidth: 0,
+                    maxWidth: '100%',
                 },
                 containerStyle,
             ]}
         >
-            {/* Hidden measuring container with wide width so text is never truncated during measurement */}
+            {/* Hidden measuring container */}
             <View
                 style={{
                     position: 'absolute',
@@ -127,25 +128,33 @@ export function MarqueeText({
                 </Text>
             </View>
 
-            {/* Visible Content with wide horizontal layout so Android never inserts ellipsis */}
+            {/* Visible Content with strict boundary clipping and no ellipsis */}
             <Animated.View
                 style={[
                     {
-                        width: 3000,
                         flexDirection: 'row',
                         alignItems: 'center',
+                        alignSelf: 'flex-start',
                     },
                     animatedStyle,
                 ]}
             >
-                <Text numberOfLines={1} style={[style, { flexShrink: 0 }]}>
+                <Text
+                    numberOfLines={1}
+                    ellipsizeMode="clip"
+                    style={[style, { flexShrink: 0 }]}
+                >
                     {text}
                 </Text>
 
                 {isOverflowing && (
                     <>
                         <View style={{ width: loopGap }} />
-                        <Text numberOfLines={1} style={[style, { flexShrink: 0 }]}>
+                        <Text
+                            numberOfLines={1}
+                            ellipsizeMode="clip"
+                            style={[style, { flexShrink: 0 }]}
+                        >
                             {text}
                         </Text>
                     </>

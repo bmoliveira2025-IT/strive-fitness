@@ -264,25 +264,27 @@ export function MusicPlayerWidget() {
     return (
         <View style={{ marginHorizontal: 20, marginBottom: 20 }}>
             {/* Header with Account Button */}
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10, marginBottom: 10 }}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flex: 1, minWidth: 0 }}>
-                    <Ionicons name="musical-notes" size={15} color={theme.colors.primary} />
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 6, marginBottom: 10 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5, flex: 1, minWidth: 0, marginRight: 4 }}>
+                    <Ionicons name="musical-notes" size={15} color={theme.colors.primary} style={{ flexShrink: 0 }} />
                     <Text
                         numberOfLines={1}
+                        ellipsizeMode="tail"
                         style={{
                             color: theme.colors.textSecondary,
                             fontSize: 12,
                             fontFamily: FontFamily.caption,
                             letterSpacing: 0.8,
                             textTransform: 'uppercase',
+                            flexShrink: 1,
                         }}
                     >
-                        MusiKA • Streaming
+                        MusiKA
                     </Text>
                 </View>
 
                 {/* Right Header Actions */}
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexShrink: 0 }}>
                     {/* MusiKA Account Button */}
                     <TouchableOpacity
                         onPress={() => setIsAuthModalOpen(true)}
@@ -290,13 +292,14 @@ export function MusicPlayerWidget() {
                         style={{
                             flexDirection: 'row',
                             alignItems: 'center',
-                            gap: 5,
+                            gap: 4,
                             backgroundColor: isMusikaLoggedIn ? '#10B98115' : (theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.06)' : '#F1F5F9'),
                             paddingHorizontal: 8,
-                            paddingVertical: 5,
+                            paddingVertical: 4.5,
                             borderRadius: Radius.sm,
                             borderWidth: 1,
                             borderColor: isMusikaLoggedIn ? '#10B98140' : (theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : '#E2E8F0'),
+                            maxWidth: 115,
                         }}
                     >
                         <Ionicons
@@ -306,14 +309,15 @@ export function MusicPlayerWidget() {
                         />
                         <Text
                             numberOfLines={1}
+                            ellipsizeMode="tail"
                             style={{
                                 color: isMusikaLoggedIn ? '#10B981' : theme.colors.textSecondary,
                                 fontSize: 11,
                                 fontFamily: FontFamily.sansBold,
-                                maxWidth: 100,
+                                flexShrink: 1,
                             }}
                         >
-                            {isMusikaLoggedIn ? (musikaUser?.name?.split(' ')[0] || 'Conectado') : 'Login MusiKA'}
+                            {isMusikaLoggedIn ? (musikaUser?.name?.split(' ')[0] || 'Conectado') : 'Login'}
                         </Text>
                     </TouchableOpacity>
 
@@ -327,10 +331,10 @@ export function MusicPlayerWidget() {
                         style={{
                             flexDirection: 'row',
                             alignItems: 'center',
-                            gap: 5,
+                            gap: 4,
                             backgroundColor: theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.08)' : '#F1F5F9',
-                            paddingHorizontal: 10,
-                            paddingVertical: 5,
+                            paddingHorizontal: 8,
+                            paddingVertical: 4.5,
                             borderRadius: Radius.sm,
                             borderWidth: 1,
                             borderColor: theme.colors.primary + '40',
@@ -493,7 +497,7 @@ export function MusicPlayerWidget() {
                         <TouchableOpacity
                             onPress={() => setPlaylistModalOpen(true)}
                             activeOpacity={0.85}
-                            style={{ flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1, marginRight: 8 }}
+                            style={{ flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1, marginRight: 10, minWidth: 0, overflow: 'hidden' }}
                         >
                             {/* Artwork / Cover */}
                             <View
@@ -507,6 +511,7 @@ export function MusicPlayerWidget() {
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     overflow: 'hidden',
+                                    flexShrink: 0,
                                 }}
                             >
                                 {logoUri && !imageError ? (
@@ -537,8 +542,8 @@ export function MusicPlayerWidget() {
                             </View>
 
                             {/* Details */}
-                            <View style={{ flex: 1, minWidth: 0, justifyContent: 'center' }}>
-                                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 3 }}>
+                            <View style={{ flex: 1, minWidth: 0, overflow: 'hidden', justifyContent: 'center' }}>
+                                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 3, minWidth: 0, overflow: 'hidden' }}>
                                     <View
                                         style={{
                                             backgroundColor: isPlaying
@@ -570,7 +575,7 @@ export function MusicPlayerWidget() {
                                             fontFamily: FontFamily.displaySemiBold,
                                             letterSpacing: -0.2,
                                         }}
-                                        containerStyle={{ flex: 1, minWidth: 0 }}
+                                        containerStyle={{ flex: 1, minWidth: 0, overflow: 'hidden' }}
                                     />
                                 </View>
 
@@ -582,7 +587,7 @@ export function MusicPlayerWidget() {
                                         fontSize: 11,
                                         fontFamily: FontFamily.sans,
                                     }}
-                                    containerStyle={{ width: '100%' }}
+                                    containerStyle={{ width: '100%', minWidth: 0, overflow: 'hidden' }}
                                 />
                             </View>
                         </TouchableOpacity>
@@ -592,7 +597,7 @@ export function MusicPlayerWidget() {
                             <TouchableOpacity
                                 onPress={() => toggleFavorite(currentItem.id)}
                                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                                style={{ padding: 6 }}
+                                style={{ padding: 6, flexShrink: 0, zIndex: 10 }}
                             >
                                 <Ionicons
                                     name={currentIsFav ? 'heart' : 'heart-outline'}

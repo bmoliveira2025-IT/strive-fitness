@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect } from 'react';
-import { StyleSheet, Text, useColorScheme, View } from 'react-native';
+import { Platform, StyleSheet, Text, useColorScheme, View } from 'react-native';
 import Animated, {
     Easing,
     runOnJS,
@@ -27,6 +27,14 @@ export const AnimatedSplashScreen: React.FC<Props> = ({ onFinish }) => {
     const containerOpacity = useSharedValue(1);
 
     useEffect(() => {
+        let isDone = false;
+        const complete = () => {
+            if (!isDone) {
+                isDone = true;
+                onFinish();
+            }
+        };
+
         // 1. Sleek text reveal (fade up)
         textOpacity.value = withDelay(100, withTiming(1, { duration: 800, easing: Easing.out(Easing.exp) }));
         textTranslateY.value = withDelay(100, withTiming(0, { duration: 800, easing: Easing.out(Easing.exp) }));
@@ -38,7 +46,7 @@ export const AnimatedSplashScreen: React.FC<Props> = ({ onFinish }) => {
         dotScale.value = withDelay(700, withSpring(1, { damping: 10, stiffness: 150 }));
 
         // 4. Exit sequence
-        const timer = setTimeout(() => {
+        const exitTimer = setTimeout(() => {
             textOpacity.value = withTiming(0, { duration: 400, easing: Easing.in(Easing.ease) });
             textTranslateY.value = withTiming(-20, { duration: 400, easing: Easing.in(Easing.ease) });
             lineScaleX.value = withTiming(0, { duration: 300 });
@@ -46,12 +54,21 @@ export const AnimatedSplashScreen: React.FC<Props> = ({ onFinish }) => {
 
             containerOpacity.value = withDelay(250, withTiming(0, { duration: 600 }, (finished) => {
                 if (finished) {
-                    runOnJS(onFinish)();
+                    runOnJS(complete)();
                 }
             }));
-        }, 2200);
 
-        return () => clearTimeout(timer);
+            // Guaranteed timer fallback (critical for Web & SSR)
+            setTimeout(complete, 800);
+        }, 1600);
+
+        // Ultimate safety timeout for Web
+        const safetyTimer = setTimeout(complete, 2600);
+
+        return () => {
+            clearTimeout(exitTimer);
+            clearTimeout(safetyTimer);
+        };
     }, []);
 
     const textStyle = useAnimatedStyle(() => ({

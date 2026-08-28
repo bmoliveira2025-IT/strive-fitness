@@ -1,11 +1,12 @@
 {
-    "version": 2,
-    "cleanUrls": true,
-    "outputDirectory": "dist",
-    "rewrites": [
-        {
-            "source": "/(.*)",
-            "destination": "/index.html"
-        }
-    ]
+  "version": 2,
+  "buildCommand": "npx expo export --platform web",
+  "outputDirectory": "dist",
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/((?!_expo|assets|.*\\..*).*)",
+      "destination": "/index.html"
+    }
+  ]
 }

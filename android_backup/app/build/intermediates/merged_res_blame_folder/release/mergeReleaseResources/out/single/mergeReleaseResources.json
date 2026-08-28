@@ -1,0 +1,354 @@
+[
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/raw_node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_fontawesome6_solid.ttf.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/raw/node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_fontawesome6_solid.ttf"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable-mdpi_assets_images_muscles_transparent_back.png.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/drawable-mdpi/assets_images_muscles_transparent_back.png"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.bmoliveira.strive.app-main-6:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/mipmap-xxhdpi_ic_launcher_foreground.webp.flat",
+        "source": "com.bmoliveira.strive.app-main-6:/mipmap-xxhdpi/ic_launcher_foreground.webp"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable-mdpi_assets_images_programs_5daysplit.png.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/drawable-mdpi/assets_images_programs_5daysplit.png"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable-mdpi_assets_images_programs_fullbody.png.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/drawable-mdpi/assets_images_programs_fullbody.png"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable-mdpi_node_modules_exporouter_assets_arrow_down.png.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/drawable-mdpi/node_modules_exporouter_assets_arrow_down.png"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/raw_node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_fontawesome.ttf.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/raw/node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_fontawesome.ttf"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable-xxxhdpi_node_modules_reactnavigation_elements_lib_module_assets_backicon.png.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/drawable-xxxhdpi/node_modules_reactnavigation_elements_lib_module_assets_backicon.png"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable-mdpi_assets_images_muscles_transparent_hamstrings.png.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/drawable-mdpi/assets_images_muscles_transparent_hamstrings.png"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable-xxhdpi_node_modules_reactnavigation_elements_lib_module_assets_clearicon.png.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/drawable-xxhdpi/node_modules_reactnavigation_elements_lib_module_assets_clearicon.png"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/mipmap-mdpi_ic_launcher_round.webp.flat",
+        "source": "com.bmoliveira.strive.app-main-6:/mipmap-mdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/mipmap-xxxhdpi_ic_launcher.webp.flat",
+        "source": "com.bmoliveira.strive.app-main-6:/mipmap-xxxhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable-mdpi_node_modules_exporouter_assets_pkg.png.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/drawable-mdpi/node_modules_exporouter_assets_pkg.png"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable-mdpi_node_modules_exporouter_assets_forward.png.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/drawable-mdpi/node_modules_exporouter_assets_forward.png"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable-mdpi_assets_images_muscles_transparent_biceps.png.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/drawable-mdpi/assets_images_muscles_transparent_biceps.png"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/raw_node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_ionicons.ttf.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/raw/node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_ionicons.ttf"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/mipmap-hdpi_ic_launcher.webp.flat",
+        "source": "com.bmoliveira.strive.app-main-6:/mipmap-hdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable-mdpi_node_modules_reactnavigation_elements_lib_module_assets_backiconmask.png.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/drawable-mdpi/node_modules_reactnavigation_elements_lib_module_assets_backiconmask.png"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable-xhdpi_splashscreen_logo.png.flat",
+        "source": "com.bmoliveira.strive.app-main-6:/drawable-xhdpi/splashscreen_logo.png"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable-hdpi_splashscreen_logo.png.flat",
+        "source": "com.bmoliveira.strive.app-main-6:/drawable-hdpi/splashscreen_logo.png"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable-mdpi_node_modules_reactnavigation_elements_lib_module_assets_closeicon.png.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/drawable-mdpi/node_modules_reactnavigation_elements_lib_module_assets_closeicon.png"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/mipmap-xxhdpi_ic_launcher_round.webp.flat",
+        "source": "com.bmoliveira.strive.app-main-6:/mipmap-xxhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable-mdpi_node_modules_exporouter_assets_unmatched.png.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/drawable-mdpi/node_modules_exporouter_assets_unmatched.png"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable-xxhdpi_splashscreen_logo.png.flat",
+        "source": "com.bmoliveira.strive.app-main-6:/drawable-xxhdpi/splashscreen_logo.png"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable-mdpi_assets_images_muscles_transparent_neck.png.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/drawable-mdpi/assets_images_muscles_transparent_neck.png"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/raw_node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_materialicons.ttf.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/raw/node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_materialicons.ttf"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable-mdpi_assets_images_muscles_transparent_triceps.png.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/drawable-mdpi/assets_images_muscles_transparent_triceps.png"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable-xxhdpi_node_modules_reactnavigation_elements_lib_module_assets_searchicon.png.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/drawable-xxhdpi/node_modules_reactnavigation_elements_lib_module_assets_searchicon.png"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/mipmap-hdpi_ic_launcher_round.webp.flat",
+        "source": "com.bmoliveira.strive.app-main-6:/mipmap-hdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable-xxxhdpi_splashscreen_logo.png.flat",
+        "source": "com.bmoliveira.strive.app-main-6:/drawable-xxxhdpi/splashscreen_logo.png"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable-mdpi_node_modules_reactnavigation_elements_lib_module_assets_searchicon.png.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/drawable-mdpi/node_modules_reactnavigation_elements_lib_module_assets_searchicon.png"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable-xhdpi_node_modules_reactnavigation_elements_lib_module_assets_closeicon.png.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/drawable-xhdpi/node_modules_reactnavigation_elements_lib_module_assets_closeicon.png"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable-xxxhdpi_node_modules_reactnavigation_elements_lib_module_assets_clearicon.png.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/drawable-xxxhdpi/node_modules_reactnavigation_elements_lib_module_assets_clearicon.png"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable-mdpi_assets_images_muscles_transparent_hips.png.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/drawable-mdpi/assets_images_muscles_transparent_hips.png"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/raw_node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_fontawesome5_brands.ttf.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/raw/node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_fontawesome5_brands.ttf"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable-mdpi_assets_images_programs_bodybuilding.png.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/drawable-mdpi/assets_images_programs_bodybuilding.png"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable-mdpi_splashscreen_logo.png.flat",
+        "source": "com.bmoliveira.strive.app-main-6:/drawable-mdpi/splashscreen_logo.png"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "com.bmoliveira.strive.app-main-6:/mipmap-anydpi-v26/ic_launcher_round.xml"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/raw_keep.xml.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/raw/keep.xml"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable-mdpi_node_modules_exporouter_assets_file.png.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/drawable-mdpi/node_modules_exporouter_assets_file.png"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable-mdpi_assets_images_programs_hypertrophy.png.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/drawable-mdpi/assets_images_programs_hypertrophy.png"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable-mdpi_assets_images_muscles_transparent_quads.png.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/drawable-mdpi/assets_images_muscles_transparent_quads.png"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable-mdpi_node_modules_reactnavigation_elements_lib_module_assets_backicon.png.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/drawable-mdpi/node_modules_reactnavigation_elements_lib_module_assets_backicon.png"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable-mdpi_assets_images_programs_fullbodymastery.png.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/drawable-mdpi/assets_images_programs_fullbodymastery.png"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable-xxhdpi_node_modules_reactnavigation_elements_lib_module_assets_closeicon.png.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/drawable-xxhdpi/node_modules_reactnavigation_elements_lib_module_assets_closeicon.png"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable-mdpi_assets_images_muscles_transparent_abs.png.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/drawable-mdpi/assets_images_muscles_transparent_abs.png"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/mipmap-xhdpi_ic_launcher_round.webp.flat",
+        "source": "com.bmoliveira.strive.app-main-6:/mipmap-xhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/raw_node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_fontawesome5_solid.ttf.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/raw/node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_fontawesome5_solid.ttf"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/raw_node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_simplelineicons.ttf.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/raw/node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_simplelineicons.ttf"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/raw_node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_antdesign.ttf.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/raw/node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_antdesign.ttf"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable-mdpi_assets_images_splashlight.png.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/drawable-mdpi/assets_images_splashlight.png"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/mipmap-mdpi_ic_launcher.webp.flat",
+        "source": "com.bmoliveira.strive.app-main-6:/mipmap-mdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable-mdpi_assets_images_programs_armpump.png.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/drawable-mdpi/assets_images_programs_armpump.png"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable_ic_launcher_background.xml.flat",
+        "source": "com.bmoliveira.strive.app-main-6:/drawable/ic_launcher_background.xml"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/mipmap-xhdpi_ic_launcher_foreground.webp.flat",
+        "source": "com.bmoliveira.strive.app-main-6:/mipmap-xhdpi/ic_launcher_foreground.webp"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable-mdpi_node_modules_exporouter_assets_error.png.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/drawable-mdpi/node_modules_exporouter_assets_error.png"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable-mdpi_assets_images_muscles_transparent_forearms.png.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/drawable-mdpi/assets_images_muscles_transparent_forearms.png"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable-mdpi_assets_images_muscles_transparent_calves.png.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/drawable-mdpi/assets_images_muscles_transparent_calves.png"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/raw_node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_evilicons.ttf.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/raw/node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_evilicons.ttf"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/raw_node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_feather.ttf.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/raw/node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_feather.ttf"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/mipmap-hdpi_ic_launcher_foreground.webp.flat",
+        "source": "com.bmoliveira.strive.app-main-6:/mipmap-hdpi/ic_launcher_foreground.webp"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/raw_node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_foundation.ttf.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/raw/node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_foundation.ttf"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable-xxxhdpi_node_modules_reactnavigation_elements_lib_module_assets_searchicon.png.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/drawable-xxxhdpi/node_modules_reactnavigation_elements_lib_module_assets_searchicon.png"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/raw_node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_fontawesome6_brands.ttf.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/raw/node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_fontawesome6_brands.ttf"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/raw_node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_materialcommunityicons.ttf.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/raw/node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_materialcommunityicons.ttf"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/raw_node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_fontawesome5_regular.ttf.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/raw/node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_fontawesome5_regular.ttf"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/mipmap-mdpi_ic_launcher_foreground.webp.flat",
+        "source": "com.bmoliveira.strive.app-main-6:/mipmap-mdpi/ic_launcher_foreground.webp"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable-xhdpi_node_modules_reactnavigation_elements_lib_module_assets_searchicon.png.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/drawable-xhdpi/node_modules_reactnavigation_elements_lib_module_assets_searchicon.png"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable-xxhdpi_node_modules_reactnavigation_elements_lib_module_assets_backicon.png.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/drawable-xxhdpi/node_modules_reactnavigation_elements_lib_module_assets_backicon.png"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable_rn_edit_text_material.xml.flat",
+        "source": "com.bmoliveira.strive.app-main-6:/drawable/rn_edit_text_material.xml"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/raw_node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_fontisto.ttf.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/raw/node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_fontisto.ttf"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/raw_node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_entypo.ttf.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/raw/node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_entypo.ttf"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/raw_node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_zocial.ttf.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/raw/node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_zocial.ttf"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable-mdpi_node_modules_reactnavigation_elements_lib_module_assets_clearicon.png.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/drawable-mdpi/node_modules_reactnavigation_elements_lib_module_assets_clearicon.png"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/raw_node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_octicons.ttf.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/raw/node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_octicons.ttf"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable-mdpi_node_modules_exporouter_assets_sitemap.png.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/drawable-mdpi/node_modules_exporouter_assets_sitemap.png"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable-mdpi_assets_images_muscles_transparent_shoulders.png.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/drawable-mdpi/assets_images_muscles_transparent_shoulders.png"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable-mdpi_assets_images_muscles_transparent_chest.png.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/drawable-mdpi/assets_images_muscles_transparent_chest.png"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable-xhdpi_node_modules_reactnavigation_elements_lib_module_assets_backicon.png.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/drawable-xhdpi/node_modules_reactnavigation_elements_lib_module_assets_backicon.png"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/mipmap-xxxhdpi_ic_launcher_round.webp.flat",
+        "source": "com.bmoliveira.strive.app-main-6:/mipmap-xxxhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/mipmap-xhdpi_ic_launcher.webp.flat",
+        "source": "com.bmoliveira.strive.app-main-6:/mipmap-xhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable-mdpi_assets_images_splash.png.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/drawable-mdpi/assets_images_splash.png"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable-xhdpi_node_modules_reactnavigation_elements_lib_module_assets_clearicon.png.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/drawable-xhdpi/node_modules_reactnavigation_elements_lib_module_assets_clearicon.png"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/raw_node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_fontawesome6_regular.ttf.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/raw/node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_fontawesome6_regular.ttf"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/drawable-xxxhdpi_node_modules_reactnavigation_elements_lib_module_assets_closeicon.png.flat",
+        "source": "com.bmoliveira.strive.app-res-0:/drawable-xxxhdpi/node_modules_reactnavigation_elements_lib_module_assets_closeicon.png"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/mipmap-xxhdpi_ic_launcher.webp.flat",
+        "source": "com.bmoliveira.strive.app-main-6:/mipmap-xxhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.bmoliveira.strive.app-release-5:/mipmap-xxxhdpi_ic_launcher_foreground.webp.flat",
+        "source": "com.bmoliveira.strive.app-main-6:/mipmap-xxxhdpi/ic_launcher_foreground.webp"
+    }
+]

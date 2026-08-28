@@ -1,0 +1,18 @@
+{
+  "installationFolder": "C:\\Users\\braul\\.gemini\\antigravity\\scratch\\gym_app\\mobile_app\\node_modules\\react-native-reanimated\\android\\build\\intermediates\\prefab_package\\debug\\prefab",
+  "gradlePath": ":react-native-reanimated",
+  "packageInfo": {
+    "packageName": "react-native-reanimated",
+    "packageVersion": "4.1.6",
+    "packageSchemaVersion": 2,
+    "packageDependencies": [],
+    "modules": [
+      {
+        "moduleName": "reanimated",
+        "moduleHeaders": "C:\\Users\\braul\\.gemini\\antigravity\\scratch\\gym_app\\mobile_app\\node_modules\\react-native-reanimated\\android\\build\\prefab-headers\\reanimated",
+        "moduleExportLibraries": [],
+        "abis": []
+      }
+    ]
+  }
+}

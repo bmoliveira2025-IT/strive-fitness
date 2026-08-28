@@ -1,0 +1,53 @@
+pluginManagement {
+    def getCurrentDir = {
+        def dir = new File(".").absolutePath
+        // Gradle daemon might be in a different dir, so use settingsDir if available, or fallback
+        return settingsDir
+    }
+    
+    def getPkgPath = { pkgName ->
+        def stdout = new ByteArrayOutputStream()
+        exec {
+            commandLine 'cmd', '/c', 'node', '--print', "require.resolve('${pkgName}/package.json')"
+            standardOutput = stdout
+            workingDir = settingsDir
+        }
+        return stdout.toString().trim()
+    }
+
+    // Since we are in an agent environment and I want to be 100% sure, I will use relative paths if I can confirm them
+    // But dynamic is better if it works.
+    // Let's go back to RELATIVE paths but verifying the structure.
+    
+    // The previous attempt: def nodeModules = new File(settingsDir, "../node_modules")
+    // If settingsDir is .../android, then ../node_modules is .../node_modules.
+    
+    // Why did it fail?
+    // Maybe @react-native/gradle-plugin/settings.gradle.kts exists, but Gradle ignored it?
+    
+    // Let's try to be EXPLICIT with the includeBuild path.
+    includeBuild(new File(settingsDir, "../node_modules/@react-native/gradle-plugin"))
+    includeBuild(new File(settingsDir, "../node_modules/expo-modules-autolinking/android/expo-gradle-plugin"))
+}
+
+plugins {
+  id("com.facebook.react.settings")
+  id("expo-autolinking-settings")
+}
+
+extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
+  if (System.getenv('EXPO_USE_COMMUNITY_AUTOLINKING') == '1') {
+    ex.autolinkLibrariesFromCommand()
+  } else {
+    ex.autolinkLibrariesFromCommand(expoAutolinking.rnConfigCommand)
+  }
+}
+expoAutolinking.useExpoModules()
+
+rootProject.name = 'Strive'
+
+expoAutolinking.useExpoVersionCatalog()
+
+include ':app'
+// Commenting out to avoid collision with pluginManagement include when using junction paths
+// includeBuild(expoAutolinking.reactNativeGradlePlugin)

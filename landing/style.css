@@ -1,0 +1,231 @@
+:root {
+    --primary: #8B5CF6;
+    --primary-dark: #7C3AED;
+    --background: #000000;
+    --card-bg: #0A0A0B;
+    --text: #FFFFFF;
+    --text-muted: #A1A1AA;
+    --border: #1C1C1E;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: var(--background);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+/* Navbar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem 5%;
+    position: absolute;
+    width: 100%;
+    z-index: 10;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -1px;
+}
+
+.logo-accent {
+    color: var(--primary);
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: var(--text);
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: color 0.3s;
+}
+
+.nav-links a:hover {
+    color: var(--primary);
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: #000 !important;
+    padding: 0.8rem 1.5rem;
+    border-radius: 999px;
+}
+
+/* Hero */
+.hero {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.05) 0%, transparent 40%);
+    padding: 0 5%;
+}
+
+.hero-content {
+    max-width: 900px;
+}
+
+.badge {
+    background: rgba(139, 92, 246, 0.1);
+    color: var(--primary);
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    display: inline-block;
+    margin-bottom: 2rem;
+}
+
+.hero h1 {
+    font-size: 5rem;
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -3px;
+    margin-bottom: 1.5rem;
+}
+
+.text-gradient {
+    color: var(--primary);
+}
+
+.hero p {
+    font-size: 1.2rem;
+    color: var(--text-muted);
+    max-width: 600px;
+    margin: 0 auto 3rem;
+}
+
+.hero-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+}
+
+.btn-hero {
+    background: var(--primary);
+    color: #000;
+    text-decoration: none;
+    padding: 1.2rem 2.5rem;
+    border-radius: 999px;
+    font-weight: 800;
+    font-size: 1.1rem;
+    transition: transform 0.3s;
+}
+
+.btn-hero:hover {
+    transform: translateY(-5px);
+}
+
+.btn-secondary {
+    border: 1px solid var(--border);
+    color: var(--text);
+    text-decoration: none;
+    padding: 1.2rem 2.5rem;
+    border-radius: 999px;
+    font-weight: 800;
+    font-size: 1.1rem;
+    transition: background 0.3s;
+}
+
+.btn-secondary:hover {
+    background: var(--border);
+}
+
+/* Features */
+.features {
+    padding: 8rem 5%;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 5rem;
+}
+
+.section-header h2 {
+    font-size: 3rem;
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin-bottom: 1rem;
+}
+
+.section-header p {
+    color: var(--text-muted);
+}
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.card {
+    background: var(--card-bg);
+    padding: 3.5rem 2.5rem;
+    border-radius: 2rem;
+    border: 1px solid var(--border);
+    transition: border-color 0.3s;
+}
+
+.card:hover {
+    border-color: var(--primary);
+}
+
+.card-active {
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}
+
+.card-icon {
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+}
+
+.card h3 {
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+}
+
+.card p {
+    color: var(--text-muted);
+}
+
+/* Footer */
+.footer {
+    padding: 4rem 5%;
+    text-align: center;
+    border-top: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hero h1 {
+        font-size: 3.5rem;
+    }
+    .hero-actions {
+        flex-direction: column;
+    }
+    .nav-links {
+        display: none;
+    }
+}

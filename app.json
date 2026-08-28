@@ -1,0 +1,99 @@
+{
+  "expo": {
+    "name": "Strive Fitness",
+    "slug": "strive-app",
+    "version": "1.0.1",
+    "orientation": "portrait",
+    "icon": "./assets/images/adaptive-icon.png",
+    "scheme": "strive-fitness-br",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "audio",
+          "fetch",
+          "remote-notification",
+          "audio",
+          "fetch",
+          "remote-notification"
+        ]
+      }
+    },
+    "android": {
+      "package": "com.bmoliveira.strive",
+      "versionCode": 2,
+      "adaptiveIcon": {
+        "backgroundColor": "#0A0A0B",
+        "foregroundImage": "./assets/images/adaptive-icon.png"
+      },
+      "permissions": [
+        "WAKE_LOCK",
+        "FOREGROUND_SERVICE",
+        "FOREGROUND_SERVICE_MEDIA_PLAYBACK"
+      ],
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "output": "static",
+      "favicon": "./assets/images/adaptive-icon.png",
+      "name": "Strive Workout",
+      "shortName": "Strive",
+      "display": "standalone",
+      "themeColor": "#8B5CF6",
+      "backgroundColor": "#FFFFFF",
+      "description": "Seu companheiro inteligente de treinos"
+    },
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "extraGradleProperties": [
+              {
+                "key": "org.gradle.jvmargs",
+                "value": "-Xmx4096m -XX:MaxMetaspaceSize=512m"
+              }
+            ]
+          }
+        }
+      ],
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/adaptive-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#0A0A0B"
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/logo_transparent.png",
+          "color": "#8B5CF6"
+        }
+      ],
+      "expo-web-browser"
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": false
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "0fbee111-b6ba-4a55-b601-d7c19a2618d0"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/0fbee111-b6ba-4a55-b601-d7c19a2618d0"
+    }
+  }
+}

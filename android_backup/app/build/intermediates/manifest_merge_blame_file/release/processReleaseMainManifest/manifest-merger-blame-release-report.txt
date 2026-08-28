@@ -1,0 +1,695 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.bmoliveira.strive"
+4    android:versionCode="1"
+5    android:versionName="1.0.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="24"
+9        android:targetSdkVersion="36" />
+10
+11    <uses-permission android:name="android.permission.INTERNET" />
+11-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:2:3-64
+11-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:2:20-62
+12    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+12-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:3:3-77
+12-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:3:20-75
+13    <uses-permission
+13-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:4:3-77
+14        android:name="android.permission.READ_EXTERNAL_STORAGE"
+14-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:4:20-75
+15        android:maxSdkVersion="32" />
+15-->[BareExpo:expo.modules.image:3.0.11] C:\Users\braul\.gradle\caches\8.14.3\transforms\89014478d0b4493a93dfed8dba4b6881\transformed\expo.modules.image-3.0.11\AndroidManifest.xml:17:9-35
+16    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+16-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:5:3-68
+16-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:5:20-66
+17    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+17-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:6:3-75
+17-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:6:20-73
+18    <uses-permission android:name="android.permission.VIBRATE" />
+18-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:7:3-63
+18-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:7:20-61
+19    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+19-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:8:3-78
+19-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:8:20-76
+20
+21    <queries>
+21-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:9:3-15:13
+22        <intent>
+22-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:10:5-14:14
+23            <action android:name="android.intent.action.VIEW" />
+23-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:11:7-58
+23-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:11:15-56
+24
+25            <category android:name="android.intent.category.BROWSABLE" />
+25-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:12:7-67
+25-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:12:17-65
+26
+27            <data android:scheme="https" />
+27-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:13:7-37
+27-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:13:13-35
+28        </intent>
+29        <!-- Query open documents -->
+30        <intent>
+30-->[host.exp.exponent:expo.modules.filesystem:19.0.21] C:\Users\braul\.gradle\caches\8.14.3\transforms\b2ffaca17051b24333e3ff63b4ad5952\transformed\expo.modules.filesystem-19.0.21\AndroidManifest.xml:15:9-17:18
+31            <action android:name="android.intent.action.OPEN_DOCUMENT_TREE" />
+31-->[host.exp.exponent:expo.modules.filesystem:19.0.21] C:\Users\braul\.gradle\caches\8.14.3\transforms\b2ffaca17051b24333e3ff63b4ad5952\transformed\expo.modules.filesystem-19.0.21\AndroidManifest.xml:16:13-79
+31-->[host.exp.exponent:expo.modules.filesystem:19.0.21] C:\Users\braul\.gradle\caches\8.14.3\transforms\b2ffaca17051b24333e3ff63b4ad5952\transformed\expo.modules.filesystem-19.0.21\AndroidManifest.xml:16:21-76
+32        </intent>
+33        <intent>
+33-->[host.exp.exponent:expo.modules.imagepicker:17.0.10] C:\Users\braul\.gradle\caches\8.14.3\transforms\178de1990997d62277ce49f3c7115deb\transformed\expo.modules.imagepicker-17.0.10\AndroidManifest.xml:15:9-19:18
+34
+35            <!-- Required for picking images from the camera roll if targeting API 30 -->
+36            <action android:name="android.media.action.IMAGE_CAPTURE" />
+36-->[host.exp.exponent:expo.modules.imagepicker:17.0.10] C:\Users\braul\.gradle\caches\8.14.3\transforms\178de1990997d62277ce49f3c7115deb\transformed\expo.modules.imagepicker-17.0.10\AndroidManifest.xml:18:13-73
+36-->[host.exp.exponent:expo.modules.imagepicker:17.0.10] C:\Users\braul\.gradle\caches\8.14.3\transforms\178de1990997d62277ce49f3c7115deb\transformed\expo.modules.imagepicker-17.0.10\AndroidManifest.xml:18:21-70
+37        </intent>
+38        <intent>
+38-->[host.exp.exponent:expo.modules.imagepicker:17.0.10] C:\Users\braul\.gradle\caches\8.14.3\transforms\178de1990997d62277ce49f3c7115deb\transformed\expo.modules.imagepicker-17.0.10\AndroidManifest.xml:20:9-24:18
+39
+40            <!-- Required for picking images from the camera if targeting API 30 -->
+41            <action android:name="android.media.action.ACTION_VIDEO_CAPTURE" />
+41-->[host.exp.exponent:expo.modules.imagepicker:17.0.10] C:\Users\braul\.gradle\caches\8.14.3\transforms\178de1990997d62277ce49f3c7115deb\transformed\expo.modules.imagepicker-17.0.10\AndroidManifest.xml:23:13-80
+41-->[host.exp.exponent:expo.modules.imagepicker:17.0.10] C:\Users\braul\.gradle\caches\8.14.3\transforms\178de1990997d62277ce49f3c7115deb\transformed\expo.modules.imagepicker-17.0.10\AndroidManifest.xml:23:21-77
+42        </intent>
+43        <intent>
+43-->[host.exp.exponent:expo.modules.sharing:14.0.8] C:\Users\braul\.gradle\caches\8.14.3\transforms\49a1d4e6d610146ee9ee4cf86913a207\transformed\expo.modules.sharing-14.0.8\AndroidManifest.xml:8:9-14:18
+44
+45            <!-- Required for file sharing if targeting API 30 -->
+46            <action android:name="android.intent.action.SEND" />
+46-->[host.exp.exponent:expo.modules.sharing:14.0.8] C:\Users\braul\.gradle\caches\8.14.3\transforms\49a1d4e6d610146ee9ee4cf86913a207\transformed\expo.modules.sharing-14.0.8\AndroidManifest.xml:11:13-65
+46-->[host.exp.exponent:expo.modules.sharing:14.0.8] C:\Users\braul\.gradle\caches\8.14.3\transforms\49a1d4e6d610146ee9ee4cf86913a207\transformed\expo.modules.sharing-14.0.8\AndroidManifest.xml:11:21-62
+47
+48            <data android:mimeType="*/*" />
+48-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:13:7-37
+49        </intent>
+50        <intent>
+50-->[host.exp.exponent:expo.modules.webbrowser:15.0.10] C:\Users\braul\.gradle\caches\8.14.3\transforms\e15829a1604f68ac2fcae1c4907e5ef1\transformed\expo.modules.webbrowser-15.0.10\AndroidManifest.xml:8:9-12:18
+51
+52            <!-- Required for opening tabs if targeting API 30 -->
+53            <action android:name="android.support.customtabs.action.CustomTabsService" />
+53-->[host.exp.exponent:expo.modules.webbrowser:15.0.10] C:\Users\braul\.gradle\caches\8.14.3\transforms\e15829a1604f68ac2fcae1c4907e5ef1\transformed\expo.modules.webbrowser-15.0.10\AndroidManifest.xml:11:13-90
+53-->[host.exp.exponent:expo.modules.webbrowser:15.0.10] C:\Users\braul\.gradle\caches\8.14.3\transforms\e15829a1604f68ac2fcae1c4907e5ef1\transformed\expo.modules.webbrowser-15.0.10\AndroidManifest.xml:11:21-87
+54        </intent>
+55        <intent>
+55-->[com.vanniktech:android-image-cropper:4.6.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\b7b1526c989827fc7a44934e4147b397\transformed\android-image-cropper-4.6.0\AndroidManifest.xml:8:9-14:18
+56            <action android:name="android.intent.action.GET_CONTENT" />
+56-->[com.vanniktech:android-image-cropper:4.6.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\b7b1526c989827fc7a44934e4147b397\transformed\android-image-cropper-4.6.0\AndroidManifest.xml:9:13-72
+56-->[com.vanniktech:android-image-cropper:4.6.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\b7b1526c989827fc7a44934e4147b397\transformed\android-image-cropper-4.6.0\AndroidManifest.xml:9:21-69
+57
+58            <category android:name="android.intent.category.OPENABLE" />
+58-->[com.vanniktech:android-image-cropper:4.6.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\b7b1526c989827fc7a44934e4147b397\transformed\android-image-cropper-4.6.0\AndroidManifest.xml:11:13-73
+58-->[com.vanniktech:android-image-cropper:4.6.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\b7b1526c989827fc7a44934e4147b397\transformed\android-image-cropper-4.6.0\AndroidManifest.xml:11:23-70
+59
+60            <data android:mimeType="*/*" />
+60-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:13:7-37
+61        </intent>
+62    </queries>
+63    <!--
+64  Allows Glide to monitor connectivity status and restart failed requests if users go from a
+65  a disconnected to a connected network state.
+66    -->
+67    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- Required for picking images from camera directly -->
+67-->[BareExpo:expo.modules.image:3.0.11] C:\Users\braul\.gradle\caches\8.14.3\transforms\89014478d0b4493a93dfed8dba4b6881\transformed\expo.modules.image-3.0.11\AndroidManifest.xml:12:5-79
+67-->[BareExpo:expo.modules.image:3.0.11] C:\Users\braul\.gradle\caches\8.14.3\transforms\89014478d0b4493a93dfed8dba4b6881\transformed\expo.modules.image-3.0.11\AndroidManifest.xml:12:22-76
+68    <uses-permission android:name="android.permission.CAMERA" />
+68-->[host.exp.exponent:expo.modules.imagepicker:17.0.10] C:\Users\braul\.gradle\caches\8.14.3\transforms\178de1990997d62277ce49f3c7115deb\transformed\expo.modules.imagepicker-17.0.10\AndroidManifest.xml:8:5-65
+68-->[host.exp.exponent:expo.modules.imagepicker:17.0.10] C:\Users\braul\.gradle\caches\8.14.3\transforms\178de1990997d62277ce49f3c7115deb\transformed\expo.modules.imagepicker-17.0.10\AndroidManifest.xml:8:22-62
+69    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+69-->[host.exp.exponent:expo.modules.notifications:0.32.16] C:\Users\braul\.gradle\caches\8.14.3\transforms\12647c0972656ecfb5dfd821a75802ec\transformed\expo.modules.notifications-0.32.16\AndroidManifest.xml:7:5-81
+69-->[host.exp.exponent:expo.modules.notifications:0.32.16] C:\Users\braul\.gradle\caches\8.14.3\transforms\12647c0972656ecfb5dfd821a75802ec\transformed\expo.modules.notifications-0.32.16\AndroidManifest.xml:7:22-78
+70    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+70-->[host.exp.exponent:expo.modules.notifications:0.32.16] C:\Users\braul\.gradle\caches\8.14.3\transforms\12647c0972656ecfb5dfd821a75802ec\transformed\expo.modules.notifications-0.32.16\AndroidManifest.xml:8:5-77
+70-->[host.exp.exponent:expo.modules.notifications:0.32.16] C:\Users\braul\.gradle\caches\8.14.3\transforms\12647c0972656ecfb5dfd821a75802ec\transformed\expo.modules.notifications-0.32.16\AndroidManifest.xml:8:22-74
+71    <uses-permission android:name="android.permission.WAKE_LOCK" /> <!-- Required by older versions of Google Play services to create IID tokens -->
+71-->[com.google.firebase:firebase-messaging:24.0.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\536af53bb98db2170378403abf1bd956\transformed\firebase-messaging-24.0.1\AndroidManifest.xml:24:5-68
+71-->[com.google.firebase:firebase-messaging:24.0.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\536af53bb98db2170378403abf1bd956\transformed\firebase-messaging-24.0.1\AndroidManifest.xml:24:22-65
+72    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+72-->[com.google.firebase:firebase-messaging:24.0.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\536af53bb98db2170378403abf1bd956\transformed\firebase-messaging-24.0.1\AndroidManifest.xml:26:5-82
+72-->[com.google.firebase:firebase-messaging:24.0.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\536af53bb98db2170378403abf1bd956\transformed\firebase-messaging-24.0.1\AndroidManifest.xml:26:22-79
+73
+74    <permission
+74-->[androidx.core:core:1.16.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\044ecc0e7de65abd60fe8d9b57bc545b\transformed\core-1.16.0\AndroidManifest.xml:22:5-24:47
+75        android:name="com.bmoliveira.strive.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+75-->[androidx.core:core:1.16.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\044ecc0e7de65abd60fe8d9b57bc545b\transformed\core-1.16.0\AndroidManifest.xml:23:9-81
+76        android:protectionLevel="signature" />
+76-->[androidx.core:core:1.16.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\044ecc0e7de65abd60fe8d9b57bc545b\transformed\core-1.16.0\AndroidManifest.xml:24:9-44
+77
+78    <uses-permission android:name="com.bmoliveira.strive.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+78-->[androidx.core:core:1.16.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\044ecc0e7de65abd60fe8d9b57bc545b\transformed\core-1.16.0\AndroidManifest.xml:26:5-97
+78-->[androidx.core:core:1.16.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\044ecc0e7de65abd60fe8d9b57bc545b\transformed\core-1.16.0\AndroidManifest.xml:26:22-94
+79    <uses-permission android:name="com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE" /> <!-- for android -->
+79-->[com.android.installreferrer:installreferrer:2.2] C:\Users\braul\.gradle\caches\8.14.3\transforms\8156d5255f73a46f8929a1c803be3996\transformed\installreferrer-2.2\AndroidManifest.xml:9:5-110
+79-->[com.android.installreferrer:installreferrer:2.2] C:\Users\braul\.gradle\caches\8.14.3\transforms\8156d5255f73a46f8929a1c803be3996\transformed\installreferrer-2.2\AndroidManifest.xml:9:22-107
+80    <!-- <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS"/> -->
+81    <!-- <uses-permission android:name="com.android.launcher.permission.WRITE_SETTINGS"/> -->
+82    <!-- <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" /> -->
+83    <!-- <uses-permission android:name="com.android.launcher.permission.UNINSTALL_SHORTCUT" /> -->
+84    <!-- for Samsung -->
+85    <uses-permission android:name="com.sec.android.provider.badge.permission.READ" />
+85-->[me.leolin:ShortcutBadger:1.1.22] C:\Users\braul\.gradle\caches\8.14.3\transforms\4eae568e9b2375dfa2274428427e0d8b\transformed\ShortcutBadger-1.1.22\AndroidManifest.xml:19:5-86
+85-->[me.leolin:ShortcutBadger:1.1.22] C:\Users\braul\.gradle\caches\8.14.3\transforms\4eae568e9b2375dfa2274428427e0d8b\transformed\ShortcutBadger-1.1.22\AndroidManifest.xml:19:22-83
+86    <uses-permission android:name="com.sec.android.provider.badge.permission.WRITE" /> <!-- for htc -->
+86-->[me.leolin:ShortcutBadger:1.1.22] C:\Users\braul\.gradle\caches\8.14.3\transforms\4eae568e9b2375dfa2274428427e0d8b\transformed\ShortcutBadger-1.1.22\AndroidManifest.xml:20:5-87
+86-->[me.leolin:ShortcutBadger:1.1.22] C:\Users\braul\.gradle\caches\8.14.3\transforms\4eae568e9b2375dfa2274428427e0d8b\transformed\ShortcutBadger-1.1.22\AndroidManifest.xml:20:22-84
+87    <uses-permission android:name="com.htc.launcher.permission.READ_SETTINGS" />
+87-->[me.leolin:ShortcutBadger:1.1.22] C:\Users\braul\.gradle\caches\8.14.3\transforms\4eae568e9b2375dfa2274428427e0d8b\transformed\ShortcutBadger-1.1.22\AndroidManifest.xml:23:5-81
+87-->[me.leolin:ShortcutBadger:1.1.22] C:\Users\braul\.gradle\caches\8.14.3\transforms\4eae568e9b2375dfa2274428427e0d8b\transformed\ShortcutBadger-1.1.22\AndroidManifest.xml:23:22-78
+88    <uses-permission android:name="com.htc.launcher.permission.UPDATE_SHORTCUT" /> <!-- for sony -->
+88-->[me.leolin:ShortcutBadger:1.1.22] C:\Users\braul\.gradle\caches\8.14.3\transforms\4eae568e9b2375dfa2274428427e0d8b\transformed\ShortcutBadger-1.1.22\AndroidManifest.xml:24:5-83
+88-->[me.leolin:ShortcutBadger:1.1.22] C:\Users\braul\.gradle\caches\8.14.3\transforms\4eae568e9b2375dfa2274428427e0d8b\transformed\ShortcutBadger-1.1.22\AndroidManifest.xml:24:22-80
+89    <uses-permission android:name="com.sonyericsson.home.permission.BROADCAST_BADGE" />
+89-->[me.leolin:ShortcutBadger:1.1.22] C:\Users\braul\.gradle\caches\8.14.3\transforms\4eae568e9b2375dfa2274428427e0d8b\transformed\ShortcutBadger-1.1.22\AndroidManifest.xml:27:5-88
+89-->[me.leolin:ShortcutBadger:1.1.22] C:\Users\braul\.gradle\caches\8.14.3\transforms\4eae568e9b2375dfa2274428427e0d8b\transformed\ShortcutBadger-1.1.22\AndroidManifest.xml:27:22-85
+90    <uses-permission android:name="com.sonymobile.home.permission.PROVIDER_INSERT_BADGE" /> <!-- for apex -->
+90-->[me.leolin:ShortcutBadger:1.1.22] C:\Users\braul\.gradle\caches\8.14.3\transforms\4eae568e9b2375dfa2274428427e0d8b\transformed\ShortcutBadger-1.1.22\AndroidManifest.xml:28:5-92
+90-->[me.leolin:ShortcutBadger:1.1.22] C:\Users\braul\.gradle\caches\8.14.3\transforms\4eae568e9b2375dfa2274428427e0d8b\transformed\ShortcutBadger-1.1.22\AndroidManifest.xml:28:22-89
+91    <uses-permission android:name="com.anddoes.launcher.permission.UPDATE_COUNT" /> <!-- for solid -->
+91-->[me.leolin:ShortcutBadger:1.1.22] C:\Users\braul\.gradle\caches\8.14.3\transforms\4eae568e9b2375dfa2274428427e0d8b\transformed\ShortcutBadger-1.1.22\AndroidManifest.xml:31:5-84
+91-->[me.leolin:ShortcutBadger:1.1.22] C:\Users\braul\.gradle\caches\8.14.3\transforms\4eae568e9b2375dfa2274428427e0d8b\transformed\ShortcutBadger-1.1.22\AndroidManifest.xml:31:22-81
+92    <uses-permission android:name="com.majeur.launcher.permission.UPDATE_BADGE" /> <!-- for huawei -->
+92-->[me.leolin:ShortcutBadger:1.1.22] C:\Users\braul\.gradle\caches\8.14.3\transforms\4eae568e9b2375dfa2274428427e0d8b\transformed\ShortcutBadger-1.1.22\AndroidManifest.xml:34:5-83
+92-->[me.leolin:ShortcutBadger:1.1.22] C:\Users\braul\.gradle\caches\8.14.3\transforms\4eae568e9b2375dfa2274428427e0d8b\transformed\ShortcutBadger-1.1.22\AndroidManifest.xml:34:22-80
+93    <uses-permission android:name="com.huawei.android.launcher.permission.CHANGE_BADGE" />
+93-->[me.leolin:ShortcutBadger:1.1.22] C:\Users\braul\.gradle\caches\8.14.3\transforms\4eae568e9b2375dfa2274428427e0d8b\transformed\ShortcutBadger-1.1.22\AndroidManifest.xml:37:5-91
+93-->[me.leolin:ShortcutBadger:1.1.22] C:\Users\braul\.gradle\caches\8.14.3\transforms\4eae568e9b2375dfa2274428427e0d8b\transformed\ShortcutBadger-1.1.22\AndroidManifest.xml:37:22-88
+94    <uses-permission android:name="com.huawei.android.launcher.permission.READ_SETTINGS" />
+94-->[me.leolin:ShortcutBadger:1.1.22] C:\Users\braul\.gradle\caches\8.14.3\transforms\4eae568e9b2375dfa2274428427e0d8b\transformed\ShortcutBadger-1.1.22\AndroidManifest.xml:38:5-92
+94-->[me.leolin:ShortcutBadger:1.1.22] C:\Users\braul\.gradle\caches\8.14.3\transforms\4eae568e9b2375dfa2274428427e0d8b\transformed\ShortcutBadger-1.1.22\AndroidManifest.xml:38:22-89
+95    <uses-permission android:name="com.huawei.android.launcher.permission.WRITE_SETTINGS" /> <!-- for ZUK -->
+95-->[me.leolin:ShortcutBadger:1.1.22] C:\Users\braul\.gradle\caches\8.14.3\transforms\4eae568e9b2375dfa2274428427e0d8b\transformed\ShortcutBadger-1.1.22\AndroidManifest.xml:39:5-93
+95-->[me.leolin:ShortcutBadger:1.1.22] C:\Users\braul\.gradle\caches\8.14.3\transforms\4eae568e9b2375dfa2274428427e0d8b\transformed\ShortcutBadger-1.1.22\AndroidManifest.xml:39:22-90
+96    <uses-permission android:name="android.permission.READ_APP_BADGE" /> <!-- for OPPO -->
+96-->[me.leolin:ShortcutBadger:1.1.22] C:\Users\braul\.gradle\caches\8.14.3\transforms\4eae568e9b2375dfa2274428427e0d8b\transformed\ShortcutBadger-1.1.22\AndroidManifest.xml:42:5-73
+96-->[me.leolin:ShortcutBadger:1.1.22] C:\Users\braul\.gradle\caches\8.14.3\transforms\4eae568e9b2375dfa2274428427e0d8b\transformed\ShortcutBadger-1.1.22\AndroidManifest.xml:42:22-70
+97    <uses-permission android:name="com.oppo.launcher.permission.READ_SETTINGS" />
+97-->[me.leolin:ShortcutBadger:1.1.22] C:\Users\braul\.gradle\caches\8.14.3\transforms\4eae568e9b2375dfa2274428427e0d8b\transformed\ShortcutBadger-1.1.22\AndroidManifest.xml:45:5-82
+97-->[me.leolin:ShortcutBadger:1.1.22] C:\Users\braul\.gradle\caches\8.14.3\transforms\4eae568e9b2375dfa2274428427e0d8b\transformed\ShortcutBadger-1.1.22\AndroidManifest.xml:45:22-79
+98    <uses-permission android:name="com.oppo.launcher.permission.WRITE_SETTINGS" /> <!-- for EvMe -->
+98-->[me.leolin:ShortcutBadger:1.1.22] C:\Users\braul\.gradle\caches\8.14.3\transforms\4eae568e9b2375dfa2274428427e0d8b\transformed\ShortcutBadger-1.1.22\AndroidManifest.xml:46:5-83
+98-->[me.leolin:ShortcutBadger:1.1.22] C:\Users\braul\.gradle\caches\8.14.3\transforms\4eae568e9b2375dfa2274428427e0d8b\transformed\ShortcutBadger-1.1.22\AndroidManifest.xml:46:22-80
+99    <uses-permission android:name="me.everything.badger.permission.BADGE_COUNT_READ" />
+99-->[me.leolin:ShortcutBadger:1.1.22] C:\Users\braul\.gradle\caches\8.14.3\transforms\4eae568e9b2375dfa2274428427e0d8b\transformed\ShortcutBadger-1.1.22\AndroidManifest.xml:49:5-88
+99-->[me.leolin:ShortcutBadger:1.1.22] C:\Users\braul\.gradle\caches\8.14.3\transforms\4eae568e9b2375dfa2274428427e0d8b\transformed\ShortcutBadger-1.1.22\AndroidManifest.xml:49:22-85
+100    <uses-permission android:name="me.everything.badger.permission.BADGE_COUNT_WRITE" />
+100-->[me.leolin:ShortcutBadger:1.1.22] C:\Users\braul\.gradle\caches\8.14.3\transforms\4eae568e9b2375dfa2274428427e0d8b\transformed\ShortcutBadger-1.1.22\AndroidManifest.xml:50:5-89
+100-->[me.leolin:ShortcutBadger:1.1.22] C:\Users\braul\.gradle\caches\8.14.3\transforms\4eae568e9b2375dfa2274428427e0d8b\transformed\ShortcutBadger-1.1.22\AndroidManifest.xml:50:22-86
+101
+102    <application
+102-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:16:3-32:17
+103        android:name="com.bmoliveira.strive.MainApplication"
+103-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:16:16-47
+104        android:allowBackup="true"
+104-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:16:162-188
+105        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+105-->[androidx.core:core:1.16.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\044ecc0e7de65abd60fe8d9b57bc545b\transformed\core-1.16.0\AndroidManifest.xml:28:18-86
+106        android:enableOnBackInvokedCallback="false"
+106-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:16:248-291
+107        android:extractNativeLibs="false"
+108        android:icon="@mipmap/ic_launcher"
+108-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:16:81-115
+109        android:label="@string/app_name"
+109-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:16:48-80
+110        android:roundIcon="@mipmap/ic_launcher_round"
+110-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:16:116-161
+111        android:supportsRtl="true"
+111-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:16:221-247
+112        android:theme="@style/AppTheme" >
+112-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:16:189-220
+113        <meta-data
+113-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:17:5-83
+114            android:name="expo.modules.updates.ENABLED"
+114-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:17:16-59
+115            android:value="false" />
+115-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:17:60-81
+116        <meta-data
+116-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:18:5-105
+117            android:name="expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH"
+117-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:18:16-80
+118            android:value="ALWAYS" />
+118-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:18:81-103
+119        <meta-data
+119-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:19:5-99
+120            android:name="expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS"
+120-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:19:16-79
+121            android:value="0" />
+121-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:19:80-97
+122
+123        <activity
+123-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:20:5-31:16
+124            android:name="com.bmoliveira.strive.MainActivity"
+124-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:20:15-43
+125            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode"
+125-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:20:44-134
+126            android:exported="true"
+126-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:20:256-279
+127            android:launchMode="singleTask"
+127-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:20:135-166
+128            android:screenOrientation="portrait"
+128-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:20:280-316
+129            android:theme="@style/Theme.App.SplashScreen"
+129-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:20:210-255
+130            android:windowSoftInputMode="adjustResize" >
+130-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:20:167-209
+131            <intent-filter>
+131-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:21:7-24:23
+132                <action android:name="android.intent.action.MAIN" />
+132-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:22:9-60
+132-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:22:17-58
+133
+134                <category android:name="android.intent.category.LAUNCHER" />
+134-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:23:9-68
+134-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:23:19-66
+135            </intent-filter>
+136            <intent-filter>
+136-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:25:7-30:23
+137                <action android:name="android.intent.action.VIEW" />
+137-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:11:7-58
+137-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:11:15-56
+138
+139                <category android:name="android.intent.category.DEFAULT" />
+139-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:27:9-67
+139-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:27:19-65
+140                <category android:name="android.intent.category.BROWSABLE" />
+140-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:12:7-67
+140-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:12:17-65
+141
+142                <data android:scheme="mobileapp" />
+142-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:13:7-37
+142-->C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\android\app\src\main\AndroidManifest.xml:13:13-35
+143            </intent-filter>
+144        </activity>
+145
+146        <meta-data
+146-->[:expo-modules-core] C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\node_modules\expo-modules-core\android\build\intermediates\merged_manifest\release\processReleaseManifest\AndroidManifest.xml:9:9-11:89
+147            android:name="org.unimodules.core.AppLoader#react-native-headless"
+147-->[:expo-modules-core] C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\node_modules\expo-modules-core\android\build\intermediates\merged_manifest\release\processReleaseManifest\AndroidManifest.xml:10:13-79
+148            android:value="expo.modules.adapters.react.apploader.RNHeadlessAppLoader" />
+148-->[:expo-modules-core] C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\node_modules\expo-modules-core\android\build\intermediates\merged_manifest\release\processReleaseManifest\AndroidManifest.xml:11:13-86
+149        <meta-data
+149-->[:expo-modules-core] C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\node_modules\expo-modules-core\android\build\intermediates\merged_manifest\release\processReleaseManifest\AndroidManifest.xml:12:9-15:45
+150            android:name="com.facebook.soloader.enabled"
+150-->[:expo-modules-core] C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\node_modules\expo-modules-core\android\build\intermediates\merged_manifest\release\processReleaseManifest\AndroidManifest.xml:13:13-57
+151            android:value="true" />
+151-->[:expo-modules-core] C:\Users\braul\.gemini\antigravity\scratch\gym_app\mobile_app\node_modules\expo-modules-core\android\build\intermediates\merged_manifest\release\processReleaseManifest\AndroidManifest.xml:14:13-33
+152
+153        <provider
+153-->[host.exp.exponent:expo.modules.filesystem:19.0.21] C:\Users\braul\.gradle\caches\8.14.3\transforms\b2ffaca17051b24333e3ff63b4ad5952\transformed\expo.modules.filesystem-19.0.21\AndroidManifest.xml:21:9-30:20
+154            android:name="expo.modules.filesystem.FileSystemFileProvider"
+154-->[host.exp.exponent:expo.modules.filesystem:19.0.21] C:\Users\braul\.gradle\caches\8.14.3\transforms\b2ffaca17051b24333e3ff63b4ad5952\transformed\expo.modules.filesystem-19.0.21\AndroidManifest.xml:22:13-74
+155            android:authorities="com.bmoliveira.strive.FileSystemFileProvider"
+155-->[host.exp.exponent:expo.modules.filesystem:19.0.21] C:\Users\braul\.gradle\caches\8.14.3\transforms\b2ffaca17051b24333e3ff63b4ad5952\transformed\expo.modules.filesystem-19.0.21\AndroidManifest.xml:23:13-74
+156            android:exported="false"
+156-->[host.exp.exponent:expo.modules.filesystem:19.0.21] C:\Users\braul\.gradle\caches\8.14.3\transforms\b2ffaca17051b24333e3ff63b4ad5952\transformed\expo.modules.filesystem-19.0.21\AndroidManifest.xml:24:13-37
+157            android:grantUriPermissions="true" >
+157-->[host.exp.exponent:expo.modules.filesystem:19.0.21] C:\Users\braul\.gradle\caches\8.14.3\transforms\b2ffaca17051b24333e3ff63b4ad5952\transformed\expo.modules.filesystem-19.0.21\AndroidManifest.xml:25:13-47
+158            <meta-data
+158-->[host.exp.exponent:expo.modules.filesystem:19.0.21] C:\Users\braul\.gradle\caches\8.14.3\transforms\b2ffaca17051b24333e3ff63b4ad5952\transformed\expo.modules.filesystem-19.0.21\AndroidManifest.xml:27:13-29:70
+159                android:name="android.support.FILE_PROVIDER_PATHS"
+159-->[host.exp.exponent:expo.modules.filesystem:19.0.21] C:\Users\braul\.gradle\caches\8.14.3\transforms\b2ffaca17051b24333e3ff63b4ad5952\transformed\expo.modules.filesystem-19.0.21\AndroidManifest.xml:28:17-67
+160                android:resource="@xml/file_system_provider_paths" />
+160-->[host.exp.exponent:expo.modules.filesystem:19.0.21] C:\Users\braul\.gradle\caches\8.14.3\transforms\b2ffaca17051b24333e3ff63b4ad5952\transformed\expo.modules.filesystem-19.0.21\AndroidManifest.xml:29:17-67
+161        </provider>
+162
+163        <service
+163-->[host.exp.exponent:expo.modules.imagepicker:17.0.10] C:\Users\braul\.gradle\caches\8.14.3\transforms\178de1990997d62277ce49f3c7115deb\transformed\expo.modules.imagepicker-17.0.10\AndroidManifest.xml:28:9-40:19
+164            android:name="com.google.android.gms.metadata.ModuleDependencies"
+164-->[host.exp.exponent:expo.modules.imagepicker:17.0.10] C:\Users\braul\.gradle\caches\8.14.3\transforms\178de1990997d62277ce49f3c7115deb\transformed\expo.modules.imagepicker-17.0.10\AndroidManifest.xml:29:13-78
+165            android:enabled="false"
+165-->[host.exp.exponent:expo.modules.imagepicker:17.0.10] C:\Users\braul\.gradle\caches\8.14.3\transforms\178de1990997d62277ce49f3c7115deb\transformed\expo.modules.imagepicker-17.0.10\AndroidManifest.xml:30:13-36
+166            android:exported="false" >
+166-->[host.exp.exponent:expo.modules.imagepicker:17.0.10] C:\Users\braul\.gradle\caches\8.14.3\transforms\178de1990997d62277ce49f3c7115deb\transformed\expo.modules.imagepicker-17.0.10\AndroidManifest.xml:31:13-37
+167            <intent-filter>
+167-->[host.exp.exponent:expo.modules.imagepicker:17.0.10] C:\Users\braul\.gradle\caches\8.14.3\transforms\178de1990997d62277ce49f3c7115deb\transformed\expo.modules.imagepicker-17.0.10\AndroidManifest.xml:33:13-35:29
+168                <action android:name="com.google.android.gms.metadata.MODULE_DEPENDENCIES" />
+168-->[host.exp.exponent:expo.modules.imagepicker:17.0.10] C:\Users\braul\.gradle\caches\8.14.3\transforms\178de1990997d62277ce49f3c7115deb\transformed\expo.modules.imagepicker-17.0.10\AndroidManifest.xml:34:17-94
+168-->[host.exp.exponent:expo.modules.imagepicker:17.0.10] C:\Users\braul\.gradle\caches\8.14.3\transforms\178de1990997d62277ce49f3c7115deb\transformed\expo.modules.imagepicker-17.0.10\AndroidManifest.xml:34:25-91
+169            </intent-filter>
+170
+171            <meta-data
+171-->[host.exp.exponent:expo.modules.imagepicker:17.0.10] C:\Users\braul\.gradle\caches\8.14.3\transforms\178de1990997d62277ce49f3c7115deb\transformed\expo.modules.imagepicker-17.0.10\AndroidManifest.xml:37:13-39:36
+172                android:name="photopicker_activity:0:required"
+172-->[host.exp.exponent:expo.modules.imagepicker:17.0.10] C:\Users\braul\.gradle\caches\8.14.3\transforms\178de1990997d62277ce49f3c7115deb\transformed\expo.modules.imagepicker-17.0.10\AndroidManifest.xml:38:17-63
+173                android:value="" />
+173-->[host.exp.exponent:expo.modules.imagepicker:17.0.10] C:\Users\braul\.gradle\caches\8.14.3\transforms\178de1990997d62277ce49f3c7115deb\transformed\expo.modules.imagepicker-17.0.10\AndroidManifest.xml:39:17-33
+174        </service>
+175
+176        <activity
+176-->[host.exp.exponent:expo.modules.imagepicker:17.0.10] C:\Users\braul\.gradle\caches\8.14.3\transforms\178de1990997d62277ce49f3c7115deb\transformed\expo.modules.imagepicker-17.0.10\AndroidManifest.xml:42:9-46:48
+177            android:name="expo.modules.imagepicker.ExpoCropImageActivity"
+177-->[host.exp.exponent:expo.modules.imagepicker:17.0.10] C:\Users\braul\.gradle\caches\8.14.3\transforms\178de1990997d62277ce49f3c7115deb\transformed\expo.modules.imagepicker-17.0.10\AndroidManifest.xml:43:13-74
+178            android:exported="false"
+178-->[host.exp.exponent:expo.modules.imagepicker:17.0.10] C:\Users\braul\.gradle\caches\8.14.3\transforms\178de1990997d62277ce49f3c7115deb\transformed\expo.modules.imagepicker-17.0.10\AndroidManifest.xml:44:13-37
+179            android:theme="@style/Base.Theme.AppCompat" /> <!-- https://developer.android.com/guide/topics/manifest/provider-element.html -->
+179-->[host.exp.exponent:expo.modules.imagepicker:17.0.10] C:\Users\braul\.gradle\caches\8.14.3\transforms\178de1990997d62277ce49f3c7115deb\transformed\expo.modules.imagepicker-17.0.10\AndroidManifest.xml:45:13-56
+180        <provider
+180-->[host.exp.exponent:expo.modules.imagepicker:17.0.10] C:\Users\braul\.gradle\caches\8.14.3\transforms\178de1990997d62277ce49f3c7115deb\transformed\expo.modules.imagepicker-17.0.10\AndroidManifest.xml:48:9-56:20
+181            android:name="expo.modules.imagepicker.fileprovider.ImagePickerFileProvider"
+181-->[host.exp.exponent:expo.modules.imagepicker:17.0.10] C:\Users\braul\.gradle\caches\8.14.3\transforms\178de1990997d62277ce49f3c7115deb\transformed\expo.modules.imagepicker-17.0.10\AndroidManifest.xml:49:13-89
+182            android:authorities="com.bmoliveira.strive.ImagePickerFileProvider"
+182-->[host.exp.exponent:expo.modules.imagepicker:17.0.10] C:\Users\braul\.gradle\caches\8.14.3\transforms\178de1990997d62277ce49f3c7115deb\transformed\expo.modules.imagepicker-17.0.10\AndroidManifest.xml:50:13-75
+183            android:exported="false"
+183-->[host.exp.exponent:expo.modules.imagepicker:17.0.10] C:\Users\braul\.gradle\caches\8.14.3\transforms\178de1990997d62277ce49f3c7115deb\transformed\expo.modules.imagepicker-17.0.10\AndroidManifest.xml:51:13-37
+184            android:grantUriPermissions="true" >
+184-->[host.exp.exponent:expo.modules.imagepicker:17.0.10] C:\Users\braul\.gradle\caches\8.14.3\transforms\178de1990997d62277ce49f3c7115deb\transformed\expo.modules.imagepicker-17.0.10\AndroidManifest.xml:52:13-47
+185            <meta-data
+185-->[host.exp.exponent:expo.modules.filesystem:19.0.21] C:\Users\braul\.gradle\caches\8.14.3\transforms\b2ffaca17051b24333e3ff63b4ad5952\transformed\expo.modules.filesystem-19.0.21\AndroidManifest.xml:27:13-29:70
+186                android:name="android.support.FILE_PROVIDER_PATHS"
+186-->[host.exp.exponent:expo.modules.filesystem:19.0.21] C:\Users\braul\.gradle\caches\8.14.3\transforms\b2ffaca17051b24333e3ff63b4ad5952\transformed\expo.modules.filesystem-19.0.21\AndroidManifest.xml:28:17-67
+187                android:resource="@xml/image_picker_provider_paths" />
+187-->[host.exp.exponent:expo.modules.filesystem:19.0.21] C:\Users\braul\.gradle\caches\8.14.3\transforms\b2ffaca17051b24333e3ff63b4ad5952\transformed\expo.modules.filesystem-19.0.21\AndroidManifest.xml:29:17-67
+188        </provider>
+189
+190        <service
+190-->[host.exp.exponent:expo.modules.notifications:0.32.16] C:\Users\braul\.gradle\caches\8.14.3\transforms\12647c0972656ecfb5dfd821a75802ec\transformed\expo.modules.notifications-0.32.16\AndroidManifest.xml:11:9-17:19
+191            android:name="expo.modules.notifications.service.ExpoFirebaseMessagingService"
+191-->[host.exp.exponent:expo.modules.notifications:0.32.16] C:\Users\braul\.gradle\caches\8.14.3\transforms\12647c0972656ecfb5dfd821a75802ec\transformed\expo.modules.notifications-0.32.16\AndroidManifest.xml:12:13-91
+192            android:exported="false" >
+192-->[host.exp.exponent:expo.modules.notifications:0.32.16] C:\Users\braul\.gradle\caches\8.14.3\transforms\12647c0972656ecfb5dfd821a75802ec\transformed\expo.modules.notifications-0.32.16\AndroidManifest.xml:13:13-37
+193            <intent-filter android:priority="-1" >
+193-->[host.exp.exponent:expo.modules.notifications:0.32.16] C:\Users\braul\.gradle\caches\8.14.3\transforms\12647c0972656ecfb5dfd821a75802ec\transformed\expo.modules.notifications-0.32.16\AndroidManifest.xml:14:13-16:29
+193-->[host.exp.exponent:expo.modules.notifications:0.32.16] C:\Users\braul\.gradle\caches\8.14.3\transforms\12647c0972656ecfb5dfd821a75802ec\transformed\expo.modules.notifications-0.32.16\AndroidManifest.xml:14:28-49
+194                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+194-->[host.exp.exponent:expo.modules.notifications:0.32.16] C:\Users\braul\.gradle\caches\8.14.3\transforms\12647c0972656ecfb5dfd821a75802ec\transformed\expo.modules.notifications-0.32.16\AndroidManifest.xml:15:17-78
+194-->[host.exp.exponent:expo.modules.notifications:0.32.16] C:\Users\braul\.gradle\caches\8.14.3\transforms\12647c0972656ecfb5dfd821a75802ec\transformed\expo.modules.notifications-0.32.16\AndroidManifest.xml:15:25-75
+195            </intent-filter>
+196        </service>
+197
+198        <receiver
+198-->[host.exp.exponent:expo.modules.notifications:0.32.16] C:\Users\braul\.gradle\caches\8.14.3\transforms\12647c0972656ecfb5dfd821a75802ec\transformed\expo.modules.notifications-0.32.16\AndroidManifest.xml:19:9-31:20
+199            android:name="expo.modules.notifications.service.NotificationsService"
+199-->[host.exp.exponent:expo.modules.notifications:0.32.16] C:\Users\braul\.gradle\caches\8.14.3\transforms\12647c0972656ecfb5dfd821a75802ec\transformed\expo.modules.notifications-0.32.16\AndroidManifest.xml:20:13-83
+200            android:enabled="true"
+200-->[host.exp.exponent:expo.modules.notifications:0.32.16] C:\Users\braul\.gradle\caches\8.14.3\transforms\12647c0972656ecfb5dfd821a75802ec\transformed\expo.modules.notifications-0.32.16\AndroidManifest.xml:21:13-35
+201            android:exported="false" >
+201-->[host.exp.exponent:expo.modules.notifications:0.32.16] C:\Users\braul\.gradle\caches\8.14.3\transforms\12647c0972656ecfb5dfd821a75802ec\transformed\expo.modules.notifications-0.32.16\AndroidManifest.xml:22:13-37
+202            <intent-filter android:priority="-1" >
+202-->[host.exp.exponent:expo.modules.notifications:0.32.16] C:\Users\braul\.gradle\caches\8.14.3\transforms\12647c0972656ecfb5dfd821a75802ec\transformed\expo.modules.notifications-0.32.16\AndroidManifest.xml:23:13-30:29
+202-->[host.exp.exponent:expo.modules.notifications:0.32.16] C:\Users\braul\.gradle\caches\8.14.3\transforms\12647c0972656ecfb5dfd821a75802ec\transformed\expo.modules.notifications-0.32.16\AndroidManifest.xml:23:28-49
+203                <action android:name="expo.modules.notifications.NOTIFICATION_EVENT" />
+203-->[host.exp.exponent:expo.modules.notifications:0.32.16] C:\Users\braul\.gradle\caches\8.14.3\transforms\12647c0972656ecfb5dfd821a75802ec\transformed\expo.modules.notifications-0.32.16\AndroidManifest.xml:24:17-88
+203-->[host.exp.exponent:expo.modules.notifications:0.32.16] C:\Users\braul\.gradle\caches\8.14.3\transforms\12647c0972656ecfb5dfd821a75802ec\transformed\expo.modules.notifications-0.32.16\AndroidManifest.xml:24:25-85
+204                <action android:name="android.intent.action.BOOT_COMPLETED" />
+204-->[host.exp.exponent:expo.modules.notifications:0.32.16] C:\Users\braul\.gradle\caches\8.14.3\transforms\12647c0972656ecfb5dfd821a75802ec\transformed\expo.modules.notifications-0.32.16\AndroidManifest.xml:25:17-79
+204-->[host.exp.exponent:expo.modules.notifications:0.32.16] C:\Users\braul\.gradle\caches\8.14.3\transforms\12647c0972656ecfb5dfd821a75802ec\transformed\expo.modules.notifications-0.32.16\AndroidManifest.xml:25:25-76
+205                <action android:name="android.intent.action.REBOOT" />
+205-->[host.exp.exponent:expo.modules.notifications:0.32.16] C:\Users\braul\.gradle\caches\8.14.3\transforms\12647c0972656ecfb5dfd821a75802ec\transformed\expo.modules.notifications-0.32.16\AndroidManifest.xml:26:17-71
+205-->[host.exp.exponent:expo.modules.notifications:0.32.16] C:\Users\braul\.gradle\caches\8.14.3\transforms\12647c0972656ecfb5dfd821a75802ec\transformed\expo.modules.notifications-0.32.16\AndroidManifest.xml:26:25-68
+206                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+206-->[host.exp.exponent:expo.modules.notifications:0.32.16] C:\Users\braul\.gradle\caches\8.14.3\transforms\12647c0972656ecfb5dfd821a75802ec\transformed\expo.modules.notifications-0.32.16\AndroidManifest.xml:27:17-82
+206-->[host.exp.exponent:expo.modules.notifications:0.32.16] C:\Users\braul\.gradle\caches\8.14.3\transforms\12647c0972656ecfb5dfd821a75802ec\transformed\expo.modules.notifications-0.32.16\AndroidManifest.xml:27:25-79
+207                <action android:name="com.htc.intent.action.QUICKBOOT_POWERON" />
+207-->[host.exp.exponent:expo.modules.notifications:0.32.16] C:\Users\braul\.gradle\caches\8.14.3\transforms\12647c0972656ecfb5dfd821a75802ec\transformed\expo.modules.notifications-0.32.16\AndroidManifest.xml:28:17-82
+207-->[host.exp.exponent:expo.modules.notifications:0.32.16] C:\Users\braul\.gradle\caches\8.14.3\transforms\12647c0972656ecfb5dfd821a75802ec\transformed\expo.modules.notifications-0.32.16\AndroidManifest.xml:28:25-79
+208                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+208-->[host.exp.exponent:expo.modules.notifications:0.32.16] C:\Users\braul\.gradle\caches\8.14.3\transforms\12647c0972656ecfb5dfd821a75802ec\transformed\expo.modules.notifications-0.32.16\AndroidManifest.xml:29:17-84
+208-->[host.exp.exponent:expo.modules.notifications:0.32.16] C:\Users\braul\.gradle\caches\8.14.3\transforms\12647c0972656ecfb5dfd821a75802ec\transformed\expo.modules.notifications-0.32.16\AndroidManifest.xml:29:25-81
+209            </intent-filter>
+210        </receiver>
+211
+212        <activity
+212-->[host.exp.exponent:expo.modules.notifications:0.32.16] C:\Users\braul\.gradle\caches\8.14.3\transforms\12647c0972656ecfb5dfd821a75802ec\transformed\expo.modules.notifications-0.32.16\AndroidManifest.xml:33:9-40:75
+213            android:name="expo.modules.notifications.service.NotificationForwarderActivity"
+213-->[host.exp.exponent:expo.modules.notifications:0.32.16] C:\Users\braul\.gradle\caches\8.14.3\transforms\12647c0972656ecfb5dfd821a75802ec\transformed\expo.modules.notifications-0.32.16\AndroidManifest.xml:34:13-92
+214            android:excludeFromRecents="true"
+214-->[host.exp.exponent:expo.modules.notifications:0.32.16] C:\Users\braul\.gradle\caches\8.14.3\transforms\12647c0972656ecfb5dfd821a75802ec\transformed\expo.modules.notifications-0.32.16\AndroidManifest.xml:35:13-46
+215            android:exported="false"
+215-->[host.exp.exponent:expo.modules.notifications:0.32.16] C:\Users\braul\.gradle\caches\8.14.3\transforms\12647c0972656ecfb5dfd821a75802ec\transformed\expo.modules.notifications-0.32.16\AndroidManifest.xml:36:13-37
+216            android:launchMode="standard"
+216-->[host.exp.exponent:expo.modules.notifications:0.32.16] C:\Users\braul\.gradle\caches\8.14.3\transforms\12647c0972656ecfb5dfd821a75802ec\transformed\expo.modules.notifications-0.32.16\AndroidManifest.xml:37:13-42
+217            android:noHistory="true"
+217-->[host.exp.exponent:expo.modules.notifications:0.32.16] C:\Users\braul\.gradle\caches\8.14.3\transforms\12647c0972656ecfb5dfd821a75802ec\transformed\expo.modules.notifications-0.32.16\AndroidManifest.xml:38:13-37
+218            android:taskAffinity=""
+218-->[host.exp.exponent:expo.modules.notifications:0.32.16] C:\Users\braul\.gradle\caches\8.14.3\transforms\12647c0972656ecfb5dfd821a75802ec\transformed\expo.modules.notifications-0.32.16\AndroidManifest.xml:39:13-36
+219            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+219-->[host.exp.exponent:expo.modules.notifications:0.32.16] C:\Users\braul\.gradle\caches\8.14.3\transforms\12647c0972656ecfb5dfd821a75802ec\transformed\expo.modules.notifications-0.32.16\AndroidManifest.xml:40:13-72
+220
+221        <provider
+221-->[host.exp.exponent:expo.modules.sharing:14.0.8] C:\Users\braul\.gradle\caches\8.14.3\transforms\49a1d4e6d610146ee9ee4cf86913a207\transformed\expo.modules.sharing-14.0.8\AndroidManifest.xml:18:9-26:20
+222            android:name="expo.modules.sharing.SharingFileProvider"
+222-->[host.exp.exponent:expo.modules.sharing:14.0.8] C:\Users\braul\.gradle\caches\8.14.3\transforms\49a1d4e6d610146ee9ee4cf86913a207\transformed\expo.modules.sharing-14.0.8\AndroidManifest.xml:19:13-68
+223            android:authorities="com.bmoliveira.strive.SharingFileProvider"
+223-->[host.exp.exponent:expo.modules.sharing:14.0.8] C:\Users\braul\.gradle\caches\8.14.3\transforms\49a1d4e6d610146ee9ee4cf86913a207\transformed\expo.modules.sharing-14.0.8\AndroidManifest.xml:20:13-71
+224            android:exported="false"
+224-->[host.exp.exponent:expo.modules.sharing:14.0.8] C:\Users\braul\.gradle\caches\8.14.3\transforms\49a1d4e6d610146ee9ee4cf86913a207\transformed\expo.modules.sharing-14.0.8\AndroidManifest.xml:21:13-37
+225            android:grantUriPermissions="true" >
+225-->[host.exp.exponent:expo.modules.sharing:14.0.8] C:\Users\braul\.gradle\caches\8.14.3\transforms\49a1d4e6d610146ee9ee4cf86913a207\transformed\expo.modules.sharing-14.0.8\AndroidManifest.xml:22:13-47
+226            <meta-data
+226-->[host.exp.exponent:expo.modules.filesystem:19.0.21] C:\Users\braul\.gradle\caches\8.14.3\transforms\b2ffaca17051b24333e3ff63b4ad5952\transformed\expo.modules.filesystem-19.0.21\AndroidManifest.xml:27:13-29:70
+227                android:name="android.support.FILE_PROVIDER_PATHS"
+227-->[host.exp.exponent:expo.modules.filesystem:19.0.21] C:\Users\braul\.gradle\caches\8.14.3\transforms\b2ffaca17051b24333e3ff63b4ad5952\transformed\expo.modules.filesystem-19.0.21\AndroidManifest.xml:28:17-67
+228                android:resource="@xml/sharing_provider_paths" />
+228-->[host.exp.exponent:expo.modules.filesystem:19.0.21] C:\Users\braul\.gradle\caches\8.14.3\transforms\b2ffaca17051b24333e3ff63b4ad5952\transformed\expo.modules.filesystem-19.0.21\AndroidManifest.xml:29:17-67
+229        </provider>
+230
+231        <receiver
+231-->[com.google.firebase:firebase-messaging:24.0.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\536af53bb98db2170378403abf1bd956\transformed\firebase-messaging-24.0.1\AndroidManifest.xml:29:9-40:20
+232            android:name="com.google.firebase.iid.FirebaseInstanceIdReceiver"
+232-->[com.google.firebase:firebase-messaging:24.0.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\536af53bb98db2170378403abf1bd956\transformed\firebase-messaging-24.0.1\AndroidManifest.xml:30:13-78
+233            android:exported="true"
+233-->[com.google.firebase:firebase-messaging:24.0.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\536af53bb98db2170378403abf1bd956\transformed\firebase-messaging-24.0.1\AndroidManifest.xml:31:13-36
+234            android:permission="com.google.android.c2dm.permission.SEND" >
+234-->[com.google.firebase:firebase-messaging:24.0.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\536af53bb98db2170378403abf1bd956\transformed\firebase-messaging-24.0.1\AndroidManifest.xml:32:13-73
+235            <intent-filter>
+235-->[com.google.firebase:firebase-messaging:24.0.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\536af53bb98db2170378403abf1bd956\transformed\firebase-messaging-24.0.1\AndroidManifest.xml:33:13-35:29
+236                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+236-->[com.google.firebase:firebase-messaging:24.0.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\536af53bb98db2170378403abf1bd956\transformed\firebase-messaging-24.0.1\AndroidManifest.xml:34:17-81
+236-->[com.google.firebase:firebase-messaging:24.0.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\536af53bb98db2170378403abf1bd956\transformed\firebase-messaging-24.0.1\AndroidManifest.xml:34:25-78
+237            </intent-filter>
+238
+239            <meta-data
+239-->[com.google.firebase:firebase-messaging:24.0.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\536af53bb98db2170378403abf1bd956\transformed\firebase-messaging-24.0.1\AndroidManifest.xml:37:13-39:40
+240                android:name="com.google.android.gms.cloudmessaging.FINISHED_AFTER_HANDLED"
+240-->[com.google.firebase:firebase-messaging:24.0.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\536af53bb98db2170378403abf1bd956\transformed\firebase-messaging-24.0.1\AndroidManifest.xml:38:17-92
+241                android:value="true" />
+241-->[com.google.firebase:firebase-messaging:24.0.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\536af53bb98db2170378403abf1bd956\transformed\firebase-messaging-24.0.1\AndroidManifest.xml:39:17-37
+242        </receiver>
+243        <!--
+244             FirebaseMessagingService performs security checks at runtime,
+245             but set to not exported to explicitly avoid allowing another app to call it.
+246        -->
+247        <service
+247-->[com.google.firebase:firebase-messaging:24.0.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\536af53bb98db2170378403abf1bd956\transformed\firebase-messaging-24.0.1\AndroidManifest.xml:46:9-53:19
+248            android:name="com.google.firebase.messaging.FirebaseMessagingService"
+248-->[com.google.firebase:firebase-messaging:24.0.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\536af53bb98db2170378403abf1bd956\transformed\firebase-messaging-24.0.1\AndroidManifest.xml:47:13-82
+249            android:directBootAware="true"
+249-->[com.google.firebase:firebase-messaging:24.0.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\536af53bb98db2170378403abf1bd956\transformed\firebase-messaging-24.0.1\AndroidManifest.xml:48:13-43
+250            android:exported="false" >
+250-->[com.google.firebase:firebase-messaging:24.0.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\536af53bb98db2170378403abf1bd956\transformed\firebase-messaging-24.0.1\AndroidManifest.xml:49:13-37
+251            <intent-filter android:priority="-500" >
+251-->[host.exp.exponent:expo.modules.notifications:0.32.16] C:\Users\braul\.gradle\caches\8.14.3\transforms\12647c0972656ecfb5dfd821a75802ec\transformed\expo.modules.notifications-0.32.16\AndroidManifest.xml:14:13-16:29
+251-->[host.exp.exponent:expo.modules.notifications:0.32.16] C:\Users\braul\.gradle\caches\8.14.3\transforms\12647c0972656ecfb5dfd821a75802ec\transformed\expo.modules.notifications-0.32.16\AndroidManifest.xml:14:28-49
+252                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+252-->[host.exp.exponent:expo.modules.notifications:0.32.16] C:\Users\braul\.gradle\caches\8.14.3\transforms\12647c0972656ecfb5dfd821a75802ec\transformed\expo.modules.notifications-0.32.16\AndroidManifest.xml:15:17-78
+252-->[host.exp.exponent:expo.modules.notifications:0.32.16] C:\Users\braul\.gradle\caches\8.14.3\transforms\12647c0972656ecfb5dfd821a75802ec\transformed\expo.modules.notifications-0.32.16\AndroidManifest.xml:15:25-75
+253            </intent-filter>
+254        </service>
+255        <service
+255-->[com.google.firebase:firebase-messaging:24.0.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\536af53bb98db2170378403abf1bd956\transformed\firebase-messaging-24.0.1\AndroidManifest.xml:54:9-63:19
+256            android:name="com.google.firebase.components.ComponentDiscoveryService"
+256-->[com.google.firebase:firebase-messaging:24.0.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\536af53bb98db2170378403abf1bd956\transformed\firebase-messaging-24.0.1\AndroidManifest.xml:55:13-84
+257            android:directBootAware="true"
+257-->[com.google.firebase:firebase-common:21.0.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\d1c32528f587b0ca1a05b0b38f324c4b\transformed\firebase-common-21.0.0\AndroidManifest.xml:32:13-43
+258            android:exported="false" >
+258-->[com.google.firebase:firebase-messaging:24.0.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\536af53bb98db2170378403abf1bd956\transformed\firebase-messaging-24.0.1\AndroidManifest.xml:56:13-37
+259            <meta-data
+259-->[com.google.firebase:firebase-messaging:24.0.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\536af53bb98db2170378403abf1bd956\transformed\firebase-messaging-24.0.1\AndroidManifest.xml:57:13-59:85
+260                android:name="com.google.firebase.components:com.google.firebase.messaging.FirebaseMessagingKtxRegistrar"
+260-->[com.google.firebase:firebase-messaging:24.0.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\536af53bb98db2170378403abf1bd956\transformed\firebase-messaging-24.0.1\AndroidManifest.xml:58:17-122
+261                android:value="com.google.firebase.components.ComponentRegistrar" />
+261-->[com.google.firebase:firebase-messaging:24.0.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\536af53bb98db2170378403abf1bd956\transformed\firebase-messaging-24.0.1\AndroidManifest.xml:59:17-82
+262            <meta-data
+262-->[com.google.firebase:firebase-messaging:24.0.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\536af53bb98db2170378403abf1bd956\transformed\firebase-messaging-24.0.1\AndroidManifest.xml:60:13-62:85
+263                android:name="com.google.firebase.components:com.google.firebase.messaging.FirebaseMessagingRegistrar"
+263-->[com.google.firebase:firebase-messaging:24.0.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\536af53bb98db2170378403abf1bd956\transformed\firebase-messaging-24.0.1\AndroidManifest.xml:61:17-119
+264                android:value="com.google.firebase.components.ComponentRegistrar" />
+264-->[com.google.firebase:firebase-messaging:24.0.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\536af53bb98db2170378403abf1bd956\transformed\firebase-messaging-24.0.1\AndroidManifest.xml:62:17-82
+265            <meta-data
+265-->[com.google.firebase:firebase-installations:17.2.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\3efc273fc466cc77072a0be75ac4cf56\transformed\firebase-installations-17.2.0\AndroidManifest.xml:15:13-17:85
+266                android:name="com.google.firebase.components:com.google.firebase.installations.FirebaseInstallationsKtxRegistrar"
+266-->[com.google.firebase:firebase-installations:17.2.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\3efc273fc466cc77072a0be75ac4cf56\transformed\firebase-installations-17.2.0\AndroidManifest.xml:16:17-130
+267                android:value="com.google.firebase.components.ComponentRegistrar" />
+267-->[com.google.firebase:firebase-installations:17.2.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\3efc273fc466cc77072a0be75ac4cf56\transformed\firebase-installations-17.2.0\AndroidManifest.xml:17:17-82
+268            <meta-data
+268-->[com.google.firebase:firebase-installations:17.2.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\3efc273fc466cc77072a0be75ac4cf56\transformed\firebase-installations-17.2.0\AndroidManifest.xml:18:13-20:85
+269                android:name="com.google.firebase.components:com.google.firebase.installations.FirebaseInstallationsRegistrar"
+269-->[com.google.firebase:firebase-installations:17.2.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\3efc273fc466cc77072a0be75ac4cf56\transformed\firebase-installations-17.2.0\AndroidManifest.xml:19:17-127
+270                android:value="com.google.firebase.components.ComponentRegistrar" />
+270-->[com.google.firebase:firebase-installations:17.2.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\3efc273fc466cc77072a0be75ac4cf56\transformed\firebase-installations-17.2.0\AndroidManifest.xml:20:17-82
+271            <meta-data
+271-->[com.google.firebase:firebase-common-ktx:21.0.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\6f2097faa0a576f3b47d46f102dba500\transformed\firebase-common-ktx-21.0.0\AndroidManifest.xml:12:13-14:85
+272                android:name="com.google.firebase.components:com.google.firebase.ktx.FirebaseCommonLegacyRegistrar"
+272-->[com.google.firebase:firebase-common-ktx:21.0.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\6f2097faa0a576f3b47d46f102dba500\transformed\firebase-common-ktx-21.0.0\AndroidManifest.xml:13:17-116
+273                android:value="com.google.firebase.components.ComponentRegistrar" />
+273-->[com.google.firebase:firebase-common-ktx:21.0.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\6f2097faa0a576f3b47d46f102dba500\transformed\firebase-common-ktx-21.0.0\AndroidManifest.xml:14:17-82
+274            <meta-data
+274-->[com.google.firebase:firebase-common:21.0.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\d1c32528f587b0ca1a05b0b38f324c4b\transformed\firebase-common-21.0.0\AndroidManifest.xml:35:13-37:85
+275                android:name="com.google.firebase.components:com.google.firebase.FirebaseCommonKtxRegistrar"
+275-->[com.google.firebase:firebase-common:21.0.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\d1c32528f587b0ca1a05b0b38f324c4b\transformed\firebase-common-21.0.0\AndroidManifest.xml:36:17-109
+276                android:value="com.google.firebase.components.ComponentRegistrar" />
+276-->[com.google.firebase:firebase-common:21.0.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\d1c32528f587b0ca1a05b0b38f324c4b\transformed\firebase-common-21.0.0\AndroidManifest.xml:37:17-82
+277            <meta-data
+277-->[com.google.firebase:firebase-datatransport:18.2.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\d2270e6964634bb1182cb21f50cbf7b1\transformed\firebase-datatransport-18.2.0\AndroidManifest.xml:25:13-27:85
+278                android:name="com.google.firebase.components:com.google.firebase.datatransport.TransportRegistrar"
+278-->[com.google.firebase:firebase-datatransport:18.2.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\d2270e6964634bb1182cb21f50cbf7b1\transformed\firebase-datatransport-18.2.0\AndroidManifest.xml:26:17-115
+279                android:value="com.google.firebase.components.ComponentRegistrar" />
+279-->[com.google.firebase:firebase-datatransport:18.2.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\d2270e6964634bb1182cb21f50cbf7b1\transformed\firebase-datatransport-18.2.0\AndroidManifest.xml:27:17-82
+280        </service>
+281
+282        <meta-data
+282-->[com.github.bumptech.glide:okhttp3-integration:4.11.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\cfc5f8ed620309848ea1b4dbb24400b4\transformed\okhttp3-integration-4.11.0\AndroidManifest.xml:11:9-13:43
+283            android:name="com.bumptech.glide.integration.okhttp3.OkHttpGlideModule"
+283-->[com.github.bumptech.glide:okhttp3-integration:4.11.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\cfc5f8ed620309848ea1b4dbb24400b4\transformed\okhttp3-integration-4.11.0\AndroidManifest.xml:12:13-84
+284            android:value="GlideModule" />
+284-->[com.github.bumptech.glide:okhttp3-integration:4.11.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\cfc5f8ed620309848ea1b4dbb24400b4\transformed\okhttp3-integration-4.11.0\AndroidManifest.xml:13:13-40
+285
+286        <provider
+286-->[com.vanniktech:android-image-cropper:4.6.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\b7b1526c989827fc7a44934e4147b397\transformed\android-image-cropper-4.6.0\AndroidManifest.xml:21:9-29:20
+287            android:name="com.canhub.cropper.CropFileProvider"
+287-->[com.vanniktech:android-image-cropper:4.6.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\b7b1526c989827fc7a44934e4147b397\transformed\android-image-cropper-4.6.0\AndroidManifest.xml:22:13-63
+288            android:authorities="com.bmoliveira.strive.cropper.fileprovider"
+288-->[com.vanniktech:android-image-cropper:4.6.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\b7b1526c989827fc7a44934e4147b397\transformed\android-image-cropper-4.6.0\AndroidManifest.xml:23:13-72
+289            android:exported="false"
+289-->[com.vanniktech:android-image-cropper:4.6.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\b7b1526c989827fc7a44934e4147b397\transformed\android-image-cropper-4.6.0\AndroidManifest.xml:24:13-37
+290            android:grantUriPermissions="true" >
+290-->[com.vanniktech:android-image-cropper:4.6.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\b7b1526c989827fc7a44934e4147b397\transformed\android-image-cropper-4.6.0\AndroidManifest.xml:25:13-47
+291            <meta-data
+291-->[host.exp.exponent:expo.modules.filesystem:19.0.21] C:\Users\braul\.gradle\caches\8.14.3\transforms\b2ffaca17051b24333e3ff63b4ad5952\transformed\expo.modules.filesystem-19.0.21\AndroidManifest.xml:27:13-29:70
+292                android:name="android.support.FILE_PROVIDER_PATHS"
+292-->[host.exp.exponent:expo.modules.filesystem:19.0.21] C:\Users\braul\.gradle\caches\8.14.3\transforms\b2ffaca17051b24333e3ff63b4ad5952\transformed\expo.modules.filesystem-19.0.21\AndroidManifest.xml:28:17-67
+293                android:resource="@xml/library_file_paths" />
+293-->[host.exp.exponent:expo.modules.filesystem:19.0.21] C:\Users\braul\.gradle\caches\8.14.3\transforms\b2ffaca17051b24333e3ff63b4ad5952\transformed\expo.modules.filesystem-19.0.21\AndroidManifest.xml:29:17-67
+294        </provider>
+295
+296        <activity
+296-->[com.vanniktech:android-image-cropper:4.6.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\b7b1526c989827fc7a44934e4147b397\transformed\android-image-cropper-4.6.0\AndroidManifest.xml:31:9-33:39
+297            android:name="com.canhub.cropper.CropImageActivity"
+297-->[com.vanniktech:android-image-cropper:4.6.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\b7b1526c989827fc7a44934e4147b397\transformed\android-image-cropper-4.6.0\AndroidManifest.xml:32:13-64
+298            android:exported="true" />
+298-->[com.vanniktech:android-image-cropper:4.6.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\b7b1526c989827fc7a44934e4147b397\transformed\android-image-cropper-4.6.0\AndroidManifest.xml:33:13-36
+299        <activity
+299-->[com.google.android.gms:play-services-base:18.0.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\bfb9366ada400c0d291e877d52e9db82\transformed\play-services-base-18.0.1\AndroidManifest.xml:20:9-22:45
+300            android:name="com.google.android.gms.common.api.GoogleApiActivity"
+300-->[com.google.android.gms:play-services-base:18.0.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\bfb9366ada400c0d291e877d52e9db82\transformed\play-services-base-18.0.1\AndroidManifest.xml:20:19-85
+301            android:exported="false"
+301-->[com.google.android.gms:play-services-base:18.0.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\bfb9366ada400c0d291e877d52e9db82\transformed\play-services-base-18.0.1\AndroidManifest.xml:22:19-43
+302            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+302-->[com.google.android.gms:play-services-base:18.0.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\bfb9366ada400c0d291e877d52e9db82\transformed\play-services-base-18.0.1\AndroidManifest.xml:21:19-78
+303
+304        <provider
+304-->[com.google.firebase:firebase-common:21.0.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\d1c32528f587b0ca1a05b0b38f324c4b\transformed\firebase-common-21.0.0\AndroidManifest.xml:23:9-28:39
+305            android:name="com.google.firebase.provider.FirebaseInitProvider"
+305-->[com.google.firebase:firebase-common:21.0.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\d1c32528f587b0ca1a05b0b38f324c4b\transformed\firebase-common-21.0.0\AndroidManifest.xml:24:13-77
+306            android:authorities="com.bmoliveira.strive.firebaseinitprovider"
+306-->[com.google.firebase:firebase-common:21.0.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\d1c32528f587b0ca1a05b0b38f324c4b\transformed\firebase-common-21.0.0\AndroidManifest.xml:25:13-72
+307            android:directBootAware="true"
+307-->[com.google.firebase:firebase-common:21.0.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\d1c32528f587b0ca1a05b0b38f324c4b\transformed\firebase-common-21.0.0\AndroidManifest.xml:26:13-43
+308            android:exported="false"
+308-->[com.google.firebase:firebase-common:21.0.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\d1c32528f587b0ca1a05b0b38f324c4b\transformed\firebase-common-21.0.0\AndroidManifest.xml:27:13-37
+309            android:initOrder="100" />
+309-->[com.google.firebase:firebase-common:21.0.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\d1c32528f587b0ca1a05b0b38f324c4b\transformed\firebase-common-21.0.0\AndroidManifest.xml:28:13-36
+310        <provider
+310-->[androidx.emoji2:emoji2:1.3.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\9a13a9af12edc25df0feaaeec8391539\transformed\emoji2-1.3.0\AndroidManifest.xml:24:9-32:20
+311            android:name="androidx.startup.InitializationProvider"
+311-->[androidx.emoji2:emoji2:1.3.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\9a13a9af12edc25df0feaaeec8391539\transformed\emoji2-1.3.0\AndroidManifest.xml:25:13-67
+312            android:authorities="com.bmoliveira.strive.androidx-startup"
+312-->[androidx.emoji2:emoji2:1.3.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\9a13a9af12edc25df0feaaeec8391539\transformed\emoji2-1.3.0\AndroidManifest.xml:26:13-68
+313            android:exported="false" >
+313-->[androidx.emoji2:emoji2:1.3.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\9a13a9af12edc25df0feaaeec8391539\transformed\emoji2-1.3.0\AndroidManifest.xml:27:13-37
+314            <meta-data
+314-->[androidx.emoji2:emoji2:1.3.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\9a13a9af12edc25df0feaaeec8391539\transformed\emoji2-1.3.0\AndroidManifest.xml:29:13-31:52
+315                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+315-->[androidx.emoji2:emoji2:1.3.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\9a13a9af12edc25df0feaaeec8391539\transformed\emoji2-1.3.0\AndroidManifest.xml:30:17-75
+316                android:value="androidx.startup" />
+316-->[androidx.emoji2:emoji2:1.3.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\9a13a9af12edc25df0feaaeec8391539\transformed\emoji2-1.3.0\AndroidManifest.xml:31:17-49
+317            <meta-data
+317-->[androidx.lifecycle:lifecycle-process:2.8.7] C:\Users\braul\.gradle\caches\8.14.3\transforms\844c6bf5f56015233b9e2f1c30292fa3\transformed\lifecycle-process-2.8.7\AndroidManifest.xml:29:13-31:52
+318                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+318-->[androidx.lifecycle:lifecycle-process:2.8.7] C:\Users\braul\.gradle\caches\8.14.3\transforms\844c6bf5f56015233b9e2f1c30292fa3\transformed\lifecycle-process-2.8.7\AndroidManifest.xml:30:17-78
+319                android:value="androidx.startup" />
+319-->[androidx.lifecycle:lifecycle-process:2.8.7] C:\Users\braul\.gradle\caches\8.14.3\transforms\844c6bf5f56015233b9e2f1c30292fa3\transformed\lifecycle-process-2.8.7\AndroidManifest.xml:31:17-49
+320            <meta-data
+320-->[androidx.profileinstaller:profileinstaller:1.4.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\aed0ab060bbf9a48415a0604b0f2f112\transformed\profileinstaller-1.4.1\AndroidManifest.xml:29:13-31:52
+321                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+321-->[androidx.profileinstaller:profileinstaller:1.4.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\aed0ab060bbf9a48415a0604b0f2f112\transformed\profileinstaller-1.4.1\AndroidManifest.xml:30:17-85
+322                android:value="androidx.startup" />
+322-->[androidx.profileinstaller:profileinstaller:1.4.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\aed0ab060bbf9a48415a0604b0f2f112\transformed\profileinstaller-1.4.1\AndroidManifest.xml:31:17-49
+323        </provider>
+324
+325        <meta-data
+325-->[com.google.android.gms:play-services-basement:18.3.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\bf46bd01cae2868883aab7548ed50340\transformed\play-services-basement-18.3.0\AndroidManifest.xml:21:9-23:69
+326            android:name="com.google.android.gms.version"
+326-->[com.google.android.gms:play-services-basement:18.3.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\bf46bd01cae2868883aab7548ed50340\transformed\play-services-basement-18.3.0\AndroidManifest.xml:22:13-58
+327            android:value="@integer/google_play_services_version" />
+327-->[com.google.android.gms:play-services-basement:18.3.0] C:\Users\braul\.gradle\caches\8.14.3\transforms\bf46bd01cae2868883aab7548ed50340\transformed\play-services-basement-18.3.0\AndroidManifest.xml:23:13-66
+328
+329        <receiver
+329-->[androidx.profileinstaller:profileinstaller:1.4.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\aed0ab060bbf9a48415a0604b0f2f112\transformed\profileinstaller-1.4.1\AndroidManifest.xml:34:9-52:20
+330            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+330-->[androidx.profileinstaller:profileinstaller:1.4.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\aed0ab060bbf9a48415a0604b0f2f112\transformed\profileinstaller-1.4.1\AndroidManifest.xml:35:13-76
+331            android:directBootAware="false"
+331-->[androidx.profileinstaller:profileinstaller:1.4.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\aed0ab060bbf9a48415a0604b0f2f112\transformed\profileinstaller-1.4.1\AndroidManifest.xml:36:13-44
+332            android:enabled="true"
+332-->[androidx.profileinstaller:profileinstaller:1.4.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\aed0ab060bbf9a48415a0604b0f2f112\transformed\profileinstaller-1.4.1\AndroidManifest.xml:37:13-35
+333            android:exported="true"
+333-->[androidx.profileinstaller:profileinstaller:1.4.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\aed0ab060bbf9a48415a0604b0f2f112\transformed\profileinstaller-1.4.1\AndroidManifest.xml:38:13-36
+334            android:permission="android.permission.DUMP" >
+334-->[androidx.profileinstaller:profileinstaller:1.4.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\aed0ab060bbf9a48415a0604b0f2f112\transformed\profileinstaller-1.4.1\AndroidManifest.xml:39:13-57
+335            <intent-filter>
+335-->[androidx.profileinstaller:profileinstaller:1.4.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\aed0ab060bbf9a48415a0604b0f2f112\transformed\profileinstaller-1.4.1\AndroidManifest.xml:40:13-42:29
+336                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+336-->[androidx.profileinstaller:profileinstaller:1.4.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\aed0ab060bbf9a48415a0604b0f2f112\transformed\profileinstaller-1.4.1\AndroidManifest.xml:41:17-91
+336-->[androidx.profileinstaller:profileinstaller:1.4.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\aed0ab060bbf9a48415a0604b0f2f112\transformed\profileinstaller-1.4.1\AndroidManifest.xml:41:25-88
+337            </intent-filter>
+338            <intent-filter>
+338-->[androidx.profileinstaller:profileinstaller:1.4.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\aed0ab060bbf9a48415a0604b0f2f112\transformed\profileinstaller-1.4.1\AndroidManifest.xml:43:13-45:29
+339                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+339-->[androidx.profileinstaller:profileinstaller:1.4.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\aed0ab060bbf9a48415a0604b0f2f112\transformed\profileinstaller-1.4.1\AndroidManifest.xml:44:17-85
+339-->[androidx.profileinstaller:profileinstaller:1.4.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\aed0ab060bbf9a48415a0604b0f2f112\transformed\profileinstaller-1.4.1\AndroidManifest.xml:44:25-82
+340            </intent-filter>
+341            <intent-filter>
+341-->[androidx.profileinstaller:profileinstaller:1.4.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\aed0ab060bbf9a48415a0604b0f2f112\transformed\profileinstaller-1.4.1\AndroidManifest.xml:46:13-48:29
+342                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+342-->[androidx.profileinstaller:profileinstaller:1.4.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\aed0ab060bbf9a48415a0604b0f2f112\transformed\profileinstaller-1.4.1\AndroidManifest.xml:47:17-88
+342-->[androidx.profileinstaller:profileinstaller:1.4.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\aed0ab060bbf9a48415a0604b0f2f112\transformed\profileinstaller-1.4.1\AndroidManifest.xml:47:25-85
+343            </intent-filter>
+344            <intent-filter>
+344-->[androidx.profileinstaller:profileinstaller:1.4.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\aed0ab060bbf9a48415a0604b0f2f112\transformed\profileinstaller-1.4.1\AndroidManifest.xml:49:13-51:29
+345                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+345-->[androidx.profileinstaller:profileinstaller:1.4.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\aed0ab060bbf9a48415a0604b0f2f112\transformed\profileinstaller-1.4.1\AndroidManifest.xml:50:17-95
+345-->[androidx.profileinstaller:profileinstaller:1.4.1] C:\Users\braul\.gradle\caches\8.14.3\transforms\aed0ab060bbf9a48415a0604b0f2f112\transformed\profileinstaller-1.4.1\AndroidManifest.xml:50:25-92
+346            </intent-filter>
+347        </receiver>
+348
+349        <service
+349-->[com.google.android.datatransport:transport-backend-cct:3.1.9] C:\Users\braul\.gradle\caches\8.14.3\transforms\22396f9588a911a98d8a827549fd8c37\transformed\transport-backend-cct-3.1.9\AndroidManifest.xml:28:9-34:19
+350            android:name="com.google.android.datatransport.runtime.backends.TransportBackendDiscovery"
+350-->[com.google.android.datatransport:transport-backend-cct:3.1.9] C:\Users\braul\.gradle\caches\8.14.3\transforms\22396f9588a911a98d8a827549fd8c37\transformed\transport-backend-cct-3.1.9\AndroidManifest.xml:29:13-103
+351            android:exported="false" >
+351-->[com.google.android.datatransport:transport-backend-cct:3.1.9] C:\Users\braul\.gradle\caches\8.14.3\transforms\22396f9588a911a98d8a827549fd8c37\transformed\transport-backend-cct-3.1.9\AndroidManifest.xml:30:13-37
+352            <meta-data
+352-->[com.google.android.datatransport:transport-backend-cct:3.1.9] C:\Users\braul\.gradle\caches\8.14.3\transforms\22396f9588a911a98d8a827549fd8c37\transformed\transport-backend-cct-3.1.9\AndroidManifest.xml:31:13-33:39
+353                android:name="backend:com.google.android.datatransport.cct.CctBackendFactory"
+353-->[com.google.android.datatransport:transport-backend-cct:3.1.9] C:\Users\braul\.gradle\caches\8.14.3\transforms\22396f9588a911a98d8a827549fd8c37\transformed\transport-backend-cct-3.1.9\AndroidManifest.xml:32:17-94
+354                android:value="cct" />
+354-->[com.google.android.datatransport:transport-backend-cct:3.1.9] C:\Users\braul\.gradle\caches\8.14.3\transforms\22396f9588a911a98d8a827549fd8c37\transformed\transport-backend-cct-3.1.9\AndroidManifest.xml:33:17-36
+355        </service>
+356        <service
+356-->[com.google.android.datatransport:transport-runtime:3.1.9] C:\Users\braul\.gradle\caches\8.14.3\transforms\7d89d6f973dbe19a5fe258c1057ba10f\transformed\transport-runtime-3.1.9\AndroidManifest.xml:26:9-30:19
+357            android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService"
+357-->[com.google.android.datatransport:transport-runtime:3.1.9] C:\Users\braul\.gradle\caches\8.14.3\transforms\7d89d6f973dbe19a5fe258c1057ba10f\transformed\transport-runtime-3.1.9\AndroidManifest.xml:27:13-117
+358            android:exported="false"
+358-->[com.google.android.datatransport:transport-runtime:3.1.9] C:\Users\braul\.gradle\caches\8.14.3\transforms\7d89d6f973dbe19a5fe258c1057ba10f\transformed\transport-runtime-3.1.9\AndroidManifest.xml:28:13-37
+359            android:permission="android.permission.BIND_JOB_SERVICE" >
+359-->[com.google.android.datatransport:transport-runtime:3.1.9] C:\Users\braul\.gradle\caches\8.14.3\transforms\7d89d6f973dbe19a5fe258c1057ba10f\transformed\transport-runtime-3.1.9\AndroidManifest.xml:29:13-69
+360        </service>
+361
+362        <receiver
+362-->[com.google.android.datatransport:transport-runtime:3.1.9] C:\Users\braul\.gradle\caches\8.14.3\transforms\7d89d6f973dbe19a5fe258c1057ba10f\transformed\transport-runtime-3.1.9\AndroidManifest.xml:32:9-34:40
+363            android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.AlarmManagerSchedulerBroadcastReceiver"
+363-->[com.google.android.datatransport:transport-runtime:3.1.9] C:\Users\braul\.gradle\caches\8.14.3\transforms\7d89d6f973dbe19a5fe258c1057ba10f\transformed\transport-runtime-3.1.9\AndroidManifest.xml:33:13-132
+364            android:exported="false" />
+364-->[com.google.android.datatransport:transport-runtime:3.1.9] C:\Users\braul\.gradle\caches\8.14.3\transforms\7d89d6f973dbe19a5fe258c1057ba10f\transformed\transport-runtime-3.1.9\AndroidManifest.xml:34:13-37
+365    </application>
+366
+367</manifest>

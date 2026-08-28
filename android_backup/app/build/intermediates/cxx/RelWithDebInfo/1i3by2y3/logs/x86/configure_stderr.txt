@@ -1,0 +1,56 @@
+CMake Warning in C:/Users/braul/.gemini/antigravity/scratch/gym_app/mobile_app/node_modules/@react-native-async-storage/async-storage/android/build/generated/source/codegen/jni/CMakeLists.txt:
+  The object file directory
+
+    C:/Users/braul/.gemini/antigravity/scratch/gym_app/mobile_app/android/app/.cxx/RelWithDebInfo/1i3by2y3/x86/rnasyncstorage_autolinked_build/CMakeFiles/react_codegen_rnasyncstorage.dir/./
+
+  has 185 characters.  The maximum full path to an object file is 250
+  characters (see CMAKE_OBJECT_PATH_MAX).  Object file
+
+    react/renderer/components/rnasyncstorage/rnasyncstorageJSI-generated.cpp.o
+
+  cannot be safely placed under this directory.  The build may not work
+  correctly.
+
+
+CMake Warning in C:/Users/braul/.gemini/antigravity/scratch/gym_app/mobile_app/node_modules/react-native-gesture-handler/android/build/generated/source/codegen/jni/CMakeLists.txt:
+  The object file directory
+
+    C:/Users/braul/.gemini/antigravity/scratch/gym_app/mobile_app/android/app/.cxx/RelWithDebInfo/1i3by2y3/x86/rngesturehandler_codegen_autolinked_build/CMakeFiles/react_codegen_rngesturehandler_codegen.dir/./
+
+  has 205 characters.  The maximum full path to an object file is 250
+  characters (see CMAKE_OBJECT_PATH_MAX).  Object file
+
+    react/renderer/components/rngesturehandler_codegen/EventEmitters.cpp.o
+
+  cannot be safely placed under this directory.  The build may not work
+  correctly.
+
+
+CMake Warning in C:/Users/braul/.gemini/antigravity/scratch/gym_app/mobile_app/node_modules/react-native-safe-area-context/android/src/main/jni/CMakeLists.txt:
+  The object file directory
+
+    C:/Users/braul/.gemini/antigravity/scratch/gym_app/mobile_app/android/app/.cxx/RelWithDebInfo/1i3by2y3/x86/safeareacontext_autolinked_build/CMakeFiles/react_codegen_safeareacontext.dir/./
+
+  has 187 characters.  The maximum full path to an object file is 250
+  characters (see CMAKE_OBJECT_PATH_MAX).  Object file
+
+    C_/Users/braul/.gemini/antigravity/scratch/gym_app/mobile_app/node_modules/react-native-safe-area-context/android/build/generated/source/codegen/jni/react/renderer/components/safeareacontext/safeareacontextJSI-generated.cpp.o
+
+  cannot be safely placed under this directory.  The build may not work
+  correctly.
+
+
+CMake Warning in C:/Users/braul/.gemini/antigravity/scratch/gym_app/mobile_app/node_modules/react-native-screens/android/src/main/jni/CMakeLists.txt:
+  The object file directory
+
+    C:/Users/braul/.gemini/antigravity/scratch/gym_app/mobile_app/android/app/.cxx/RelWithDebInfo/1i3by2y3/x86/rnscreens_autolinked_build/CMakeFiles/react_codegen_rnscreens.dir/./
+
+  has 175 characters.  The maximum full path to an object file is 250
+  characters (see CMAKE_OBJECT_PATH_MAX).  Object file
+
+    C_/Users/braul/.gemini/antigravity/scratch/gym_app/mobile_app/node_modules/react-native-screens/common/cpp/react/renderer/components/rnscreens/RNSScreenStackHeaderSubviewShadowNode.cpp.o
+
+  cannot be safely placed under this directory.  The build may not work
+  correctly.
+
+

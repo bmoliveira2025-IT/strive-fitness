@@ -43,6 +43,7 @@ app-example
 /android
 /android_backup
 *.apk
+!public/*.apk
 *.csv
 top_duplicates.json
 build_copilot_knowledge_freezing*.py

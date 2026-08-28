@@ -2,7 +2,7 @@
   "expo": {
     "name": "Strive Fitness",
     "slug": "strive-app",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/images/adaptive-icon.png",
     "scheme": "strive-fitness-br",
@@ -23,7 +23,7 @@
     },
     "android": {
       "package": "com.bmoliveira.strive",
-      "versionCode": 2,
+      "versionCode": 3,
       "adaptiveIcon": {
         "backgroundColor": "#0A0A0B",
         "foregroundImage": "./assets/images/adaptive-icon.png"

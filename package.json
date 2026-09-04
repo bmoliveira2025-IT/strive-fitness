@@ -1,6 +1,6 @@
 {
   "name": "mobile_app",
-  "main": "index.js",
+  "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
     "postinstall": "node ./scripts/patch-track-player.js",

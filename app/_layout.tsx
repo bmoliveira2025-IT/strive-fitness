@@ -15,14 +15,25 @@ import {
 } from '@expo-google-fonts/inter';
 import { Stack, usePathname, useRouter, useSegments } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { InteractionManager, LogBox, Platform, View } from 'react-native';
+import { InteractionManager, LogBox, NativeModules, Platform, View } from 'react-native';
+import * as SplashScreen from 'expo-splash-screen';
 import { AnimatedSplashScreen } from '../components/AnimatedSplashScreen';
+import { PlaybackService } from '../services/trackPlayerService';
 import { ExerciseHistoryProvider } from '../context/ExerciseHistoryContext';
 import { FavoritesProvider } from '../context/FavoritesContext';
 import { SavedWorkoutsProvider } from '../context/SavedWorkoutsContext';
 import { ThemeProvider, useTheme } from '../context/ThemeContext';
 import { useWorkoutStore } from '../store/useWorkoutStore';
 import '../global.css';
+
+if (Platform.OS !== 'web' && NativeModules.TrackPlayerModule) {
+  try {
+    const TrackPlayer = require('react-native-track-player').default;
+    TrackPlayer.registerPlaybackService(() => PlaybackService);
+  } catch (error) {
+    console.log('[TrackPlayer Service Registration Error]', error);
+  }
+}
 
 import { ThemeProvider as NavThemeProvider, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import * as Notifications from 'expo-notifications';
@@ -186,6 +197,7 @@ export default function TabLayout() {
 
   useEffect(() => {
     setIsMounted(true);
+    SplashScreen.hideAsync().catch(() => {});
 
     LogBox.ignoreLogs([
       'SafeAreaView has been deprecated',

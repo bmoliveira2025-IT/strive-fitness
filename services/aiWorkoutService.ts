@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SavedExercise, SavedWorkout } from '../context/SavedWorkoutsContext';
 
-const GEMINI_API_KEY = 'AIzaSyCZC0UdP9Po1nEgzt83lf6IaLdNeeCTUWc';
+const GEMINI_API_KEY = process.env.EXPO_PUBLIC_GEMINI_API_KEY || '';
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
 const CACHE_KEY = '@ai_workout_plans_cache';
 const CACHE_EXPIRATION = 24 * 60 * 60 * 1000; // 24 hours
@@ -188,7 +188,14 @@ export async function generateWorkoutPlans(suggestedFocus?: string, suggestedMus
             console.warn('Failed to load AI plans from AsyncStorage:', e);
         }
 
-        // 4. Fetch from API if cache is missing or expired
+        // 4. If no Gemini API key is configured, fallback smoothly to curated plans
+        if (!GEMINI_API_KEY) {
+            const populated = ensureMockPlansPopulated();
+            cachedPlans = populated;
+            return populated;
+        }
+
+        // 5. Fetch from API if cache is missing or expired
         try {
             // Get a diverse sample of exercises from key muscle groups
             const mainGroups = ['Peito', 'Costas', 'Coxas', 'Ombros', 'Bíceps', 'Tríceps'];
@@ -267,8 +274,16 @@ export async function generateWorkoutPlans(suggestedFocus?: string, suggestedMus
 
             if (!response.ok) {
                 const errorText = await response.text();
-                console.error('Gemini API Error Detail:', errorText);
-                throw new Error(`Gemini API error: ${response.status} - ${errorText} `);
+                if (response.status === 403) {
+                    console.warn('[AI Service] Gemini API key expired/leaked. Using curated workout plans.');
+                } else if (response.status === 429) {
+                    console.warn('[AI Service] Gemini API rate limited (429). Using curated workout plans.');
+                } else {
+                    console.warn(`[AI Service] Gemini API returned status ${response.status}. Using curated workout plans.`);
+                }
+                const populated = ensureMockPlansPopulated();
+                cachedPlans = populated;
+                return populated;
             }
 
             const data = await response.json();

@@ -35,6 +35,22 @@ export default function LoginScreen() {
     const [googleLoading, setGoogleLoading] = useState(false);
     const [isSignUp, setIsSignUp] = useState(false);
 
+    const withTimeout = async <T,>(operation: Promise<T>, timeoutMs = 15000): Promise<T> => {
+        let timeoutId: ReturnType<typeof setTimeout> | undefined;
+        const timeout = new Promise<never>((_, reject) => {
+            timeoutId = setTimeout(
+                () => reject(new Error('A conexão demorou demais. Verifique sua internet e tente novamente.')),
+                timeoutMs
+            );
+        });
+
+        try {
+            return await Promise.race([operation, timeout]);
+        } finally {
+            if (timeoutId) clearTimeout(timeoutId);
+        }
+    };
+
     const handleAuth = async () => {
         if (!email.trim() || !password.trim()) {
             Alert.alert('Atenção', 'Por favor, preencha todos os campos.');
@@ -45,18 +61,21 @@ export default function LoginScreen() {
 
         try {
             if (isSignUp) {
-                const { error } = await supabase.auth.signUp({
+                const { error } = await withTimeout(supabase.auth.signUp({
                     email: email.trim(),
                     password,
-                });
+                }));
                 if (error) throw error;
                 Alert.alert('Sucesso', 'Conta criada com sucesso! Verifique seu e-mail para confirmar o cadastro.');
             } else {
-                const { error } = await supabase.auth.signInWithPassword({
+                const { data, error } = await withTimeout(supabase.auth.signInWithPassword({
                     email: email.trim(),
                     password,
-                });
+                }));
                 if (error) throw error;
+                if (data.session) {
+                    router.replace('/(tabs)');
+                }
             }
         } catch (error: any) {
             console.error('Auth error:', error);

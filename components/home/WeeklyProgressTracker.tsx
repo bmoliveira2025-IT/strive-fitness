@@ -10,6 +10,7 @@ import Animated, {
 import { Circle, Svg } from "react-native-svg";
 import { useTheme } from "../../context/ThemeContext";
 import { FontFamily, Radius } from "../../constants/theme";
+import { useUserStore } from "../../store/useUserStore";
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
@@ -193,8 +194,10 @@ export function WeeklyProgressTracker({
 }: Props) {
   const { theme } = useTheme();
   const router = useRouter();
+  const { profile } = useUserStore();
 
-  const progressValue = weekCount / 7;
+  const targetDays = profile?.onboardingData?.daysPerWeek || 4;
+  const progressValue = weekCount / targetDays;
   const percentage = Math.round(Math.min(progressValue, 1) * 100);
 
   const trackColor = theme.mode === "dark" ? "rgba(255, 255, 255, 0.08)" : "rgba(15, 23, 42, 0.08)";
@@ -235,7 +238,7 @@ export function WeeklyProgressTracker({
               marginBottom: 16,
             }}
           >
-            {weekCount} de 7 treinos concluídos
+            {weekCount} de {targetDays} treinos concluídos
           </Text>
 
           <TouchableOpacity
@@ -294,7 +297,7 @@ export function WeeklyProgressTracker({
         <MetricCard
           title="Treinos"
           value={weekCount.toString()}
-          subtext="/7"
+          subtext={`/${targetDays}`}
           icon="fitness-outline"
           iconColor={theme.mode === "light" ? "#0284C7" : "#38BDF8"}
         />

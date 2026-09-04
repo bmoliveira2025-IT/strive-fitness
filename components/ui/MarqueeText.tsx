@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import {
     LayoutChangeEvent,
+    NativeSyntheticEvent,
     StyleProp,
     Text,
+    TextLayoutEventData,
     TextStyle,
     View,
     ViewStyle,
@@ -14,6 +16,7 @@ import Animated, {
     useSharedValue,
     withDelay,
     withRepeat,
+    withSequence,
     withTiming,
 } from 'react-native-reanimated';
 
@@ -45,12 +48,23 @@ export function MarqueeText({
 
     // Guaranteed width calculation (heuristic fallback + real measured width)
     const estimatedWidth = Math.ceil((text?.length || 0) * (fontSize * 0.64));
-    const effectiveTextWidth = Math.max(measuredTextWidth, estimatedWidth);
+    // Use the heuristic only until Android reports the real rendered width.
+    const effectiveTextWidth = measuredTextWidth > 0 ? measuredTextWidth : estimatedWidth;
 
     const onContainerLayout = (e: LayoutChangeEvent) => {
         const width = Math.round(e.nativeEvent.layout.width);
         if (width > 0 && Math.abs(width - containerWidth) > 1) {
             setContainerWidth(width);
+        }
+    };
+
+    const onMeasureText = (e: NativeSyntheticEvent<TextLayoutEventData>) => {
+        // `onLayout` on the visible Text reports the width after Yoga has
+        // constrained it to the player. `onTextLayout`, measured in a very
+        // wide invisible line, reports the actual glyph width on Android.
+        const width = Math.ceil(e.nativeEvent.lines?.[0]?.width || 0);
+        if (width > 0 && Math.abs(width - measuredTextWidth) > 1) {
+            setMeasuredTextWidth(width);
         }
     };
 
@@ -64,25 +78,37 @@ export function MarqueeText({
             return;
         }
 
-        const scrollDistance = effectiveTextWidth + loopGap;
-        const duration = Math.max(1800, (scrollDistance / speed) * 1000);
+        // Move only the exact overflowing portion. The previous continuous-loop
+        // implementation depended on an estimated duplicated-text width and
+        // could reset before the final glyph was visible on Android.
+        const scrollDistance = Math.max(0, effectiveTextWidth - containerWidth + 2);
+        const duration = Math.max(1400, (scrollDistance / speed) * 1000);
 
-        translateX.value = withDelay(
-            pauseDuration,
-            withRepeat(
-                withTiming(-scrollDistance, {
-                    duration: duration,
-                    easing: Easing.linear,
-                }),
-                -1,
-                false
-            )
+        translateX.value = withRepeat(
+            withSequence(
+                withDelay(
+                    pauseDuration,
+                    withTiming(-scrollDistance, {
+                        duration,
+                        easing: Easing.linear,
+                    })
+                ),
+                withDelay(
+                    pauseDuration,
+                    withTiming(0, {
+                        duration: Math.max(500, duration * 0.55),
+                        easing: Easing.inOut(Easing.quad),
+                    })
+                )
+            ),
+            -1,
+            false
         );
 
         return () => {
             cancelAnimation(translateX);
         };
-    }, [isOverflowing, effectiveTextWidth, containerWidth, text, speed, pauseDuration, loopGap]);
+    }, [isOverflowing, effectiveTextWidth, containerWidth, text, speed, pauseDuration]);
 
     const animatedStyle = useAnimatedStyle(() => ({
         transform: [{ translateX: translateX.value }],
@@ -101,64 +127,46 @@ export function MarqueeText({
                 containerStyle,
             ]}
         >
-            {/* Hidden measuring container */}
-            <View
-                style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    opacity: 0,
-                    width: 3000,
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                }}
+            {/* Measure outside the player's width constraint. Without this,
+                Android reports only the already-clipped title width. */}
+            <Text
+                numberOfLines={1}
+                onTextLayout={onMeasureText}
                 pointerEvents="none"
+                accessibilityElementsHidden
+                importantForAccessibility="no-hide-descendants"
+                style={[
+                    style,
+                    {
+                        position: 'absolute',
+                        left: 0,
+                        top: 0,
+                        width: 10000,
+                        opacity: 0,
+                    },
+                ]}
             >
-                <Text
-                    numberOfLines={1}
-                    onLayout={(e) => {
-                        const width = Math.ceil(e.nativeEvent.layout.width);
-                        if (width > 0 && Math.abs(width - measuredTextWidth) > 1) {
-                            setMeasuredTextWidth(width);
-                        }
-                    }}
-                    style={[style, { flexShrink: 0 }]}
-                >
-                    {text}
-                </Text>
-            </View>
+                {text}
+            </Text>
 
-            {/* Visible Content with strict boundary clipping and no ellipsis */}
+            {/* A single real-width title avoids seams and premature loop resets. */}
             <Animated.View
                 style={[
                     {
                         flexDirection: 'row',
                         alignItems: 'center',
                         alignSelf: 'flex-start',
+                        width: effectiveTextWidth + 4,
                     },
                     animatedStyle,
                 ]}
             >
                 <Text
                     numberOfLines={1}
-                    ellipsizeMode="clip"
-                    style={[style, { flexShrink: 0 }]}
+                    style={[style, { width: effectiveTextWidth + 4, flexShrink: 0, paddingRight: 4 }]}
                 >
                     {text}
                 </Text>
-
-                {isOverflowing && (
-                    <>
-                        <View style={{ width: loopGap }} />
-                        <Text
-                            numberOfLines={1}
-                            ellipsizeMode="clip"
-                            style={[style, { flexShrink: 0 }]}
-                        >
-                            {text}
-                        </Text>
-                    </>
-                )}
             </Animated.View>
         </View>
     );

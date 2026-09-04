@@ -1,7 +1,7 @@
 import { Audio } from 'expo-av';
 import * as WebBrowser from 'expo-web-browser';
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Linking, Platform } from 'react-native';
+import { Alert, Linking, NativeModules, Platform } from 'react-native';
 import {
     formatMusikaMediaUrl,
     MUSIKA_APK_DOWNLOAD_URL,
@@ -59,6 +59,22 @@ export interface MediaItem {
 }
 
 export const formatMediaUrl = formatMusikaMediaUrl;
+
+type TrackPlayerModule = typeof import('react-native-track-player');
+let nativeTrackPlayerModule: TrackPlayerModule | null = null;
+// Automatically enable native TrackPlayer when native module is linked (APK / standalone),
+// safely falling back to expo-av on web or Expo Go where native module is absent.
+const USE_NATIVE_TRACK_PLAYER = Platform.OS !== 'web' && !!NativeModules.TrackPlayerModule;
+
+const getNativeTrackPlayer = (): TrackPlayerModule => {
+    if (Platform.OS === 'web') {
+        throw new Error('TrackPlayer is not available on web.');
+    }
+    if (!nativeTrackPlayerModule) {
+        nativeTrackPlayerModule = require('react-native-track-player') as TrackPlayerModule;
+    }
+    return nativeTrackPlayerModule;
+};
 
 export const DEFAULT_ITEMS: MediaItem[] = [
     {
@@ -252,6 +268,8 @@ export function MusicPlayerProvider({ children }: { children: React.ReactNode })
     const activeQueueRef = useRef<MediaItem[]>(DEFAULT_ITEMS);
     const isPlayingRef = useRef(false);
     const playHistoryRef = useRef<string[]>([]);
+    const playerSetupPromiseRef = useRef<Promise<void> | null>(null);
+    const nativeEventSubscriptionsRef = useRef<Array<{ remove: () => void }>>([]);
 
     useEffect(() => {
         currentItemRef.current = currentItem;
@@ -347,7 +365,79 @@ export function MusicPlayerProvider({ children }: { children: React.ReactNode })
         }
     };
 
-    // Configure background audio mode
+    const ensureNativePlayer = async () => {
+        if (Platform.OS === 'web') return;
+
+        if (!playerSetupPromiseRef.current) {
+            playerSetupPromiseRef.current = (async () => {
+                const playerModule = getNativeTrackPlayer();
+                const TrackPlayer = playerModule.default;
+                try {
+                    await TrackPlayer.setupPlayer();
+                } catch (error: any) {
+                    // setupPlayer is intentionally idempotent for this provider. Track Player
+                    // rejects when another mounted provider has already initialized it.
+                    if (!String(error?.message || error).toLowerCase().includes('already')) {
+                        throw error;
+                    }
+                }
+
+                await TrackPlayer.updateOptions({
+                    android: {
+                        appKilledPlaybackBehavior: playerModule.AppKilledPlaybackBehavior.ContinuePlayback,
+                    },
+                    capabilities: [
+                        playerModule.Capability.Play,
+                        playerModule.Capability.Pause,
+                        playerModule.Capability.SkipToNext,
+                        playerModule.Capability.SkipToPrevious,
+                        playerModule.Capability.Stop,
+                    ],
+                    compactCapabilities: [
+                        playerModule.Capability.Play,
+                        playerModule.Capability.Pause,
+                        playerModule.Capability.SkipToNext,
+                    ],
+                    progressUpdateEventInterval: 1,
+                });
+                await TrackPlayer.setRepeatMode(playerModule.RepeatMode.Queue);
+
+                if (nativeEventSubscriptionsRef.current.length === 0) {
+                    nativeEventSubscriptionsRef.current = [
+                        TrackPlayer.addEventListener(playerModule.Event.PlaybackActiveTrackChanged, (event: any) => {
+                            const trackId = event?.track?.id;
+                            if (!trackId) return;
+                            const queue = activeQueueRef.current;
+                            const matchingItem = queue.find((queueItem) => queueItem.id === trackId);
+                            if (matchingItem) {
+                                setCurrentItem(matchingItem);
+                                playHistoryRef.current = [
+                                    matchingItem.id,
+                                    ...playHistoryRef.current.filter((id) => id !== matchingItem.id),
+                                ].slice(0, 50);
+                            }
+                        }),
+                        TrackPlayer.addEventListener(playerModule.Event.PlaybackState, (event: any) => {
+                            setIsPlaying(event.state === playerModule.State.Playing);
+                            setIsBuffering(
+                                event.state === playerModule.State.Buffering ||
+                                event.state === playerModule.State.Loading
+                            );
+                        }),
+                    ];
+                }
+            })().catch((error) => {
+                playerSetupPromiseRef.current = null;
+                throw error;
+            });
+        }
+
+        await playerSetupPromiseRef.current;
+    };
+
+    // Configure only the web engine eagerly. Native TrackPlayer must be set up
+    // on demand, after the user starts playback, so authentication/startup is
+    // never blocked by a foreground media service.
     const configureAudioMode = async () => {
         try {
             await Audio.setAudioModeAsync({
@@ -366,6 +456,10 @@ export function MusicPlayerProvider({ children }: { children: React.ReactNode })
 
     useEffect(() => {
         configureAudioMode();
+        return () => {
+            nativeEventSubscriptionsRef.current.forEach((subscription) => subscription.remove());
+            nativeEventSubscriptionsRef.current = [];
+        };
     }, []);
 
     // Load initial stored user session & local favorites with real-time MusiKA sync
@@ -488,14 +582,29 @@ export function MusicPlayerProvider({ children }: { children: React.ReactNode })
 
     const enforceExclusiveAudioFocus = async () => {
         try {
-            await configureAudioMode();
+            if (Platform.OS === 'web') {
+                await Audio.setAudioModeAsync({ staysActiveInBackground: true });
+            }
         } catch {}
     };
 
     const isTransitioningRef = useRef(false);
+
     const nextTrackRef = useRef<() => Promise<void>>(async () => {});
 
     const nextTrack = async () => {
+        if (USE_NATIVE_TRACK_PLAYER && Platform.OS !== 'web') {
+            try {
+                await ensureNativePlayer();
+                const TrackPlayer = getNativeTrackPlayer().default;
+                await TrackPlayer.skipToNext();
+                await TrackPlayer.play();
+                return;
+            } catch (error) {
+                console.log('Native next track error:', error);
+            }
+        }
+
         const queue = activeQueueRef.current.length > 0 ? activeQueueRef.current : (allSongs.length > 0 ? allSongs : allRadios);
         const nextItem = getRandomItem(queue, currentItemRef.current?.id) || queue[0];
         if (nextItem) {
@@ -516,6 +625,42 @@ export function MusicPlayerProvider({ children }: { children: React.ReactNode })
 
         if (item.id) {
             playHistoryRef.current = [item.id, ...playHistoryRef.current.filter((id) => id !== item.id)].slice(0, 50);
+        }
+
+        if (USE_NATIVE_TRACK_PLAYER && Platform.OS !== 'web') {
+            try {
+                await ensureNativePlayer();
+                const playerModule = getNativeTrackPlayer();
+                const TrackPlayer = playerModule.default;
+
+                const sourceQueue = activeQueueRef.current.length > 0
+                    ? activeQueueRef.current
+                    : (allSongs.length > 0 ? allSongs : allRadios);
+                const playableQueue = sourceQueue.filter((queueItem) => !!queueItem.audioUrl);
+                const selectedIndex = playableQueue.findIndex((queueItem) => queueItem.id === item.id);
+                const orderedQueue = selectedIndex >= 0
+                    ? [...playableQueue.slice(selectedIndex), ...playableQueue.slice(0, selectedIndex)]
+                    : [item, ...playableQueue.filter((queueItem) => queueItem.id !== item.id)];
+
+                await TrackPlayer.reset();
+                await TrackPlayer.add(orderedQueue.map((queueItem) => ({
+                    id: queueItem.id,
+                    url: queueItem.audioUrl!,
+                    title: queueItem.title,
+                    artist: queueItem.artist,
+                    artwork: queueItem.logo,
+                    genre: queueItem.genre,
+                })));
+                await TrackPlayer.setRepeatMode(playerModule.RepeatMode.Queue);
+                await TrackPlayer.play();
+                setIsPlaying(true);
+                setIsBuffering(false);
+            } catch (error) {
+                console.log('Native playback error:', error);
+                setIsPlaying(false);
+                setIsBuffering(false);
+            }
+            return;
         }
 
         await enforceExclusiveAudioFocus();
@@ -582,6 +727,25 @@ export function MusicPlayerProvider({ children }: { children: React.ReactNode })
 
     const togglePlay = async () => {
         try {
+            if (USE_NATIVE_TRACK_PLAYER && Platform.OS !== 'web') {
+                await ensureNativePlayer();
+                const playerModule = getNativeTrackPlayer();
+                const TrackPlayer = playerModule.default;
+                const playbackState = await TrackPlayer.getPlaybackState();
+                if (playbackState.state === playerModule.State.Playing) {
+                    await TrackPlayer.pause();
+                } else {
+                    const queue = await TrackPlayer.getQueue();
+                    if (queue.length === 0) {
+                        const trackToPlay = currentItemRef.current || getRandomItem(activeQueueRef.current) || DEFAULT_ITEMS[0];
+                        await playMedia(trackToPlay);
+                    } else {
+                        await TrackPlayer.play();
+                    }
+                }
+                return;
+            }
+
             if (isPlaying && soundRef.current) {
                 await soundRef.current.pauseAsync();
                 setIsPlaying(false);
@@ -606,6 +770,18 @@ export function MusicPlayerProvider({ children }: { children: React.ReactNode })
     };
 
     const prevTrack = async () => {
+        if (USE_NATIVE_TRACK_PLAYER && Platform.OS !== 'web') {
+            try {
+                await ensureNativePlayer();
+                const TrackPlayer = getNativeTrackPlayer().default;
+                await TrackPlayer.skipToPrevious();
+                await TrackPlayer.play();
+                return;
+            } catch (error) {
+                console.log('Native previous track error:', error);
+            }
+        }
+
         const queue = activeQueueRef.current.length > 0 ? activeQueueRef.current : (allSongs.length > 0 ? allSongs : allRadios);
         const history = playHistoryRef.current;
         const currentId = currentItemRef.current?.id;
@@ -719,6 +895,12 @@ export function MusicPlayerProvider({ children }: { children: React.ReactNode })
     };
 
     const openMusikaApp = async () => {
+        if (USE_NATIVE_TRACK_PLAYER && Platform.OS !== 'web') {
+            try {
+                const TrackPlayer = getNativeTrackPlayer().default;
+                await TrackPlayer.pause();
+            } catch {}
+        }
         if (soundRef.current && isPlaying) {
             try {
                 await soundRef.current.pauseAsync();

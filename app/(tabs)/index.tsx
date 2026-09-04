@@ -6,7 +6,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ActivityFeed } from '../../components/home/ActivityFeed';
 import { CardioSummaryWidget } from '../../components/home/CardioSummaryWidget';
 import { CommunityLeaderboardCard } from '../../components/home/CommunityLeaderboardCard';
-import { ContextualReminderCard } from '../../components/home/ContextualReminderCard';
 import { DailyInsightCard } from '../../components/home/DailyInsightCard';
 import { HomeHeader } from '../../components/home/HomeHeader';
 import { MuscleUsageStats } from '../../components/home/MuscleUsageStats';
@@ -250,17 +249,14 @@ export default function Home() {
                 {/* 1. HERO: Premium Card with Contextual Action */}
                 <HeroCard />
 
-                {/* 2. CONTEXTUAL REMINDER: Smart streak / weekly goals reminder */}
-                <ContextualReminderCard streak={streak} weekCount={stats.current.count} />
-
-                {/* 3. WEEKLY PROGRESS: 7-day dot tracker + streak + volume */}
+                {/* 2. WEEKLY PROGRESS: Dynamic goal tracker + streak + volume */}
                 <WeeklyProgressTracker
                     streak={streak}
                     weekCount={stats.current.count}
                     weekVolume={stats.current.volumeFormatted}
                 />
 
-                {/* 4. NEXT WORKOUT: shown only when user hasn't trained today */}
+                {/* 3. NEXT WORKOUT: shown only when user hasn't trained today */}
                 <NextWorkoutCard />
 
                 {/* 5. RECENT PR: Personal Record Milestone */}

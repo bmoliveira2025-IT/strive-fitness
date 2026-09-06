@@ -301,6 +301,44 @@ export default function WorkoutScreen() {
         return (m === '0' ? '' : m) + s;
     };
 
+    // Unified history resolver: checks ExerciseHistoryContext first, then falls back to WorkoutHistory records
+    const getExercisePreviousData = React.useCallback((exerciseId: string | number) => {
+        if (!exerciseId && exerciseId !== 0) return null;
+        const idStr = String(exerciseId);
+        const exHist = getHistory(idStr);
+
+        if (exHist && (exHist.lastSets || exHist.lastKg || exHist.lastReps)) {
+            return exHist;
+        }
+
+        // Fallback to WorkoutHistoryContext if not in ExerciseHistoryContext
+        if (history && history.length > 0) {
+            const lastSession = history.find(record =>
+                record.exercises?.some(e => String(e.id) === idStr)
+            );
+            if (lastSession) {
+                const foundEx = lastSession.exercises.find(e => String(e.id) === idStr);
+                if (foundEx && foundEx.sets && foundEx.sets.length > 0) {
+                    const lastSetsMap: { [idx: number]: { kg: string, reps: string } } = {};
+                    foundEx.sets.forEach((s, idx) => {
+                        lastSetsMap[idx] = { kg: String(s.kg), reps: String(s.reps) };
+                    });
+                    const lastSet = foundEx.sets[foundEx.sets.length - 1];
+                    return {
+                        lastKg: String(lastSet.kg),
+                        lastReps: String(lastSet.reps),
+                        bestKg: String(Math.max(...foundEx.sets.map(s => s.kg || 0))),
+                        bestReps: String(Math.max(...foundEx.sets.map(s => s.reps || 0))),
+                        lastDate: lastSession.date,
+                        lastSets: lastSetsMap
+                    };
+                }
+            }
+        }
+
+        return null;
+    }, [getHistory, history]);
+
     // AI Generation Logic
     const generateAIWorkout = () => {
         setIsGeneratingAI(true);
@@ -514,6 +552,7 @@ export default function WorkoutScreen() {
     };
 
     // Sync exercises with currentWorkout - add new ones, keep existing ones
+    // Sync exercises with currentWorkout - add new ones, keep existing ones
     // Skip sync when loading a saved workout to avoid duplicates
     useEffect(() => {
         if (isLoadingSavedWorkout) return; // Don't sync when loading saved workout
@@ -528,6 +567,7 @@ export default function WorkoutScreen() {
                     .filter((item: any) => !existingIds.includes(item.id))
                     .map((item: any, newIdx: number) => {
                         const isCardioItem = isCardio(item);
+                        const prevData = getExercisePreviousData(item.id);
 
                         let defaultSets: SetData[] = [];
 
@@ -547,6 +587,15 @@ export default function WorkoutScreen() {
                                     type: 'N'
                                 });
                             }
+                        } else if (item.sets && Array.isArray(item.sets) && item.sets.length > 0) {
+                            defaultSets = item.sets.map((s: any, idx: number) => ({
+                                id: Date.now() + Math.random() + idx,
+                                previous: s.previous || '',
+                                kg: s.kg !== undefined && s.kg !== null ? String(s.kg) : '',
+                                reps: s.reps !== undefined && s.reps !== null ? String(s.reps) : '',
+                                completed: false,
+                                type: s.type || 'N',
+                            }));
                         } else {
                             // Default behavior
                             const baseId = Date.now();
@@ -562,19 +611,43 @@ export default function WorkoutScreen() {
                         }
 
                         const masterExercise = exercisesMap.get(item.id?.toString());
-                        const history = getHistory(item.id);
 
-                        // Populate 'previous' field for sets
+                        // Populate 'previous' field for sets AND pre-fill kg & reps from history
                         const enrichedSets = defaultSets.map((s, idx) => {
+                            const specificHist = prevData?.lastSets?.[idx];
+                            const histKg = specificHist?.kg ?? prevData?.lastKg;
+                            const histReps = specificHist?.reps ?? prevData?.lastReps;
+
                             let prevString = '-';
-                            if (history?.lastSets && history.lastSets[idx]) {
-                                const { kg, reps } = history.lastSets[idx];
-                                prevString = `${kg}kg x ${reps}`;
-                            } else if (history?.lastKg && history?.lastReps && idx === 0) {
-                                // Fallback for first set if no granular history
-                                prevString = `${history.lastKg}kg x ${history.lastReps}`;
+                            if (specificHist && (specificHist.kg || specificHist.reps)) {
+                                prevString = isCardioItem
+                                    ? `${specificHist.kg || 0} tempo • ${specificHist.reps || 0}km`
+                                    : `${specificHist.kg || 0}kg x ${specificHist.reps || 0}`;
+                            } else if (prevData?.lastKg || prevData?.lastReps) {
+                                prevString = isCardioItem
+                                    ? `${prevData.lastKg || 0} tempo • ${prevData.lastReps || 0}km`
+                                    : `${prevData.lastKg || 0}kg x ${prevData.lastReps || 0}`;
+                            } else if (s.previous && s.previous !== '-') {
+                                prevString = s.previous;
                             }
-                            return { ...s, previous: prevString };
+
+                            // Use existing s.kg if it was explicitly defined (e.g. from plan target), else use history
+                            const finalKg = (s.kg !== undefined && s.kg !== null && String(s.kg).trim() !== '')
+                                ? String(s.kg)
+                                : (histKg !== undefined && histKg !== null ? String(histKg) : '');
+
+                            // Use existing s.reps if it was explicitly defined, else use history
+                            const finalReps = (s.reps !== undefined && s.reps !== null && String(s.reps).trim() !== '')
+                                ? String(s.reps)
+                                : (histReps !== undefined && histReps !== null ? String(histReps) : '');
+
+                            return {
+                                ...s,
+                                previous: prevString,
+                                kg: finalKg,
+                                reps: finalReps,
+                                completed: false
+                            };
                         });
 
                         return {
@@ -597,20 +670,23 @@ export default function WorkoutScreen() {
                 return [...prevExercises, ...newExercises];
             });
         }
-    }, [currentWorkout, isLoadingSavedWorkout]);
+    }, [currentWorkout, isLoadingSavedWorkout, getExercisePreviousData]);
 
-    // Sanitize Duplicate IDs Effect
-    // This fixes existing workouts that might have corrupted state with duplicate IDs
+    // Sanitize Duplicate IDs & Pre-fill Missing Historical Values
     useEffect(() => {
         if (exercises.length > 0) {
             let hasDuplicates = false;
             const sanitized = exercises.map(ex => {
                 const seenIds = new Set();
                 let exHasDupes = false;
+                const prevData = getExercisePreviousData(ex.id);
+
                 const newSets = ex.sets.map((s, idx) => {
                     let needsUpdate = false;
                     let newId = s.id;
                     let newPrevious = s.previous;
+                    let newKg = s.kg;
+                    let newReps = s.reps;
 
                     // 1. Fix Duplicate IDs
                     if (seenIds.has(s.id)) {
@@ -620,33 +696,32 @@ export default function WorkoutScreen() {
                     }
                     seenIds.add(newId);
 
-                    // 2. Refresh 'Previous' History (Granular)
-                    // REMOVED: We don't want to update 'Previous' live during the workout.
-                    // It should stay as "Last Workout's Data".
+                    // 2. Pre-fill KG and REPS if completely empty and history exists
+                    const setHist = prevData?.lastSets?.[idx];
+                    const histKg = setHist?.kg || prevData?.lastKg;
+                    const histReps = setHist?.reps || prevData?.lastReps;
 
-                    /* 
-                    const history = getHistory(ex.id);
-                    let shouldBePrevious = '-';
-                    if (history?.lastSets && history.lastSets[idx]) {
-                         const { kg, reps } = history.lastSets[idx];
-                         shouldBePrevious = `${kg}kg x ${reps}`;
-                    } else if (history?.lastKg && history?.lastReps && idx === 0) {
-                        shouldBePrevious = `${history.lastKg}kg x ${history.lastReps}`;
-                    }
-                    
-                    if (s.previous !== shouldBePrevious) {
+                    if ((!s.kg || s.kg === '') && histKg) {
+                        newKg = String(histKg);
                         needsUpdate = true;
-                        newPrevious = shouldBePrevious;
                     }
-                    */
+                    if ((!s.reps || s.reps === '') && histReps) {
+                        newReps = String(histReps);
+                        needsUpdate = true;
+                    }
+
+                    // 3. Pre-fill Previous if missing
+                    if ((!s.previous || s.previous === '-' || s.previous === '') && (setHist || prevData?.lastKg)) {
+                        newPrevious = setHist ? `${setHist.kg}kg x ${setHist.reps}` : `${prevData?.lastKg}kg x ${prevData?.lastReps}`;
+                        needsUpdate = true;
+                    }
 
                     if (needsUpdate) {
-                        return { ...s, id: newId, previous: newPrevious };
+                        return { ...s, id: newId, previous: newPrevious, kg: newKg, reps: newReps };
                     }
                     return s;
                 });
 
-                // Always checking if we need to update to trigger re-render if history changed
                 const setsChanged = newSets.some((ns, i) => ns !== ex.sets[i]);
                 if (exHasDupes || setsChanged) {
                     hasDuplicates = true;
@@ -656,11 +731,10 @@ export default function WorkoutScreen() {
             });
 
             if (hasDuplicates) {
-                console.log('Sanitized IDs and Refreshed History in current workout');
                 setExercises(sanitized);
             }
         }
-    }, [exercises.length]); // Run when exercises count changes or on mount
+    }, [exercises.length, getExercisePreviousData]); // Run when exercises count changes or on mount
 
     // Load AI plans on mount (non-blocking)
     useEffect(() => {
@@ -926,25 +1000,33 @@ export default function WorkoutScreen() {
             if (ex.id === exerciseId) {
                 const newSetId = Date.now();
                 const lastSet = ex.sets[ex.sets.length - 1];
-                const defaultKg = lastSet ? lastSet.kg : '10';
-                const defaultReps = lastSet ? lastSet.reps : '10';
-
-                // Fetch granular history for this new set index
-                const history = getHistory(exerciseId);
+                const prevData = getExercisePreviousData(exerciseId);
                 const newSetIndex = ex.sets.length;
-                let prevString = '';
-                if (history?.lastSets && history.lastSets[newSetIndex]) {
-                    const { kg, reps } = history.lastSets[newSetIndex];
-                    prevString = `${kg}kg x ${reps}`;
+                const specificHist = prevData?.lastSets?.[newSetIndex];
+                const histKg = specificHist?.kg ?? prevData?.lastKg;
+                const histReps = specificHist?.reps ?? prevData?.lastReps;
+
+                let prevString = '-';
+                if (specificHist && (specificHist.kg || specificHist.reps)) {
+                    prevString = `${specificHist.kg}kg x ${specificHist.reps}`;
+                } else if (prevData?.lastKg || prevData?.lastReps) {
+                    prevString = `${prevData.lastKg}kg x ${prevData.lastReps}`;
                 }
+
+                const defaultKg = (specificHist?.kg !== undefined && specificHist.kg !== '')
+                    ? specificHist.kg
+                    : (lastSet?.kg || histKg || '10');
+                const defaultReps = (specificHist?.reps !== undefined && specificHist.reps !== '')
+                    ? specificHist.reps
+                    : (lastSet?.reps || histReps || '10');
 
                 return {
                     ...ex,
                     sets: [...ex.sets, {
                         id: newSetId,
                         previous: prevString,
-                        kg: defaultKg,
-                        reps: defaultReps,
+                        kg: String(defaultKg),
+                        reps: String(defaultReps),
                         completed: false,
                         type: 'N'
                     }]
@@ -1008,15 +1090,39 @@ export default function WorkoutScreen() {
     const handleReplaceExercise = (newExMetadata: any) => {
         if (!selectedExerciseId) return;
 
+        const prevData = getExercisePreviousData(newExMetadata.id);
+
         setExercises(prev => prev.map(ex => {
             if (ex.id === selectedExerciseId) {
+                const updatedSets = ex.sets.map((s, idx) => {
+                    const specificHist = prevData?.lastSets?.[idx];
+                    const histKg = specificHist?.kg ?? prevData?.lastKg;
+                    const histReps = specificHist?.reps ?? prevData?.lastReps;
+
+                    let prevString = '-';
+                    if (specificHist && (specificHist.kg || specificHist.reps)) {
+                        prevString = `${specificHist.kg}kg x ${specificHist.reps}`;
+                    } else if (prevData?.lastKg || prevData?.lastReps) {
+                        prevString = `${prevData.lastKg}kg x ${prevData.lastReps}`;
+                    }
+
+                    return {
+                        ...s,
+                        previous: prevString,
+                        kg: histKg ? String(histKg) : s.kg,
+                        reps: histReps ? String(histReps) : s.reps,
+                    };
+                });
+
                 return {
                     ...ex,
+                    id: String(newExMetadata.id),
                     name: newExMetadata.name,
                     image_url: newExMetadata.image_url,
                     video_url: newExMetadata.video_url,
                     body_parts: newExMetadata.body_parts,
                     equipment: newExMetadata.equipment,
+                    sets: updatedSets,
                 };
             }
             return ex;
@@ -1143,22 +1249,23 @@ export default function WorkoutScreen() {
 
     // ─── Suggested Workout ───
     const suggestedWorkout = React.useMemo(() => {
-        if (savedWorkouts.length === 0) return null;
+        if (!savedWorkouts || savedWorkouts.length === 0) return null;
 
-        const lastSession = [...history].sort(
+        const validHistory = (history || []).filter(s => s && Array.isArray(s.exercises) && s.exercises.length > 0);
+        const lastSession = [...validHistory].sort(
             (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
         )[0];
 
-        if (!lastSession) return savedWorkouts[0];
+        if (!lastSession) return savedWorkouts[0] || null;
 
         const pushMuscles = ['peito', 'ombros', 'tríceps', 'triceps'];
         const pullMuscles = ['costas', 'bíceps', 'biceps', 'antebraços', 'antebraccos'];
         const legMuscles = ['quadríceps', 'quadriceps', 'isquiotibiais', 'panturrilhas', 'glúteos', 'gluteos'];
 
         const trainedParts = new Set(
-            lastSession.exercises.flatMap((ex: any) =>
-                (exercisesData.find((e: any) => e.id?.toString() === ex.id?.toString())?.body_parts || [])
-            ).map((p: string) => p.toLowerCase())
+            (lastSession.exercises || []).flatMap((ex: any) =>
+                (exercisesData.find((e: any) => e.id?.toString() === ex?.id?.toString())?.body_parts || [])
+            ).filter(Boolean).map((p: string) => typeof p === 'string' ? p.toLowerCase() : '')
         );
 
         const wasPush = pushMuscles.some(m => trainedParts.has(m));
@@ -1166,8 +1273,9 @@ export default function WorkoutScreen() {
         const wasLegs = legMuscles.some(m => trainedParts.has(m));
 
         const match = savedWorkouts.find(w => {
+            if (!w || !Array.isArray(w.exercises)) return false;
             const wParts = new Set(
-                w.exercises.flatMap((ex: any) => ex.body_parts || []).map((p: string) => p.toLowerCase())
+                (w.exercises || []).flatMap((ex: any) => ex?.body_parts || []).filter(Boolean).map((p: string) => typeof p === 'string' ? p.toLowerCase() : '')
             );
             const isPush = pushMuscles.some(m => wParts.has(m));
             const isPull = pullMuscles.some(m => wParts.has(m));
@@ -1181,18 +1289,18 @@ export default function WorkoutScreen() {
         if (match) return match;
 
         return [...savedWorkouts].sort((a, b) => {
-            return (a.lastDone ? new Date(a.lastDone).getTime() : 0) -
-                   (b.lastDone ? new Date(b.lastDone).getTime() : 0);
+            return (a?.lastDone ? new Date(a.lastDone).getTime() : 0) -
+                   (b?.lastDone ? new Date(b.lastDone).getTime() : 0);
         })[0] || null;
     }, [savedWorkouts, history]);
 
     const suggestionReason = React.useMemo(() => {
         if (!suggestedWorkout) return '';
-        const lastSession = [...history].sort(
+        const validHistory = (history || []).filter(s => s && Array.isArray(s.exercises) && s.exercises.length > 0);
+        const lastSession = [...validHistory].sort(
             (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
         )[0];
         if (!lastSession) return 'Comece com este treino';
-        const lastGroup = lastSession.exercises?.[0]?.name;
         if (lastSession.workoutName) {
             const daysAgo = Math.round((Date.now() - new Date(lastSession.date).getTime()) / 86400000);
             return `Último treino: ${lastSession.workoutName} (há ${daysAgo === 0 ? 'hoje' : daysAgo === 1 ? '1 dia' : `${daysAgo} dias`})`;
@@ -1220,6 +1328,8 @@ export default function WorkoutScreen() {
 
         const planExercises = workout.exercises.map((ex: any, exIndex: number) => {
             const isCardioItem = isCardio(ex);
+            const prevData = getExercisePreviousData(ex.id);
+
             const defaultSets: SetData[] = isCardioItem
                 ? [{ id: 1, previous: '-', kg: '', reps: '', completed: false, type: 'N' }]
                 : [
@@ -1238,7 +1348,40 @@ export default function WorkoutScreen() {
                     sId = Date.now() + Math.random() + idx;
                 }
                 seenSetIds.add(sId);
-                return { ...s, id: sId };
+
+                const specificHist = prevData?.lastSets?.[idx];
+                const histKg = specificHist?.kg ?? prevData?.lastKg;
+                const histReps = specificHist?.reps ?? prevData?.lastReps;
+
+                let prevText = '-';
+                if (specificHist && (specificHist.kg || specificHist.reps)) {
+                    prevText = isCardioItem
+                        ? `${specificHist.kg || 0} tempo • ${specificHist.reps || 0}km`
+                        : `${specificHist.kg || 0}kg x ${specificHist.reps || 0}`;
+                } else if (prevData?.lastKg || prevData?.lastReps) {
+                    prevText = isCardioItem
+                        ? `${prevData.lastKg || 0} tempo • ${prevData.lastReps || 0}km`
+                        : `${prevData.lastKg || 0}kg x ${prevData.lastReps || 0}`;
+                } else if (s.previous && s.previous !== '-') {
+                    prevText = s.previous;
+                }
+
+                const finalKg = (s.kg !== undefined && s.kg !== null && String(s.kg).trim() !== '')
+                    ? String(s.kg)
+                    : (histKg !== undefined && histKg !== null ? String(histKg) : '');
+
+                const finalReps = (s.reps !== undefined && s.reps !== null && String(s.reps).trim() !== '')
+                    ? String(s.reps)
+                    : (histReps !== undefined && histReps !== null ? String(histReps) : '');
+
+                return {
+                    ...s,
+                    id: sId,
+                    previous: prevText,
+                    kg: finalKg,
+                    reps: finalReps,
+                    completed: false
+                };
             });
 
             return {
@@ -1361,6 +1504,336 @@ export default function WorkoutScreen() {
             router.setParams({ isCreatingPlan: '', editPlanId: '' });
         }
     }, [params.isCreatingPlan]);
+
+    const renderExerciseItem = React.useCallback(({ item: exercise, drag, isActive: isDragging }: RenderItemParams<ExerciseWithSets>) => {
+        const isCompleted = exercise.sets.length > 0 && exercise.sets.every(s => s.completed);
+        // Computed once per exercise, not once per set (was O(N×M), now O(N))
+        const exerciseHistory = getExercisePreviousData(exercise.id);
+        const isCardioExercise = exercise.body_parts?.some((p: string) => ['cardio'].includes(p.toLowerCase()));
+
+        return (
+            <View style={{ opacity: isDragging ? 0.5 : 1, paddingHorizontal: 4, marginBottom: 10 }}>
+                <View style={{
+                    backgroundColor: isCompleted
+                        ? (theme.mode === 'light' ? '#DCFCE7' : 'rgba(20, 83, 45, 0.2)')
+                        : theme.colors.card,
+                    borderColor: isCompleted
+                        ? (theme.mode === 'light' ? '#86EFAC' : 'rgba(34, 197, 94, 0.3)')
+                        : theme.colors.cardBorder,
+                    borderWidth: 1.5,
+                    borderRadius: 22,
+                    overflow: 'hidden'
+                }}>
+                    <View
+                        style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            paddingVertical: 14,
+                            paddingHorizontal: 16
+                        }}
+                    >
+                        {/* Exercise Image */}
+                        <TouchableOpacity
+                            onPress={() => {
+                                router.push({
+                                    pathname: '/exercise/[id]',
+                                    params: { id: exercise.id, source: 'workout' }
+                                });
+                            }}
+                            style={{ width: 64, height: 64, borderRadius: 18, alignItems: 'center', justifyContent: 'center', marginRight: 14, overflow: 'hidden', backgroundColor: theme.colors.backgroundTertiary, borderColor: theme.colors.cardBorder, borderWidth: 1 }}
+                        >
+                            {exercise.image_url ? (
+                                <Image
+                                    source={{ uri: exercise.image_url }}
+                                    style={{ width: '100%', height: '100%' }}
+                                    contentFit="contain"
+                                    cachePolicy="memory-disk"
+                                />
+                            ) : (
+                                <Ionicons name="barbell" size={28} color={theme.colors.textSecondary} />
+                            )}
+                        </TouchableOpacity>
+
+                        {/* Exercise Info */}
+                        <TouchableOpacity
+                            onPress={() => toggleExpand(exercise.id)}
+                            onLongPress={drag}
+                            delayLongPress={200}
+                            activeOpacity={0.7}
+                            style={{ flex: 1 }}
+                        >
+                            <Text style={{ color: theme.colors.text, fontSize: 16, fontWeight: '800', letterSpacing: -0.3 }} numberOfLines={1}>
+                                {exercise.name}
+                            </Text>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 4 }}>
+                                <Text style={{ color: theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.primary, fontSize: 12, fontWeight: '700' }}>
+                                    {exercise.sets.filter(s => s.completed).length}/{exercise.sets.length} séries
+                                </Text>
+                                {exercise.body_parts && exercise.body_parts.length > 0 && (
+                                    <View style={{ backgroundColor: theme.colors.backgroundTertiary, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 8 }}>
+                                        <Text style={{ color: theme.colors.textSecondary, fontSize: 9, fontWeight: '700', textTransform: 'uppercase' }}>
+                                            {exercise.body_parts[0]}
+                                        </Text>
+                                    </View>
+                                )}
+                            </View>
+                        </TouchableOpacity>
+
+                        {/* Expand Chevron + Menu */}
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                            <TouchableOpacity
+                                onPress={() => toggleExpand(exercise.id)}
+                                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                                style={{ padding: 6 }}
+                            >
+                                <Ionicons name={exercise.expanded ? 'chevron-up' : 'chevron-down'} size={18} color={theme.colors.textSecondary} />
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    setSelectedExerciseId(exercise.id);
+                                    setShowExerciseOptions(true);
+                                }}
+                                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                                style={{ padding: 6 }}
+                            >
+                                <Ionicons name="ellipsis-vertical" size={16} color={theme.colors.textSecondary} />
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+
+                    {/* Expanded Content */}
+                    {exercise.expanded && !isDragging && (
+                        <View style={{ borderTopColor: theme.colors.cardBorder, borderTopWidth: 1, paddingHorizontal: 12, paddingVertical: 10 }}>
+                            {/* Pinned Note */}
+                            {exercise.showPinnedNote && (
+                                <View style={{ backgroundColor: theme.colors.card, borderColor: theme.colors.border, borderRadius: 12, borderWidth: 1, paddingHorizontal: 16, paddingVertical: 12, marginBottom: 12, flexDirection: 'row', alignItems: 'center' }}>
+                                    <TextInput
+                                        value={exercise.pinnedNote}
+                                        onChangeText={(text) => updateExercisePinnedNote(exercise.id, text)}
+                                        placeholder="Nota fixada..."
+                                        placeholderTextColor={theme.colors.textMuted}
+                                        style={{ color: theme.colors.text, fontSize: 16, flex: 1 }}
+                                        multiline
+                                    />
+                                    <TouchableOpacity onPress={() => {
+                                        setExerciseForPinnedNoteInfo(exercise.id);
+                                        setShowPinnedNoteInfo(true);
+                                    }}>
+                                        <Ionicons name="pin" size={18} color={theme.colors.primary} style={{ marginLeft: 8 }} />
+                                    </TouchableOpacity>
+                                </View>
+                            )}
+
+                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, paddingHorizontal: 4 }}>
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        setEditingExerciseId(exercise.id);
+                                        setShowRestTimePicker(true);
+                                    }}
+                                    style={{ backgroundColor: theme.colors.backgroundTertiary, borderColor: theme.colors.cardBorder, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 10, borderWidth: 1 }}
+                                >
+                                    <Ionicons name="time-outline" size={13} color={theme.colors.textSecondary} />
+                                    <Text style={{ color: theme.colors.text, marginLeft: 5, fontSize: 12, fontWeight: '700' }}>
+                                        {Math.floor(exercise.restTime / 60)}:{String(exercise.restTime % 60).padStart(2, '0')}
+                                    </Text>
+                                </TouchableOpacity>
+
+                                <TextInput
+                                    value={exercise.notes}
+                                    onChangeText={(text) => updateExerciseNotes(exercise.id, text)}
+                                    placeholder="Notas..."
+                                    placeholderTextColor={theme.colors.textMuted}
+                                    style={{ color: theme.colors.text, fontSize: 12, textAlign: 'right', flex: 1, marginLeft: 16, fontWeight: '600' }}
+                                />
+                            </View>
+
+                            {/* Sets Header */}
+                            <View style={{ flexDirection: 'row', marginBottom: 6, paddingHorizontal: 4 }}>
+                                <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontWeight: '800', width: 40, textAlign: 'center', textTransform: 'uppercase' }}>Série</Text>
+                                <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontWeight: '800', flex: 1, textAlign: 'center', textTransform: 'uppercase' }}>Anterior</Text>
+
+                                {exercise.body_parts?.some((p: string) => ['cardio'].includes(p.toLowerCase())) ? (
+                                    <TouchableOpacity style={{ width: 64, alignItems: 'center' }}>
+                                        <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontWeight: '800', textTransform: 'uppercase' }}>Tempo</Text>
+                                    </TouchableOpacity>
+                                ) : (
+                                    <TouchableOpacity style={{ width: 56, alignItems: 'center' }}>
+                                        <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontWeight: '800', textTransform: 'uppercase' }}>{exercise.weightUnit || 'kg'}</Text>
+                                    </TouchableOpacity>
+                                )}
+
+                                <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontWeight: '800', width: 56, textAlign: 'center', textTransform: 'uppercase' }}>
+                                    {exercise.body_parts?.some((p: string) => ['cardio'].includes(p.toLowerCase())) ? 'Km' : 'Reps'}
+                                </Text>
+                                {settings.rpeMode !== 'Off' && (
+                                    <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontWeight: '800', width: 40, textAlign: 'center', textTransform: 'uppercase' }}>{settings.rpeMode}</Text>
+                                )}
+                                <View style={{ width: 36 }} />
+                            </View>
+
+                            {/* Sets */}
+                            {exercise.sets.map((set, index) => {
+                                const isTimeBased = isCardioExercise;
+
+                                const specificSetHistory = exerciseHistory?.lastSets?.[index];
+                                // Use specific set history if available, fallback to global last
+                                const prevKg = specificSetHistory?.kg || exerciseHistory?.lastKg;
+                                const prevReps = specificSetHistory?.reps || exerciseHistory?.lastReps;
+
+                                const hasPrevData = specificSetHistory ? (specificSetHistory.kg || specificSetHistory.reps) : (exerciseHistory?.lastKg || exerciseHistory?.lastReps);
+
+                                const prevText = hasPrevData ? (
+                                    isCardioExercise
+                                        ? `${prevKg} tempo • ${prevReps}km`
+                                        : isTimeBased
+                                            ? `${prevKg} tempo • ${prevReps} reps`
+                                            : `${prevKg}${exercise.weightUnit || 'kg'} x ${prevReps}`
+                                ) : (set.previous && set.previous !== '-' ? set.previous : '-');
+
+                                return (
+                                    <View key={set.id} style={{ backgroundColor: set.completed ? (theme.mode === 'light' ? '#DCFCE7' : 'rgba(20, 83, 45, 0.25)') : 'transparent', flexDirection: 'row', alignItems: 'center', paddingVertical: 6, marginBottom: 3, borderRadius: 12, paddingHorizontal: 4 }}>
+                                        <TouchableOpacity
+                                            onPress={() => {
+                                                setSelectedSetForType({ exerciseId: exercise.id, setId: set.id });
+                                                setShowSetTypeModal(true);
+                                            }}
+                                            style={{ width: 40, height: 28, alignItems: 'center', justifyContent: 'center' }}
+                                        >
+                                            <View style={{ width: 26, height: 26, borderRadius: 9, backgroundColor: set.type && set.type !== 'N' ? (theme.colors.primary + '20') : theme.colors.backgroundTertiary, alignItems: 'center', justifyContent: 'center' }}>
+                                                <Text style={{ color: theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.primary, fontWeight: '900', fontSize: 12 }}>
+                                                    {set.type && set.type !== 'N' ? set.type.charAt(0) : index + 1}
+                                                </Text>
+                                            </View>
+                                        </TouchableOpacity>
+
+                                        <Text style={{ color: theme.colors.textSecondary, fontSize: 11, flex: 1, textAlign: 'center', fontWeight: '600' }}>
+                                            {prevText}
+                                        </Text>
+
+                                        <View style={{ width: isTimeBased ? 64 : 56, alignItems: 'center' }}>
+                                            <TouchableOpacity
+                                                onPress={() => {
+                                                    if (isTimeBased) {
+                                                        setSelectedSetForSmartInput({ exerciseId: exercise.id, setId: set.id });
+                                                        setSmartInputMode('time');
+                                                        const raw = getRawTimeDigits(set.kg || '');
+                                                        setSmartInputValue(raw);
+                                                        setShowSmartInput(true);
+                                                    } else {
+                                                        setSelectedSetForSmartInput({ exerciseId: exercise.id, setId: set.id });
+                                                        setSmartInputMode('weight');
+                                                        setSmartInputValue(set.kg || '');
+                                                        setShowSmartInput(true);
+                                                    }
+                                                }}
+                                                style={{ width: '100%', alignItems: 'center', justifyContent: 'center' }}
+                                            >
+                                                <TextInput
+                                                    value={set.kg}
+                                                    onChangeText={(text) => updateSet(exercise.id, set.id, 'kg', text)}
+                                                    style={{ color: theme.colors.text, textAlign: 'center', fontWeight: '900', fontSize: 16, width: '100%', paddingVertical: 4 }}
+                                                    keyboardType={isTimeBased ? "default" : "numeric"}
+                                                    placeholder={isTimeBased ? "00:00" : "-"}
+                                                    placeholderTextColor={theme.colors.textMuted}
+                                                    editable={false}
+                                                    pointerEvents="none"
+                                                />
+                                            </TouchableOpacity>
+                                        </View>
+
+                                        <View style={{ width: 56, alignItems: 'center' }}>
+                                            <TouchableOpacity
+                                                onPress={() => {
+                                                    if (isCardioExercise) {
+                                                        setSelectedSetForSmartInput({ exerciseId: exercise.id, setId: set.id });
+                                                        setSmartInputMode('distance');
+                                                        setSmartInputValue(set.reps || '');
+                                                        setShowSmartInput(true);
+                                                    } else {
+                                                        setSelectedSetForSmartInput({ exerciseId: exercise.id, setId: set.id });
+                                                        setSmartInputMode('reps');
+                                                        setSmartInputValue(set.reps || '');
+                                                        setShowSmartInput(true);
+                                                    }
+                                                }}
+                                                style={{ width: '100%', alignItems: 'center', justifyContent: 'center' }}
+                                            >
+                                                <TextInput
+                                                    value={set.reps}
+                                                    onChangeText={(text) => updateSet(exercise.id, set.id, 'reps', text)}
+                                                    style={{ color: theme.colors.text, textAlign: 'center', fontWeight: '900', fontSize: 16, width: '100%', paddingVertical: 4 }}
+                                                    keyboardType={isCardioExercise ? "default" : "numeric"}
+                                                    placeholder={isCardioExercise ? "0.0" : "-"}
+                                                    placeholderTextColor={theme.colors.textMuted}
+                                                    editable={false}
+                                                    pointerEvents="none"
+                                                />
+                                            </TouchableOpacity>
+                                        </View>
+
+                                        {settings.rpeMode !== 'Off' && (
+                                            <View style={{ borderLeftColor: theme.colors.border, borderLeftWidth: 1, width: 56, alignItems: 'center' }}>
+                                                <TextInput
+                                                    value={set.rpe}
+                                                    onChangeText={(text) => updateSet(exercise.id, set.id, 'rpe', text)}
+                                                    style={{ color: theme.colors.primary, textAlign: 'center', fontWeight: 'bold', fontSize: 20, width: '100%', paddingVertical: 4 }}
+                                                    keyboardType="numeric"
+                                                    placeholder="-"
+                                                    placeholderTextColor={theme.colors.textMuted}
+                                                />
+                                            </View>
+                                        )}
+
+                                        <TouchableOpacity
+                                            onPress={() => toggleSetComplete(exercise.id, set.id, exercise.restTime)}
+                                            style={{ backgroundColor: set.completed ? theme.colors.primary : theme.colors.backgroundTertiary, width: 32, height: 32, borderRadius: 10, alignItems: 'center', justifyContent: 'center', marginLeft: 4, borderWidth: set.completed ? 0 : 1, borderColor: theme.colors.cardBorder }}
+                                        >
+                                            <Ionicons name={set.completed ? "checkmark-sharp" : "checkmark"} size={16} color={set.completed ? "#000000" : theme.colors.textSecondary} />
+                                        </TouchableOpacity>
+                                    </View>
+                                );
+                            })}
+
+                            {/* Add Set Button */}
+                            <TouchableOpacity
+                                onPress={() => addSet(exercise.id)}
+                                style={{ marginTop: 12, marginHorizontal: 4, borderRadius: 14, paddingVertical: 10, alignItems: 'center', borderWidth: 1.5, borderColor: theme.colors.cardBorder, borderStyle: 'dashed', flexDirection: 'row', justifyContent: 'center', gap: 6 }}
+                            >
+                                <Ionicons name="add" size={16} color={theme.colors.textSecondary} />
+                                <Text style={{ color: theme.colors.textSecondary, fontSize: 12, fontWeight: '700' }}>Adicionar Série</Text>
+                            </TouchableOpacity>
+
+                        </View>
+                    )}
+                </View>
+            </View>
+        );
+    }, [
+        theme,
+        settings.rpeMode,
+        getExercisePreviousData,
+        router,
+        toggleExpand,
+        setSelectedExerciseId,
+        setShowExerciseOptions,
+        updateExercisePinnedNote,
+        setExerciseForPinnedNoteInfo,
+        setShowPinnedNoteInfo,
+        setEditingExerciseId,
+        setShowRestTimePicker,
+        updateExerciseNotes,
+        setSelectedSetForType,
+        setShowSetTypeModal,
+        setSelectedSetForSmartInput,
+        setSmartInputMode,
+        getRawTimeDigits,
+        setSmartInputValue,
+        setShowSmartInput,
+        updateSet,
+        toggleSetComplete,
+        addSet
+    ]);
+
 
     // Plan Creation / Editing Mode
     const planToEdit = editingPlanId ? savedWorkouts.find(w => w.id === editingPlanId) : null;
@@ -2116,7 +2589,7 @@ export default function WorkoutScreen() {
 
         // Save to history
         const historyExercises = exercises
-            .filter(ex => ex.sets.some(s => s.completed))
+            .filter(ex => ex.sets.some(s => s.completed || (s.kg && s.reps)))
             .map(ex => ({
                 id: ex.id,
                 name: ex.name,
@@ -2124,7 +2597,7 @@ export default function WorkoutScreen() {
                 video_url: ex.video_url,
                 body_parts: ex.body_parts, // Ensure cardio category is saved
                 sets: ex.sets
-                    .filter(s => s.completed)
+                    .filter(s => s.completed || (s.kg && s.reps))
                     .map(s => ({
                         kg: parseFloat(s.kg) || 0,
                         reps: parseInt(s.reps) || 0,
@@ -2148,8 +2621,10 @@ export default function WorkoutScreen() {
         // Update global exercise history (Granular Per-Set History)
         const historyUpdates = exercises.flatMap(ex =>
             ex.sets.flatMap((set, index) => {
-                if (set.completed && set.kg && set.reps) {
-                    return [{ exerciseId: ex.id, kg: set.kg, reps: set.reps, setIndex: index }];
+                const kgStr = set.kg !== undefined && set.kg !== null ? String(set.kg).trim() : '';
+                const repsStr = set.reps !== undefined && set.reps !== null ? String(set.reps).trim() : '';
+                if ((set.completed || (kgStr !== '' && repsStr !== '')) && (kgStr !== '' || repsStr !== '')) {
+                    return [{ exerciseId: ex.id, kg: kgStr, reps: repsStr, setIndex: index }];
                 }
                 return [];
             })
@@ -2172,7 +2647,7 @@ export default function WorkoutScreen() {
         router.setParams({ loadWorkoutId: undefined, _t: undefined });
 
         // Force navigation to home/history since context state change might not trigger unmount immediately
-        router.replace('/');
+        router.navigate('/(tabs)');
         return true;
         } catch (error) {
             console.error('Failed to finalize workout atomically:', error);
@@ -2505,312 +2980,7 @@ export default function WorkoutScreen() {
                         </View>
                     ) : null
                 }
-                renderItem={({ item: exercise, drag, isActive: isDragging }: RenderItemParams<ExerciseWithSets>) => {
-                    const isCompleted = exercise.sets.length > 0 && exercise.sets.every(s => s.completed);
-                    // Computed once per exercise, not once per set (was O(N×M), now O(N))
-                    const exerciseHistory = getHistory(exercise.id);
-                    const isCardioExercise = exercise.body_parts?.some((p: string) => ['cardio'].includes(p.toLowerCase()));
-
-                    return (
-                        <View style={{ opacity: isDragging ? 0.5 : 1, paddingHorizontal: 4, marginBottom: 10 }}>
-                            <View style={{
-                                backgroundColor: isCompleted
-                                    ? (theme.mode === 'light' ? '#DCFCE7' : 'rgba(20, 83, 45, 0.2)')
-                                    : theme.colors.card,
-                                borderColor: isCompleted
-                                    ? (theme.mode === 'light' ? '#86EFAC' : 'rgba(34, 197, 94, 0.3)')
-                                    : theme.colors.cardBorder,
-                                borderWidth: 1.5,
-                                borderRadius: 22,
-                                overflow: 'hidden'
-                            }}>
-                                <View
-                                    style={{
-                                        flexDirection: 'row',
-                                        alignItems: 'center',
-                                        paddingVertical: 14,
-                                        paddingHorizontal: 16
-                                    }}
-                                >
-                                    {/* Exercise Image */}
-                                    <TouchableOpacity
-                                        onPress={() => {
-                                            router.push({
-                                                pathname: '/exercise/[id]',
-                                                params: { id: exercise.id, source: 'workout' }
-                                            });
-                                        }}
-                                        style={{ width: 64, height: 64, borderRadius: 18, alignItems: 'center', justifyContent: 'center', marginRight: 14, overflow: 'hidden', backgroundColor: theme.colors.backgroundTertiary, borderColor: theme.colors.cardBorder, borderWidth: 1 }}
-                                    >
-                                        {exercise.image_url ? (
-                                            <Image
-                                                source={{ uri: exercise.image_url }}
-                                                style={{ width: '100%', height: '100%' }}
-                                                contentFit="contain"
-                                                cachePolicy="memory-disk"
-                                            />
-                                        ) : (
-                                            <Ionicons name="barbell" size={28} color={theme.colors.textSecondary} />
-                                        )}
-                                    </TouchableOpacity>
-
-                                    {/* Exercise Info */}
-                                    <TouchableOpacity
-                                        onPress={() => toggleExpand(exercise.id)}
-                                        onLongPress={drag}
-                                        delayLongPress={200}
-                                        activeOpacity={0.7}
-                                        style={{ flex: 1 }}
-                                    >
-                                        <Text style={{ color: theme.colors.text, fontSize: 16, fontWeight: '800', letterSpacing: -0.3 }} numberOfLines={1}>
-                                            {exercise.name}
-                                        </Text>
-                                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 4 }}>
-                                            <Text style={{ color: theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.primary, fontSize: 12, fontWeight: '700' }}>
-                                                {exercise.sets.filter(s => s.completed).length}/{exercise.sets.length} séries
-                                            </Text>
-                                            {exercise.body_parts && exercise.body_parts.length > 0 && (
-                                                <View style={{ backgroundColor: theme.colors.backgroundTertiary, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 8 }}>
-                                                    <Text style={{ color: theme.colors.textSecondary, fontSize: 9, fontWeight: '700', textTransform: 'uppercase' }}>
-                                                        {exercise.body_parts[0]}
-                                                    </Text>
-                                                </View>
-                                            )}
-                                        </View>
-                                    </TouchableOpacity>
-
-                                    {/* Expand Chevron + Menu */}
-                                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                                        <TouchableOpacity
-                                            onPress={() => toggleExpand(exercise.id)}
-                                            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                                            style={{ padding: 6 }}
-                                        >
-                                            <Ionicons name={exercise.expanded ? 'chevron-up' : 'chevron-down'} size={18} color={theme.colors.textSecondary} />
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            onPress={() => {
-                                                setSelectedExerciseId(exercise.id);
-                                                setShowExerciseOptions(true);
-                                            }}
-                                            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                                            style={{ padding: 6 }}
-                                        >
-                                            <Ionicons name="ellipsis-vertical" size={16} color={theme.colors.textSecondary} />
-                                        </TouchableOpacity>
-                                    </View>
-                                </View>
-
-                                {/* Expanded Content */}
-                                {exercise.expanded && !isDragging && (
-                                    <View style={{ borderTopColor: theme.colors.cardBorder, borderTopWidth: 1, paddingHorizontal: 12, paddingVertical: 10 }}>
-                                        {/* Pinned Note */}
-                                        {exercise.showPinnedNote && (
-                                            <View style={{ backgroundColor: theme.colors.card, borderColor: theme.colors.border, borderRadius: 12, borderWidth: 1, paddingHorizontal: 16, paddingVertical: 12, marginBottom: 12, flexDirection: 'row', alignItems: 'center' }}>
-                                                <TextInput
-                                                    value={exercise.pinnedNote}
-                                                    onChangeText={(text) => updateExercisePinnedNote(exercise.id, text)}
-                                                    placeholder="Nota fixada..."
-                                                    placeholderTextColor={theme.colors.textMuted}
-                                                    style={{ color: theme.colors.text, fontSize: 16, flex: 1 }}
-                                                    multiline
-                                                />
-                                                <TouchableOpacity onPress={() => {
-                                                    setExerciseForPinnedNoteInfo(exercise.id);
-                                                    setShowPinnedNoteInfo(true);
-                                                }}>
-                                                    <Ionicons name="pin" size={18} color={theme.colors.primary} style={{ marginLeft: 8 }} />
-                                                </TouchableOpacity>
-                                            </View>
-                                        )}
-
-                                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, paddingHorizontal: 4 }}>
-                                            <TouchableOpacity
-                                                onPress={() => {
-                                                    setEditingExerciseId(exercise.id);
-                                                    setShowRestTimePicker(true);
-                                                }}
-                                                style={{ backgroundColor: theme.colors.backgroundTertiary, borderColor: theme.colors.cardBorder, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 10, borderWidth: 1 }}
-                                            >
-                                                <Ionicons name="time-outline" size={13} color={theme.colors.textSecondary} />
-                                                <Text style={{ color: theme.colors.text, marginLeft: 5, fontSize: 12, fontWeight: '700' }}>
-                                                    {Math.floor(exercise.restTime / 60)}:{String(exercise.restTime % 60).padStart(2, '0')}
-                                                </Text>
-                                            </TouchableOpacity>
-
-                                            <TextInput
-                                                value={exercise.notes}
-                                                onChangeText={(text) => updateExerciseNotes(exercise.id, text)}
-                                                placeholder="Notas..."
-                                                placeholderTextColor={theme.colors.textMuted}
-                                                style={{ color: theme.colors.text, fontSize: 12, textAlign: 'right', flex: 1, marginLeft: 16, fontWeight: '600' }}
-                                            />
-                                        </View>
-
-
-
-                                        {/* Sets Header */}
-                                        <View style={{ flexDirection: 'row', marginBottom: 6, paddingHorizontal: 4 }}>
-                                            <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontWeight: '800', width: 40, textAlign: 'center', textTransform: 'uppercase' }}>Série</Text>
-                                            <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontWeight: '800', flex: 1, textAlign: 'center', textTransform: 'uppercase' }}>Anterior</Text>
-
-                                            {exercise.body_parts?.some((p: string) => ['cardio'].includes(p.toLowerCase())) ? (
-                                                <TouchableOpacity style={{ width: 64, alignItems: 'center' }}>
-                                                    <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontWeight: '800', textTransform: 'uppercase' }}>Tempo</Text>
-                                                </TouchableOpacity>
-                                            ) : (
-                                                <TouchableOpacity style={{ width: 56, alignItems: 'center' }}>
-                                                    <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontWeight: '800', textTransform: 'uppercase' }}>{exercise.weightUnit || 'kg'}</Text>
-                                                </TouchableOpacity>
-                                            )}
-
-                                            <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontWeight: '800', width: 56, textAlign: 'center', textTransform: 'uppercase' }}>
-                                                {exercise.body_parts?.some((p: string) => ['cardio'].includes(p.toLowerCase())) ? 'Km' : 'Reps'}
-                                            </Text>
-                                            {settings.rpeMode !== 'Off' && (
-                                                <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontWeight: '800', width: 40, textAlign: 'center', textTransform: 'uppercase' }}>{settings.rpeMode}</Text>
-                                            )}
-                                            <View style={{ width: 36 }} />
-                                        </View>
-
-                                        {/* Sets */}
-                                        {exercise.sets.map((set, index) => {
-                                            const isTimeBased = isCardioExercise;
-
-                                            const specificSetHistory = exerciseHistory?.lastSets?.[index];
-                                            // Use specific set history if available, fallback to global last
-                                            const prevKg = specificSetHistory?.kg || exerciseHistory?.lastKg;
-                                            const prevReps = specificSetHistory?.reps || exerciseHistory?.lastReps;
-
-                                            const hasPrevData = specificSetHistory ? (specificSetHistory.kg || specificSetHistory.reps) : exerciseHistory?.lastKg;
-
-                                            const prevText = hasPrevData ? (
-                                                isCardioExercise
-                                                    ? `${prevKg} tempo • ${prevReps}km`
-                                                    : isTimeBased
-                                                        ? `${prevKg} tempo • ${prevReps} reps`
-                                                        : `${prevKg}${exercise.weightUnit || 'kg'} x ${prevReps}`
-                                            ) : '-';
-
-                                            return (
-                                                <View key={set.id} style={{ backgroundColor: set.completed ? (theme.mode === 'light' ? '#DCFCE7' : 'rgba(20, 83, 45, 0.25)') : 'transparent', flexDirection: 'row', alignItems: 'center', paddingVertical: 6, marginBottom: 3, borderRadius: 12, paddingHorizontal: 4 }}>
-                                                    <TouchableOpacity
-                                                        onPress={() => {
-                                                            setSelectedSetForType({ exerciseId: exercise.id, setId: set.id });
-                                                            setShowSetTypeModal(true);
-                                                        }}
-                                                        style={{ width: 40, height: 28, alignItems: 'center', justifyContent: 'center' }}
-                                                    >
-                                                        <View style={{ width: 26, height: 26, borderRadius: 9, backgroundColor: set.type && set.type !== 'N' ? (theme.colors.primary + '20') : theme.colors.backgroundTertiary, alignItems: 'center', justifyContent: 'center' }}>
-                                                            <Text style={{ color: theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.primary, fontWeight: '900', fontSize: 12 }}>
-                                                                {set.type && set.type !== 'N' ? set.type.charAt(0) : index + 1}
-                                                            </Text>
-                                                        </View>
-                                                    </TouchableOpacity>
-
-                                                    <Text style={{ color: theme.colors.textSecondary, fontSize: 11, flex: 1, textAlign: 'center', fontWeight: '600' }}>
-                                                        {prevText}
-                                                    </Text>
-
-                                                    <View style={{ width: isTimeBased ? 64 : 56, alignItems: 'center' }}>
-                                                        <TouchableOpacity
-                                                            onPress={() => {
-                                                                if (isTimeBased) {
-                                                                    setSelectedSetForSmartInput({ exerciseId: exercise.id, setId: set.id });
-                                                                    setSmartInputMode('time');
-                                                                    const raw = getRawTimeDigits(set.kg || '');
-                                                                    setSmartInputValue(raw);
-                                                                    setShowSmartInput(true);
-                                                                } else {
-                                                                    setSelectedSetForSmartInput({ exerciseId: exercise.id, setId: set.id });
-                                                                    setSmartInputMode('weight');
-                                                                    setSmartInputValue(set.kg || '');
-                                                                    setShowSmartInput(true);
-                                                                }
-                                                            }}
-                                                            style={{ width: '100%', alignItems: 'center', justifyContent: 'center' }}
-                                                        >
-                                                            <TextInput
-                                                                value={set.kg}
-                                                                onChangeText={(text) => updateSet(exercise.id, set.id, 'kg', text)}
-                                                                style={{ color: theme.colors.text, textAlign: 'center', fontWeight: '900', fontSize: 16, width: '100%', paddingVertical: 4 }}
-                                                                keyboardType={isTimeBased ? "default" : "numeric"}
-                                                                placeholder={isTimeBased ? "00:00" : "-"}
-                                                                placeholderTextColor={theme.colors.textMuted}
-                                                                editable={false}
-                                                                pointerEvents="none"
-                                                            />
-                                                        </TouchableOpacity>
-                                                    </View>
-
-                                                    <View style={{ width: 56, alignItems: 'center' }}>
-                                                        <TouchableOpacity
-                                                            onPress={() => {
-                                                                if (isCardioExercise) {
-                                                                    setSelectedSetForSmartInput({ exerciseId: exercise.id, setId: set.id });
-                                                                    setSmartInputMode('distance');
-                                                                    setSmartInputValue(set.reps || '');
-                                                                    setShowSmartInput(true);
-                                                                } else {
-                                                                    setSelectedSetForSmartInput({ exerciseId: exercise.id, setId: set.id });
-                                                                    setSmartInputMode('reps');
-                                                                    setSmartInputValue(set.reps || '');
-                                                                    setShowSmartInput(true);
-                                                                }
-                                                            }}
-                                                            style={{ width: '100%', alignItems: 'center', justifyContent: 'center' }}
-                                                        >
-                                                            <TextInput
-                                                                value={set.reps}
-                                                                onChangeText={(text) => updateSet(exercise.id, set.id, 'reps', text)}
-                                                                style={{ color: theme.colors.text, textAlign: 'center', fontWeight: '900', fontSize: 16, width: '100%', paddingVertical: 4 }}
-                                                                keyboardType={isCardioExercise ? "default" : "numeric"}
-                                                                placeholder={isCardioExercise ? "0.0" : "-"}
-                                                                placeholderTextColor={theme.colors.textMuted}
-                                                                editable={false}
-                                                                pointerEvents="none"
-                                                            />
-                                                        </TouchableOpacity>
-                                                    </View>
-
-                                                    {settings.rpeMode !== 'Off' && (
-                                                        <View style={{ borderLeftColor: theme.colors.border, borderLeftWidth: 1, width: 56, alignItems: 'center' }}>
-                                                            <TextInput
-                                                                value={set.rpe}
-                                                                onChangeText={(text) => updateSet(exercise.id, set.id, 'rpe', text)}
-                                                                style={{ color: theme.colors.primary, textAlign: 'center', fontWeight: 'bold', fontSize: 20, width: '100%', paddingVertical: 4 }}
-                                                                keyboardType="numeric"
-                                                                placeholder="-"
-                                                                placeholderTextColor={theme.colors.textMuted}
-                                                            />
-                                                        </View>
-                                                    )}
-
-                                                    <TouchableOpacity
-                                                        onPress={() => toggleSetComplete(exercise.id, set.id, exercise.restTime)}
-                                                        style={{ backgroundColor: set.completed ? theme.colors.primary : theme.colors.backgroundTertiary, width: 32, height: 32, borderRadius: 10, alignItems: 'center', justifyContent: 'center', marginLeft: 4, borderWidth: set.completed ? 0 : 1, borderColor: theme.colors.cardBorder }}
-                                                    >
-                                                        <Ionicons name={set.completed ? "checkmark-sharp" : "checkmark"} size={16} color={set.completed ? "#000000" : theme.colors.textSecondary} />
-                                                    </TouchableOpacity>
-                                                </View>
-                                            );
-                                        })}
-
-                                        {/* Add Set Button */}
-                                        <TouchableOpacity
-                                            onPress={() => addSet(exercise.id)}
-                                            style={{ marginTop: 12, marginHorizontal: 4, borderRadius: 14, paddingVertical: 10, alignItems: 'center', borderWidth: 1.5, borderColor: theme.colors.cardBorder, borderStyle: 'dashed', flexDirection: 'row', justifyContent: 'center', gap: 6 }}
-                                        >
-                                            <Ionicons name="add" size={16} color={theme.colors.textSecondary} />
-                                            <Text style={{ color: theme.colors.textSecondary, fontSize: 12, fontWeight: '700' }}>Adicionar Série</Text>
-                                        </TouchableOpacity>
-
-                                    </View>
-                                )}
-                            </View>
-                        </View>
-                    )
-                }}
+                renderItem={renderExerciseItem}
             />
 
             {/* ─── FAB: Adicionar Exercício ─── */}
@@ -3735,8 +3905,17 @@ export default function WorkoutScreen() {
                                                 text: "Descartar",
                                                 style: "destructive",
                                                 onPress: () => {
+                                                    setExercises([]);
+                                                    setActivePlanId(null);
+                                                    setDuration(0);
+                                                    setIsResting(false);
+                                                    setRestingExerciseId(null);
+                                                    setRestEndTime(null);
+                                                    if (Platform.OS !== 'web') {
+                                                        Notifications.cancelAllScheduledNotificationsAsync().catch(() => {});
+                                                    }
                                                     clearWorkout();
-                                                    router.replace('/');
+                                                    router.navigate('/(tabs)');
                                                 }
                                             }
                                         ]

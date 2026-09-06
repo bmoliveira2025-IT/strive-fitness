@@ -87,7 +87,7 @@ function DraggableBanner({ onPress, showDiscard = true }: Omit<ActiveWorkoutBann
                 {
                     text: 'Descartar',
                     style: 'destructive',
-                    onPress: () => { clearWorkout(); router.replace('/'); },
+                    onPress: () => { clearWorkout(); router.navigate('/(tabs)'); },
                 },
             ]
         );
@@ -170,7 +170,7 @@ function StaticBanner({ onPress, style, showDiscard = true }: Omit<ActiveWorkout
                 {
                     text: 'Descartar',
                     style: 'destructive',
-                    onPress: () => { clearWorkout(); router.replace('/'); },
+                    onPress: () => { clearWorkout(); router.navigate('/(tabs)'); },
                 },
             ]
         );

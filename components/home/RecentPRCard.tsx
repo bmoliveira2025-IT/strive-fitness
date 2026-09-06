@@ -19,7 +19,7 @@ export function RecentPRCard() {
     const latestPR = useMemo(() => {
         if (!history || Object.keys(history).length === 0) return null;
 
-        const entries = Object.entries(history).filter(([_, rec]) => parseFloat(rec.bestKg) > 0 || parseInt(rec.bestReps) > 0);
+        const entries = Object.entries(history).filter(([, rec]) => parseFloat(rec.bestKg) > 0 || parseInt(rec.bestReps) > 0);
         if (entries.length === 0) return null;
 
         // Sort by lastDate desc
@@ -40,6 +40,27 @@ export function RecentPRCard() {
             date: record.lastDate ? new Date(record.lastDate).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }) : 'Recente',
         };
     }, [history]);
+
+    if (!latestPR) {
+        return (
+            <View style={{ marginHorizontal: 20, marginBottom: 20, padding: 20, borderRadius: Radius.lg, backgroundColor: theme.colors.card, borderWidth: 1, borderColor: theme.colors.cardBorder }}>
+                <Ionicons name="trophy-outline" size={24} color={theme.colors.primary} />
+                <Text style={{ color: theme.colors.text, fontSize: 16, fontFamily: FontFamily.displaySemiBold, marginTop: 12 }}>
+                    Seu primeiro recorde começa aqui
+                </Text>
+                <Text style={{ color: theme.colors.textSecondary, fontSize: 14, lineHeight: 21, fontFamily: FontFamily.sans, marginTop: 6 }}>
+                    Registre as séries do seu próximo treino para acompanhar seus recordes pessoais.
+                </Text>
+                <TouchableOpacity
+                    accessibilityRole="button"
+                    onPress={() => router.push('/workout')}
+                    style={{ minHeight: 44, justifyContent: 'center', alignSelf: 'flex-start', marginTop: 8 }}
+                >
+                    <Text style={{ color: theme.colors.primary, fontFamily: FontFamily.sansSemiBold }}>Ir para o treino</Text>
+                </TouchableOpacity>
+            </View>
+        );
+    }
 
     return (
         <View style={{ marginHorizontal: 20, marginBottom: 20 }}>
@@ -128,7 +149,7 @@ export function RecentPRCard() {
                                         </Text>
                                     </View>
                                     <Text style={{ color: theme.colors.textMuted, fontSize: 11, fontFamily: FontFamily.sans }}>
-                                        {latestPR ? latestPR.date : 'Hoje'}
+                                        {latestPR.date}
                                     </Text>
                                 </View>
 
@@ -141,7 +162,7 @@ export function RecentPRCard() {
                                         letterSpacing: -0.2,
                                     }}
                                 >
-                                    {latestPR ? latestPR.name : 'Supino Reto com Barra'}
+                                    {latestPR.name}
                                 </Text>
                             </View>
                         </View>
@@ -166,7 +187,7 @@ export function RecentPRCard() {
                                     fontWeight: '800',
                                 }}
                             >
-                                {latestPR ? `${latestPR.bestKg} kg` : '80 kg'}
+                                {parseFloat(latestPR.bestKg) > 0 ? `${latestPR.bestKg} kg` : `${latestPR.bestReps} reps`}
                             </Text>
                             <Text
                                 style={{
@@ -175,7 +196,7 @@ export function RecentPRCard() {
                                     fontFamily: FontFamily.sansMedium,
                                 }}
                             >
-                                {latestPR && parseInt(latestPR.bestReps) > 0 ? `${latestPR.bestReps} reps` : 'Máxima'}
+                                {parseFloat(latestPR.bestKg) > 0 && parseInt(latestPR.bestReps) > 0 ? `${latestPR.bestReps} reps` : 'Máxima'}
                             </Text>
                         </View>
                     </View>

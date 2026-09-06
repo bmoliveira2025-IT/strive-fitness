@@ -26,7 +26,7 @@ export function QuickActions() {
             icon: 'book-outline' as const,
             label: 'Biblioteca',
             description: 'Exercícios',
-            onPress: () => router.push('/explore'),
+            onPress: () => router.push({ pathname: '/explore', params: { tab: 'Exercícios', categoryId: '', categoryName: '' } }),
         },
         {
             icon: 'sparkles-outline' as const,

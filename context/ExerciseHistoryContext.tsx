@@ -3,25 +3,25 @@ import React, { createContext, ReactNode, useContext, useEffect, useState } from
 
 const STORAGE_KEY = '@exercise_history';
 
-type ExerciseRecord = {
+export type ExerciseRecord = {
     lastKg: string;
     lastReps: string;
     bestKg: string;
     bestReps: string;
     lastDate: string;
-    lastSets?: { [index: number]: { kg: string, reps: string } }; // New field for granular history
+    lastSets?: { [index: number]: { kg: string, reps: string } }; // Granular history per set
 };
 
-type ExerciseHistoryData = {
+export type ExerciseHistoryData = {
     [exerciseId: string]: ExerciseRecord;
 };
 
 type ExerciseHistoryContextType = {
     history: ExerciseHistoryData;
-    getHistory: (exerciseId: string) => ExerciseRecord | null;
-    updateHistory: (exerciseId: string, kg: string, reps: string, setIndex?: number) => void;
-    updateHistoryBatch: (updates: { exerciseId: string; kg: string; reps: string; setIndex?: number }[]) => Promise<void>;
-    checkIsPR: (exerciseId: string, kg: string, reps: string) => boolean;
+    getHistory: (exerciseId: string | number) => ExerciseRecord | null;
+    updateHistory: (exerciseId: string | number, kg: string, reps: string, setIndex?: number) => void;
+    updateHistoryBatch: (updates: { exerciseId: string | number; kg: string; reps: string; setIndex?: number }[]) => Promise<void>;
+    checkIsPR: (exerciseId: string | number, kg: string, reps: string) => boolean;
 };
 
 const ExerciseHistoryContext = createContext<ExerciseHistoryContextType | undefined>(undefined);
@@ -62,16 +62,19 @@ export function ExerciseHistoryProvider({ children }: { children: ReactNode }) {
         }
     };
 
-    const getHistory = (exerciseId: string): ExerciseRecord | null => {
-        return history[exerciseId] || null;
+    const getHistory = (exerciseId: string | number): ExerciseRecord | null => {
+        if (exerciseId === undefined || exerciseId === null || exerciseId === '') return null;
+        const idStr = String(exerciseId);
+        return history[idStr] || history[exerciseId as string] || null;
     };
 
-    const updateHistory = (exerciseId: string, kg: string, reps: string, setIndex?: number) => {
+    const updateHistory = (exerciseId: string | number, kg: string, reps: string, setIndex?: number) => {
+        const idStr = String(exerciseId);
         setHistory(prev => {
             const kgNum = parseFloat(kg) || 0;
             const repsNum = parseInt(reps) || 0;
 
-            const current = prev[exerciseId];
+            const current = prev[idStr];
             const currentBestKg = current ? parseFloat(current.bestKg) || 0 : 0;
             const currentBestReps = current ? parseInt(current.bestReps) || 0 : 0;
 
@@ -89,13 +92,14 @@ export function ExerciseHistoryProvider({ children }: { children: ReactNode }) {
                 lastSets: newLastSets
             };
 
-            return { ...prev, [exerciseId]: newRecord };
+            return { ...prev, [idStr]: newRecord };
         });
     };
 
-    const updateHistoryBatch = async (updates: { exerciseId: string; kg: string; reps: string; setIndex?: number }[]) => {
+    const updateHistoryBatch = async (updates: { exerciseId: string | number; kg: string; reps: string; setIndex?: number }[]) => {
         const nextHistory = updates.reduce<ExerciseHistoryData>((next, update) => {
-            const current = next[update.exerciseId];
+            const idStr = String(update.exerciseId);
+            const current = next[idStr];
             const kgNum = parseFloat(update.kg) || 0;
             const repsNum = parseInt(update.reps) || 0;
             const currentBestKg = current ? parseFloat(current.bestKg) || 0 : 0;
@@ -103,7 +107,7 @@ export function ExerciseHistoryProvider({ children }: { children: ReactNode }) {
             const lastSets = current?.lastSets ? { ...current.lastSets } : {};
             if (update.setIndex !== undefined) lastSets[update.setIndex] = { kg: update.kg, reps: update.reps };
 
-            next[update.exerciseId] = {
+            next[idStr] = {
                 lastKg: update.kg,
                 lastReps: update.reps,
                 bestKg: kgNum > currentBestKg ? update.kg : (current?.bestKg || update.kg),
@@ -118,8 +122,9 @@ export function ExerciseHistoryProvider({ children }: { children: ReactNode }) {
         setHistory(nextHistory);
     };
 
-    const checkIsPR = (exerciseId: string, kg: string, reps: string): boolean => {
-        const current = history[exerciseId];
+    const checkIsPR = (exerciseId: string | number, kg: string, reps: string): boolean => {
+        const idStr = String(exerciseId);
+        const current = history[idStr] || history[exerciseId as string];
         if (!current) return false;
 
         const kgNum = parseFloat(kg) || 0;
@@ -127,10 +132,6 @@ export function ExerciseHistoryProvider({ children }: { children: ReactNode }) {
         const bestKg = parseFloat(current.bestKg) || 0;
         const bestReps = parseInt(current.bestReps) || 0;
 
-        // A PR is considered only if:
-        // 1. Weight is strictly higher than previous best weight AND reps are at least equal to best reps
-        // 2. OR Reps are strictly higher than previous best reps AND weight is at least equal to best weight
-        // This ensures the "Explosion" only happens when a real progress boundary is crossed.
         return (kgNum > bestKg && repsNum >= bestReps) || (repsNum > bestReps && kgNum >= bestKg);
     };
 

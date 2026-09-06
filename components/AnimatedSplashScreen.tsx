@@ -43,27 +43,27 @@ export const AnimatedSplashScreen: React.FC<Props> = ({ onFinish }) => {
         lineScaleX.value = withDelay(400, withSpring(1, { damping: 14, stiffness: 90 }));
 
         // 3. Accent dot pop (neon green)
-        dotScale.value = withDelay(700, withSpring(1, { damping: 10, stiffness: 150 }));
+        dotScale.value = withDelay(500, withSpring(1, { damping: 10, stiffness: 150 }));
 
-        // 4. Exit sequence
+        // 4. Exit sequence (agile, fast startup)
         const exitTimer = setTimeout(() => {
-            textOpacity.value = withTiming(0, { duration: 400, easing: Easing.in(Easing.ease) });
-            textTranslateY.value = withTiming(-20, { duration: 400, easing: Easing.in(Easing.ease) });
-            lineScaleX.value = withTiming(0, { duration: 300 });
-            dotScale.value = withTiming(0, { duration: 250 });
+            textOpacity.value = withTiming(0, { duration: 300, easing: Easing.in(Easing.ease) });
+            textTranslateY.value = withTiming(-15, { duration: 300, easing: Easing.in(Easing.ease) });
+            lineScaleX.value = withTiming(0, { duration: 250 });
+            dotScale.value = withTiming(0, { duration: 200 });
 
-            containerOpacity.value = withDelay(250, withTiming(0, { duration: 600 }, (finished) => {
+            containerOpacity.value = withDelay(150, withTiming(0, { duration: 400 }, (finished) => {
                 if (finished) {
                     runOnJS(complete)();
                 }
             }));
 
             // Guaranteed timer fallback (critical for Web & SSR)
-            setTimeout(complete, 800);
-        }, 1600);
+            setTimeout(complete, 600);
+        }, 800);
 
         // Ultimate safety timeout for Web
-        const safetyTimer = setTimeout(complete, 2600);
+        const safetyTimer = setTimeout(complete, 1600);
 
         return () => {
             clearTimeout(exitTimer);

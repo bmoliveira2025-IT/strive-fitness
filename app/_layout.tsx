@@ -78,7 +78,7 @@ function AuthProtection({ children }: { children: React.ReactNode }) {
 
 function StackContent() {
   const { theme } = useTheme();
-  const { isWorkoutActive } = useWorkoutStore();
+  const isWorkoutActive = useWorkoutStore(state => state.isWorkoutActive);
   const pathname = usePathname();
   const router = useRouter();
 

@@ -9,7 +9,28 @@ type TabIconProps = {
   name: keyof typeof Ionicons.glyphMap;
   focused: boolean;
   color: string;
+  primaryColor: string;
+  isDark: boolean;
 };
+
+const TabIcon = ({ name, focused, color, primaryColor, isDark }: TabIconProps) => (
+  <View
+    style={{
+      width: 36,
+      height: 28,
+      borderRadius: 14,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: focused ? (isDark ? 'rgba(183, 245, 42, 0.14)' : 'rgba(77, 124, 15, 0.12)') : 'transparent',
+    }}
+  >
+    <Ionicons
+      name={focused ? name : (`${name}-outline` as keyof typeof Ionicons.glyphMap)}
+      size={20}
+      color={focused ? primaryColor : color}
+    />
+  </View>
+);
 
 export default function TabLayout() {
   const { theme } = useTheme();
@@ -19,33 +40,16 @@ export default function TabLayout() {
     ? Math.max(insets.bottom, 50) + 22
     : Math.max(insets.bottom, 16);
   const tabHeight = 52 + bottomPadding;
-
-  const TabIcon = ({ name, focused, color }: TabIconProps) => (
-    <View
-      style={{
-        width: 36,
-        height: 28,
-        borderRadius: 14,
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: focused ? (theme.mode === 'dark' ? 'rgba(183, 245, 42, 0.14)' : 'rgba(77, 124, 15, 0.12)') : 'transparent',
-      }}
-    >
-      <Ionicons
-        name={focused ? name : (`${name}-outline` as keyof typeof Ionicons.glyphMap)}
-        size={20}
-        color={focused ? theme.colors.primary : color}
-      />
-    </View>
-  );
+  const isDark = theme.mode === 'dark';
+  const primaryColor = theme.colors.primary;
 
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        lazy: false,
+        lazy: true,
         freezeOnBlur: false,
-        sceneStyle: { backgroundColor: 'transparent' },
+        sceneStyle: { backgroundColor: theme.colors.background },
         tabBarActiveTintColor: theme.colors.primary,
         tabBarInactiveTintColor: theme.colors.textMuted,
         tabBarShowLabel: true,
@@ -91,7 +95,7 @@ export default function TabLayout() {
         options={{
           title: 'Início',
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon name="home" focused={focused} color={color} />
+            <TabIcon name="home" focused={focused} color={color} primaryColor={primaryColor} isDark={isDark} />
           ),
         }}
       />
@@ -100,7 +104,7 @@ export default function TabLayout() {
         options={{
           title: 'Progresso',
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon name="stats-chart" focused={focused} color={color} />
+            <TabIcon name="stats-chart" focused={focused} color={color} primaryColor={primaryColor} isDark={isDark} />
           ),
         }}
       />
@@ -109,7 +113,7 @@ export default function TabLayout() {
         options={{
           title: 'Treino',
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon name="barbell" focused={focused} color={color} />
+            <TabIcon name="barbell" focused={focused} color={color} primaryColor={primaryColor} isDark={isDark} />
           ),
         }}
       />
@@ -118,7 +122,7 @@ export default function TabLayout() {
         options={{
           title: 'Explorar',
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon name="search" focused={focused} color={color} />
+            <TabIcon name="search" focused={focused} color={color} primaryColor={primaryColor} isDark={isDark} />
           ),
         }}
       />
@@ -127,7 +131,7 @@ export default function TabLayout() {
         options={{
           title: 'Perfil',
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon name="person" focused={focused} color={color} />
+            <TabIcon name="person" focused={focused} color={color} primaryColor={primaryColor} isDark={isDark} />
           ),
         }}
       />

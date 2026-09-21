@@ -678,9 +678,13 @@ export function MuscleGroupHeatmapWidget() {
             <View
                 style={{
                     flexDirection: 'row',
-                    justifyContent: 'space-around',
+                    flexWrap: 'wrap',
+                    justifyContent: 'center',
                     alignItems: 'center',
+                    rowGap: 8,
+                    columnGap: 14,
                     paddingTop: 12,
+                    paddingHorizontal: 12,
                     marginTop: 6,
                     borderTopWidth: 1,
                     borderTopColor: theme.colors.border,

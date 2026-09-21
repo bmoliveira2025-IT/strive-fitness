@@ -59,7 +59,7 @@ export function AnatomicalMuscleBody({
     selectedMuscle,
     onSelectMuscle,
     width = 230,
-    height = 340,
+    height = 345,
     onToggleSide,
 }: AnatomicalMuscleBodyProps) {
     const { theme } = useTheme();
@@ -68,20 +68,26 @@ export function AnatomicalMuscleBody({
     // 1. Idle 3D Micro-Motion (Breathing & Floating)
     const idleAnim = useRef(new Animated.Value(0)).current;
 
-    // 2. 3D Rotation Value (0 = Front, 180 = Back)
+    // 2. 3D Rotation Value (Continuous degrees for smooth 360° rotation)
     const rotateYAnim = useRef(new Animated.Value(viewSide === 'Front' ? 0 : 180)).current;
     const currentAngle = useRef(viewSide === 'Front' ? 0 : 180);
     const dragStartAngle = useRef(viewSide === 'Front' ? 0 : 180);
 
     useEffect(() => {
-        const target = viewSide === 'Front' ? 0 : 180;
+        const isCurrentlyBack = Math.abs(Math.round(currentAngle.current / 180) % 2) === 1;
+        const currentSide = isCurrentlyBack ? 'Back' : 'Front';
+        if (viewSide === currentSide) return;
+
+        // Smoothly rotate 180° in the natural direction
+        const target = currentAngle.current + (viewSide === 'Back' ? 180 : -180);
         Animated.spring(rotateYAnim, {
             toValue: target,
             useNativeDriver: true,
-            friction: 9,
-            tension: 30,
-        }).start();
-        currentAngle.current = target;
+            friction: 8,
+            tension: 32,
+        }).start(() => {
+            currentAngle.current = target;
+        });
     }, [viewSide, rotateYAnim]);
 
     useEffect(() => {
@@ -105,44 +111,41 @@ export function AnatomicalMuscleBody({
         return () => loop.stop();
     }, [idleAnim]);
 
-    // 3. Touch / Mouse Gesture PanResponder for 360° Dragging
+    // 3. Touch / Mouse Gesture PanResponder for Complete 360° Dragging
     const panResponder = useRef(
         PanResponder.create({
             onStartShouldSetPanResponder: () => true,
             onMoveShouldSetPanResponder: (_, gestureState: PanResponderGestureState) => {
-                return Math.abs(gestureState.dx) > 4;
+                return Math.abs(gestureState.dx) > 3;
             },
+            onPanResponderTerminationRequest: () => false,
             onPanResponderGrant: () => {
                 dragStartAngle.current = currentAngle.current;
             },
             onPanResponderMove: (_: GestureResponderEvent, gestureState: PanResponderGestureState) => {
-                const deltaAngle = gestureState.dx * 0.72;
+                const deltaAngle = gestureState.dx * 1.05;
                 rotateYAnim.setValue(dragStartAngle.current + deltaAngle);
             },
             onPanResponderRelease: (_: GestureResponderEvent, gestureState: PanResponderGestureState) => {
-                const finalRaw = dragStartAngle.current + gestureState.dx * 0.72;
-                const normalized = ((finalRaw % 360) + 360) % 360;
-                let target = 0;
-                if (normalized >= 45 && normalized < 135) {
-                    target = gestureState.vx > 0.2 ? 180 : 0;
-                } else if (normalized >= 135 && normalized < 225) {
-                    target = 180;
-                } else if (normalized >= 225 && normalized < 315) {
-                    target = gestureState.vx < -0.2 ? 180 : 360;
-                } else {
-                    target = finalRaw > 180 ? 360 : 0;
-                }
+                const finalRaw = dragStartAngle.current + gestureState.dx * 1.05;
+                const flickMomentum = gestureState.vx * 65;
+                const projected = finalRaw + flickMomentum;
+                // Snap cleanly to nearest 180° face (0, 180, 360, 540, -180, etc.)
+                const nearestSnap = Math.round(projected / 180) * 180;
 
                 Animated.spring(rotateYAnim, {
-                    toValue: target,
-                    velocity: gestureState.vx * 0.5,
+                    toValue: nearestSnap,
+                    velocity: gestureState.vx,
                     useNativeDriver: true,
-                    friction: 8,
-                    tension: 36,
+                    friction: 7,
+                    tension: 32,
                 }).start(() => {
-                    const finalNorm = ((target % 360) + 360) % 360;
-                    rotateYAnim.setValue(finalNorm);
-                    currentAngle.current = finalNorm;
+                    currentAngle.current = nearestSnap;
+                    const isBack = Math.abs(Math.round(nearestSnap / 180) % 2) === 1;
+                    const targetSide = isBack ? 'Back' : 'Front';
+                    if (targetSide !== viewSide) {
+                        onToggleSide?.();
+                    }
                 });
             },
         })
@@ -151,11 +154,13 @@ export function AnatomicalMuscleBody({
     const rotateYFront = rotateYAnim.interpolate({
         inputRange: [-360, 0, 360],
         outputRange: ['-360deg', '0deg', '360deg'],
+        extrapolate: 'extend',
     });
 
     const rotateYBack = rotateYAnim.interpolate({
         inputRange: [-360, 0, 360],
         outputRange: ['-180deg', '180deg', '540deg'],
+        extrapolate: 'extend',
     });
 
     const translateY = idleAnim.interpolate({
@@ -180,7 +185,7 @@ export function AnatomicalMuscleBody({
         if (selectedMuscle === muscleName) return 0.95;
         if (!colors[muscleName]) return 0;
         const intensity = intensities[muscleName] ?? 70;
-        return Math.max(0.45, Math.min(0.9, (intensity / 100) * 0.95));
+        return Math.max(0.48, Math.min(0.92, (intensity / 100) * 0.95));
     };
 
     const getMuscleStroke = (muscleName: keyof MuscleColorMap) => {
@@ -194,7 +199,7 @@ export function AnatomicalMuscleBody({
     };
 
     const getMuscleStrokeWidth = (muscleName: keyof MuscleColorMap) => {
-        if (selectedMuscle === muscleName) return 2.8;
+        if (selectedMuscle === muscleName) return 2.6;
         if (colors[muscleName]) return 1.4;
         return 0;
     };
@@ -214,7 +219,20 @@ export function AnatomicalMuscleBody({
 
     return (
         <View
-            style={{ width, height, alignItems: 'center', justifyContent: 'center' }}
+            style={[
+                {
+                    width,
+                    height,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                },
+                Platform.OS === 'web' && ({
+                    cursor: 'grab',
+                    userSelect: 'none',
+                    touchAction: 'none',
+                    WebkitUserSelect: 'none',
+                } as any),
+            ]}
             {...panResponder.panHandlers}
         >
             {/* ════════════════════════════ FRONT 3D VIEW ════════════════════════════ */}
@@ -235,92 +253,105 @@ export function AnatomicalMuscleBody({
                 {/* 1. Realistic 3D Muscle Base Image */}
                 <Image
                     source={require('../../assets/anatomy_front_cropped.png')}
-                    style={{
-                        width: '100%',
-                        height: '100%',
-                        position: 'absolute',
-                        opacity: isDark ? 0.96 : 0.88,
-                    }}
+                    style={[
+                        {
+                            width: '100%',
+                            height: '100%',
+                            position: 'absolute',
+                            opacity: isDark ? 0.96 : 0.88,
+                        },
+                        Platform.OS === 'web' && ({
+                            pointerEvents: 'none',
+                            userSelect: 'none',
+                            WebkitUserDrag: 'none',
+                        } as any),
+                    ]}
                     resizeMode="contain"
                 />
 
-                {/* 2. Precision SVG Heatmap Layer */}
+                {/* 2. Precision SVG Heatmap Layer - Calibrated 1:1 with 512x960 3D body */}
                 <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
-                    <Svg width="100%" height="100%" viewBox="256 16 512 960">
+                    <Svg width="100%" height="100%" viewBox="0 0 512 960" preserveAspectRatio="xMidYMid meet">
                         <Defs>
-                            {/* Heatmap Gradients for Worked Muscles */}
                             {colors['Peito'] && (
-                                <RadialGradient id="grad-pec-front" cx="50%" cy="40%" rx="60%" ry="50%">
+                                <RadialGradient id="grad-pec-front" cx="50%" cy="50%" rx="60%" ry="50%">
                                     <Stop offset="0%" stopColor={colors['Peito']} stopOpacity="0.95" />
-                                    <Stop offset="75%" stopColor={colors['Peito']} stopOpacity="0.65" />
-                                    <Stop offset="100%" stopColor={colors['Peito']} stopOpacity="0.25" />
+                                    <Stop offset="75%" stopColor={colors['Peito']} stopOpacity="0.75" />
+                                    <Stop offset="100%" stopColor={colors['Peito']} stopOpacity="0.3" />
                                 </RadialGradient>
                             )}
 
                             {colors['Ombros'] && (
                                 <LinearGradient id="grad-delts-front" x1="0%" y1="0%" x2="0%" y2="100%">
                                     <Stop offset="0%" stopColor={colors['Ombros']} stopOpacity="0.95" />
-                                    <Stop offset="100%" stopColor={colors['Ombros']} stopOpacity="0.45" />
+                                    <Stop offset="100%" stopColor={colors['Ombros']} stopOpacity="0.5" />
                                 </LinearGradient>
                             )}
 
                             {colors['Bíceps'] && (
-                                <LinearGradient id="grad-biceps-front" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <LinearGradient id="grad-biceps-front" x1="0%" y1="0%" x2="0%" y2="100%">
                                     <Stop offset="0%" stopColor={colors['Bíceps']} stopOpacity="0.95" />
-                                    <Stop offset="100%" stopColor={colors['Bíceps']} stopOpacity="0.45" />
+                                    <Stop offset="100%" stopColor={colors['Bíceps']} stopOpacity="0.5" />
+                                </LinearGradient>
+                            )}
+
+                            {colors['Antebraços'] && (
+                                <LinearGradient id="grad-forearms-front" x1="0%" y1="0%" x2="0%" y2="100%">
+                                    <Stop offset="0%" stopColor={colors['Antebraços']} stopOpacity="0.95" />
+                                    <Stop offset="100%" stopColor={colors['Antebraços']} stopOpacity="0.45" />
                                 </LinearGradient>
                             )}
 
                             {colors['Abdômen'] && (
                                 <RadialGradient id="grad-abs-front" cx="50%" cy="50%" rx="50%" ry="50%">
-                                    <Stop offset="0%" stopColor={colors['Abdômen']} stopOpacity="0.9" />
-                                    <Stop offset="80%" stopColor={colors['Abdômen']} stopOpacity="0.6" />
-                                    <Stop offset="100%" stopColor={colors['Abdômen']} stopOpacity="0.2" />
+                                    <Stop offset="0%" stopColor={colors['Abdômen']} stopOpacity="0.95" />
+                                    <Stop offset="80%" stopColor={colors['Abdômen']} stopOpacity="0.7" />
+                                    <Stop offset="100%" stopColor={colors['Abdômen']} stopOpacity="0.3" />
                                 </RadialGradient>
                             )}
 
                             {colors['Quadríceps'] && (
                                 <LinearGradient id="grad-quads-front" x1="0%" y1="0%" x2="0%" y2="100%">
-                                    <Stop offset="0%" stopColor={colors['Quadríceps']} stopOpacity="0.9" />
-                                    <Stop offset="70%" stopColor={colors['Quadríceps']} stopOpacity="0.6" />
-                                    <Stop offset="100%" stopColor={colors['Quadríceps']} stopOpacity="0.2" />
+                                    <Stop offset="0%" stopColor={colors['Quadríceps']} stopOpacity="0.92" />
+                                    <Stop offset="70%" stopColor={colors['Quadríceps']} stopOpacity="0.65" />
+                                    <Stop offset="100%" stopColor={colors['Quadríceps']} stopOpacity="0.25" />
                                 </LinearGradient>
                             )}
 
                             {colors['Panturrilhas'] && (
                                 <LinearGradient id="grad-calves-front" x1="0%" y1="0%" x2="0%" y2="100%">
-                                    <Stop offset="0%" stopColor={colors['Panturrilhas']} stopOpacity="0.9" />
-                                    <Stop offset="100%" stopColor={colors['Panturrilhas']} stopOpacity="0.35" />
+                                    <Stop offset="0%" stopColor={colors['Panturrilhas']} stopOpacity="0.92" />
+                                    <Stop offset="100%" stopColor={colors['Panturrilhas']} stopOpacity="0.4" />
                                 </LinearGradient>
                             )}
 
                             {colors['Trapézio'] && (
                                 <LinearGradient id="grad-traps-front" x1="0%" y1="0%" x2="0%" y2="100%">
                                     <Stop offset="0%" stopColor={colors['Trapézio']} stopOpacity="0.9" />
-                                    <Stop offset="100%" stopColor={colors['Trapézio']} stopOpacity="0.4" />
+                                    <Stop offset="100%" stopColor={colors['Trapézio']} stopOpacity="0.45" />
                                 </LinearGradient>
                             )}
 
-                            {colors['Antebraços'] && (
-                                <LinearGradient id="grad-forearms-front" x1="0%" y1="0%" x2="0%" y2="100%">
-                                    <Stop offset="0%" stopColor={colors['Antebraços']} stopOpacity="0.9" />
-                                    <Stop offset="100%" stopColor={colors['Antebraços']} stopOpacity="0.35" />
+                            {colors['Costas'] && (
+                                <LinearGradient id="grad-back-front" x1="0%" y1="0%" x2="0%" y2="100%">
+                                    <Stop offset="0%" stopColor={colors['Costas']} stopOpacity="0.92" />
+                                    <Stop offset="100%" stopColor={colors['Costas']} stopOpacity="0.45" />
                                 </LinearGradient>
                             )}
                         </Defs>
 
                         <G>
-                            {/* Trapézio Superior (Frontal) */}
+                            {/* Trapézio Superior (Frontal) - Desce do pescoço acompanhando a clavícula até o ombro */}
                             <G {...getSvgPressProps('Trapézio')}>
                                 <Path
-                                    d="M488 178 C468 190 435 215 408 226 L430 236 C460 234 480 215 488 178 Z"
+                                    d="M 244 146 C 236 166 220 188 188 208 L 220 206 C 234 188 240 166 244 146 Z"
                                     fill={getMuscleFill('Trapézio', 'grad-traps-front')}
                                     fillOpacity={getMuscleOpacity('Trapézio')}
                                     stroke={getMuscleStroke('Trapézio')}
                                     strokeWidth={getMuscleStrokeWidth('Trapézio')}
                                 />
                                 <Path
-                                    d="M536 178 C556 190 589 215 616 226 L594 236 C564 234 544 215 536 178 Z"
+                                    d="M 268 146 C 276 166 292 188 324 208 L 292 206 C 278 188 272 166 268 146 Z"
                                     fill={getMuscleFill('Trapézio', 'grad-traps-front')}
                                     fillOpacity={getMuscleOpacity('Trapézio')}
                                     stroke={getMuscleStroke('Trapézio')}
@@ -331,14 +362,14 @@ export function AnatomicalMuscleBody({
                             {/* Deltoides Anteriores e Laterais (Ombros) */}
                             <G {...getSvgPressProps('Ombros')}>
                                 <Path
-                                    d="M408 226 C388 235 372 260 368 290 C364 320 376 342 390 355 C396 342 404 316 414 290 C420 270 426 248 430 236 Z"
+                                    d="M 188 208 C 166 212 140 222 128 245 C 118 268 124 295 144 314 C 156 305 166 275 172 245 C 176 225 182 214 188 208 Z"
                                     fill={getMuscleFill('Ombros', 'grad-delts-front')}
                                     fillOpacity={getMuscleOpacity('Ombros')}
                                     stroke={getMuscleStroke('Ombros')}
                                     strokeWidth={getMuscleStrokeWidth('Ombros')}
                                 />
                                 <Path
-                                    d="M616 226 C636 235 652 260 656 290 C660 320 648 342 634 355 C628 342 620 316 610 290 C604 270 598 248 594 236 Z"
+                                    d="M 324 208 C 346 212 372 222 384 245 C 394 268 388 295 368 314 C 356 305 346 275 340 245 C 336 225 330 214 324 208 Z"
                                     fill={getMuscleFill('Ombros', 'grad-delts-front')}
                                     fillOpacity={getMuscleOpacity('Ombros')}
                                     stroke={getMuscleStroke('Ombros')}
@@ -346,35 +377,53 @@ export function AnatomicalMuscleBody({
                                 />
                             </G>
 
-                            {/* Peitoral (Superior + Maior) */}
+                            {/* Peitoral (Superior + Maior) - Perfeita curvatura e encaixe nos ombros */}
                             <G {...getSvgPressProps('Peito')}>
                                 <Path
-                                    d="M510 244 C482 244 438 238 424 246 C412 254 402 284 406 312 C412 344 446 362 485 362 C504 362 509 350 510 340 Z"
+                                    d="M 254 208 C 228 205 196 212 182 225 C 170 238 168 256 174 272 C 190 284 225 285 254 276 Z"
                                     fill={getMuscleFill('Peito', 'grad-pec-front')}
                                     fillOpacity={getMuscleOpacity('Peito')}
                                     stroke={getMuscleStroke('Peito')}
                                     strokeWidth={getMuscleStrokeWidth('Peito')}
                                 />
                                 <Path
-                                    d="M514 244 C542 244 586 238 600 246 C612 254 622 284 618 312 C612 344 578 362 539 362 C520 362 515 350 514 340 Z"
+                                    d="M 258 208 C 284 205 316 212 330 225 C 342 238 344 256 338 272 C 322 284 287 285 258 276 Z"
                                     fill={getMuscleFill('Peito', 'grad-pec-front')}
                                     fillOpacity={getMuscleOpacity('Peito')}
                                     stroke={getMuscleStroke('Peito')}
                                     strokeWidth={getMuscleStrokeWidth('Peito')}
+                                />
+                            </G>
+
+                            {/* Dorsais / Serrátil (Costas visíveis pela frente no V-Taper) */}
+                            <G {...getSvgPressProps('Costas')}>
+                                <Path
+                                    d="M 174 274 C 164 288 156 312 164 336 C 172 355 180 372 186 385 C 190 375 188 350 184 325 C 180 300 178 285 174 274 Z"
+                                    fill={getMuscleFill('Costas', 'grad-back-front')}
+                                    fillOpacity={getMuscleOpacity('Costas')}
+                                    stroke={getMuscleStroke('Costas')}
+                                    strokeWidth={getMuscleStrokeWidth('Costas')}
+                                />
+                                <Path
+                                    d="M 338 274 C 348 288 356 312 348 336 C 340 355 332 372 326 385 C 322 375 324 350 328 325 C 332 300 334 285 338 274 Z"
+                                    fill={getMuscleFill('Costas', 'grad-back-front')}
+                                    fillOpacity={getMuscleOpacity('Costas')}
+                                    stroke={getMuscleStroke('Costas')}
+                                    strokeWidth={getMuscleStrokeWidth('Costas')}
                                 />
                             </G>
 
                             {/* Bíceps & Braquial */}
                             <G {...getSvgPressProps('Bíceps')}>
                                 <Path
-                                    d="M388 340 C374 354 368 376 370 410 C372 438 382 458 392 468 C398 448 402 418 404 390 C406 366 404 350 398 335 Z"
+                                    d="M 144 308 C 130 318 120 338 120 358 C 120 368 128 372 138 370 C 150 358 155 335 155 312 C 155 306 148 308 144 308 Z"
                                     fill={getMuscleFill('Bíceps', 'grad-biceps-front')}
                                     fillOpacity={getMuscleOpacity('Bíceps')}
                                     stroke={getMuscleStroke('Bíceps')}
                                     strokeWidth={getMuscleStrokeWidth('Bíceps')}
                                 />
                                 <Path
-                                    d="M636 340 C650 354 656 376 654 410 C652 438 642 458 632 468 C626 448 622 418 620 390 C618 366 620 350 626 335 Z"
+                                    d="M 368 308 C 382 318 392 338 392 358 C 392 368 384 372 374 370 C 362 358 357 335 357 312 C 357 306 364 308 368 308 Z"
                                     fill={getMuscleFill('Bíceps', 'grad-biceps-front')}
                                     fillOpacity={getMuscleOpacity('Bíceps')}
                                     stroke={getMuscleStroke('Bíceps')}
@@ -382,17 +431,17 @@ export function AnatomicalMuscleBody({
                                 />
                             </G>
 
-                            {/* Antebraços */}
+                            {/* Antebraços - Acompanhando a inclinação dos braços e ossos até os punhos */}
                             <G {...getSvgPressProps('Antebraços')}>
                                 <Path
-                                    d="M388 472 C376 492 368 522 364 555 C360 584 364 612 372 630 L388 628 C394 600 402 556 404 520 C406 495 400 480 394 470 Z"
+                                    d="M 124 368 C 110 395 94 428 80 458 C 72 470 72 476 80 476 C 92 476 108 454 126 424 C 136 395 138 376 134 368 Z"
                                     fill={getMuscleFill('Antebraços', 'grad-forearms-front')}
                                     fillOpacity={getMuscleOpacity('Antebraços')}
                                     stroke={getMuscleStroke('Antebraços')}
                                     strokeWidth={getMuscleStrokeWidth('Antebraços')}
                                 />
                                 <Path
-                                    d="M636 472 C648 492 656 522 660 555 C664 584 660 612 652 630 L636 628 C630 600 622 556 620 520 C618 495 624 480 630 470 Z"
+                                    d="M 388 368 C 402 395 418 428 432 458 C 440 470 440 476 432 476 C 420 476 404 454 386 424 C 376 395 374 376 378 368 Z"
                                     fill={getMuscleFill('Antebraços', 'grad-forearms-front')}
                                     fillOpacity={getMuscleOpacity('Antebraços')}
                                     stroke={getMuscleStroke('Antebraços')}
@@ -400,45 +449,63 @@ export function AnatomicalMuscleBody({
                                 />
                             </G>
 
-                            {/* Abdômen (Reto Abdominal 6-Pack) */}
+                            {/* Abdômen (Reto Abdominal 6-Pack + Oblíquos laterais da cintura) */}
                             <G {...getSvgPressProps('Abdômen')}>
+                                {/* 6-pack gomos superiores */}
                                 <Path
-                                    d="M486 372 C496 372 508 374 508 392 C508 406 496 410 482 410 C468 410 464 398 464 388 C464 376 474 372 486 372 Z"
+                                    d="M 220 286 C 235 284 250 284 253 284 L 253 324 C 238 325 224 322 218 316 C 216 302 216 292 220 286 Z"
                                     fill={getMuscleFill('Abdômen', 'grad-abs-front')}
                                     fillOpacity={getMuscleOpacity('Abdômen')}
                                     stroke={getMuscleStroke('Abdômen')}
                                     strokeWidth={getMuscleStrokeWidth('Abdômen')}
                                 />
                                 <Path
-                                    d="M538 372 C528 372 516 374 516 392 C516 406 528 410 542 410 C556 410 560 398 560 388 C560 376 550 372 538 372 Z"
+                                    d="M 259 284 C 262 284 277 284 292 286 C 296 292 296 302 294 316 C 288 322 274 325 259 324 Z"
+                                    fill={getMuscleFill('Abdômen', 'grad-abs-front')}
+                                    fillOpacity={getMuscleOpacity('Abdômen')}
+                                    stroke={getMuscleStroke('Abdômen')}
+                                    strokeWidth={getMuscleStrokeWidth('Abdômen')}
+                                />
+                                {/* 6-pack gomos médios */}
+                                <Path
+                                    d="M 218 330 L 253 330 L 253 372 C 238 372 222 370 216 364 C 214 350 214 340 218 330 Z"
                                     fill={getMuscleFill('Abdômen', 'grad-abs-front')}
                                     fillOpacity={getMuscleOpacity('Abdômen')}
                                     stroke={getMuscleStroke('Abdômen')}
                                     strokeWidth={getMuscleStrokeWidth('Abdômen')}
                                 />
                                 <Path
-                                    d="M484 416 C496 416 508 418 508 438 C508 454 496 458 480 458 C466 458 462 446 462 434 C462 420 472 416 484 416 Z"
+                                    d="M 259 330 L 294 330 C 298 340 298 350 296 364 C 290 370 274 372 259 372 Z"
+                                    fill={getMuscleFill('Abdômen', 'grad-abs-front')}
+                                    fillOpacity={getMuscleOpacity('Abdômen')}
+                                    stroke={getMuscleStroke('Abdômen')}
+                                    strokeWidth={getMuscleStrokeWidth('Abdômen')}
+                                />
+                                {/* 6-pack gomos inferiores */}
+                                <Path
+                                    d="M 217 378 L 253 378 L 253 430 C 242 432 232 426 224 410 C 218 396 216 386 217 378 Z"
                                     fill={getMuscleFill('Abdômen', 'grad-abs-front')}
                                     fillOpacity={getMuscleOpacity('Abdômen')}
                                     stroke={getMuscleStroke('Abdômen')}
                                     strokeWidth={getMuscleStrokeWidth('Abdômen')}
                                 />
                                 <Path
-                                    d="M540 416 C528 416 516 418 516 438 C516 454 528 458 544 458 C558 458 562 446 562 434 C562 420 552 416 540 416 Z"
+                                    d="M 259 378 L 295 378 C 296 386 294 396 288 410 C 280 426 270 432 259 430 Z"
+                                    fill={getMuscleFill('Abdômen', 'grad-abs-front')}
+                                    fillOpacity={getMuscleOpacity('Abdômen')}
+                                    stroke={getMuscleStroke('Abdômen')}
+                                    strokeWidth={getMuscleStrokeWidth('Abdômen')}
+                                />
+                                {/* Oblíquos Externos (cintura atlética lateral) */}
+                                <Path
+                                    d="M 210 300 C 196 318 188 345 186 370 C 184 395 192 418 206 435 C 214 425 216 400 214 375 C 214 345 216 320 210 300 Z"
                                     fill={getMuscleFill('Abdômen', 'grad-abs-front')}
                                     fillOpacity={getMuscleOpacity('Abdômen')}
                                     stroke={getMuscleStroke('Abdômen')}
                                     strokeWidth={getMuscleStrokeWidth('Abdômen')}
                                 />
                                 <Path
-                                    d="M486 464 C496 464 508 468 508 492 C508 514 494 520 476 518 C466 516 460 500 460 488 C460 470 472 464 486 464 Z"
-                                    fill={getMuscleFill('Abdômen', 'grad-abs-front')}
-                                    fillOpacity={getMuscleOpacity('Abdômen')}
-                                    stroke={getMuscleStroke('Abdômen')}
-                                    strokeWidth={getMuscleStrokeWidth('Abdômen')}
-                                />
-                                <Path
-                                    d="M538 464 C528 464 516 468 516 492 C516 514 530 520 548 518 C558 516 564 500 564 488 C564 470 552 464 538 464 Z"
+                                    d="M 302 300 C 316 318 324 345 326 370 C 328 395 320 418 306 435 C 298 425 296 400 298 375 C 298 345 296 320 302 300 Z"
                                     fill={getMuscleFill('Abdômen', 'grad-abs-front')}
                                     fillOpacity={getMuscleOpacity('Abdômen')}
                                     stroke={getMuscleStroke('Abdômen')}
@@ -446,17 +513,17 @@ export function AnatomicalMuscleBody({
                                 />
                             </G>
 
-                            {/* Quadríceps */}
+                            {/* Quadríceps (Coxa frontal completa: desde a virilha/quadril até o topo do joelho) */}
                             <G {...getSvgPressProps('Quadríceps')}>
                                 <Path
-                                    d="M446 534 C432 570 422 620 424 670 C426 710 436 740 452 764 C464 766 476 764 484 750 C488 720 486 670 488 620 C490 580 496 550 504 534 Z"
+                                    d="M 185 448 C 165 490 160 545 170 605 C 178 635 190 660 205 668 C 220 672 234 660 238 625 C 245 565 250 500 248 475 C 230 460 205 448 185 448 Z"
                                     fill={getMuscleFill('Quadríceps', 'grad-quads-front')}
                                     fillOpacity={getMuscleOpacity('Quadríceps')}
                                     stroke={getMuscleStroke('Quadríceps')}
                                     strokeWidth={getMuscleStrokeWidth('Quadríceps')}
                                 />
                                 <Path
-                                    d="M578 534 C592 570 602 620 600 670 C598 710 588 740 572 764 C560 766 548 764 540 750 C536 720 538 670 536 620 C534 580 528 550 520 534 Z"
+                                    d="M 327 448 C 347 490 352 545 342 605 C 334 635 322 660 307 668 C 292 672 278 660 274 625 C 267 565 262 500 264 475 C 282 460 307 448 327 448 Z"
                                     fill={getMuscleFill('Quadríceps', 'grad-quads-front')}
                                     fillOpacity={getMuscleOpacity('Quadríceps')}
                                     stroke={getMuscleStroke('Quadríceps')}
@@ -464,17 +531,17 @@ export function AnatomicalMuscleBody({
                                 />
                             </G>
 
-                            {/* Panturrilhas Frontais */}
+                            {/* Panturrilhas (Perna inferior completa até o tornozelo) */}
                             <G {...getSvgPressProps('Panturrilhas')}>
                                 <Path
-                                    d="M450 806 C438 825 432 856 438 888 C444 916 454 938 460 954 L474 952 C478 934 480 905 480 878 C480 845 476 820 472 806 Z"
+                                    d="M 200 695 C 182 725 174 765 176 815 C 180 860 190 895 198 915 C 210 915 220 895 226 845 C 228 795 226 745 218 705 Z"
                                     fill={getMuscleFill('Panturrilhas', 'grad-calves-front')}
                                     fillOpacity={getMuscleOpacity('Panturrilhas')}
                                     stroke={getMuscleStroke('Panturrilhas')}
                                     strokeWidth={getMuscleStrokeWidth('Panturrilhas')}
                                 />
                                 <Path
-                                    d="M574 806 C586 825 592 856 586 888 C580 916 570 938 564 954 L550 952 C546 934 544 905 544 878 C544 845 548 820 552 806 Z"
+                                    d="M 312 695 C 330 725 338 765 336 815 C 332 860 322 895 314 915 C 302 915 292 895 286 845 C 284 795 286 745 294 705 Z"
                                     fill={getMuscleFill('Panturrilhas', 'grad-calves-front')}
                                     fillOpacity={getMuscleOpacity('Panturrilhas')}
                                     stroke={getMuscleStroke('Panturrilhas')}
@@ -504,29 +571,36 @@ export function AnatomicalMuscleBody({
                 {/* 1. Realistic 3D Muscle Base Image */}
                 <Image
                     source={require('../../assets/anatomy_back_cropped.png')}
-                    style={{
-                        width: '100%',
-                        height: '100%',
-                        position: 'absolute',
-                        opacity: isDark ? 0.96 : 0.88,
-                    }}
+                    style={[
+                        {
+                            width: '100%',
+                            height: '100%',
+                            position: 'absolute',
+                            opacity: isDark ? 0.96 : 0.88,
+                        },
+                        Platform.OS === 'web' && ({
+                            pointerEvents: 'none',
+                            userSelect: 'none',
+                            WebkitUserDrag: 'none',
+                        } as any),
+                    ]}
                     resizeMode="contain"
                 />
 
                 {/* 2. Precision SVG Heatmap Layer */}
                 <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
-                    <Svg width="100%" height="100%" viewBox="256 16 512 960">
+                    <Svg width="100%" height="100%" viewBox="0 0 512 960" preserveAspectRatio="xMidYMid meet">
                         <Defs>
                             {colors['Trapézio'] && (
                                 <LinearGradient id="grad-traps-back" x1="0%" y1="0%" x2="0%" y2="100%">
-                                    <Stop offset="0%" stopColor={colors['Trapézio']} stopOpacity="0.9" />
+                                    <Stop offset="0%" stopColor={colors['Trapézio']} stopOpacity="0.95" />
                                     <Stop offset="100%" stopColor={colors['Trapézio']} stopOpacity="0.45" />
                                 </LinearGradient>
                             )}
 
                             {colors['Costas'] && (
                                 <LinearGradient id="grad-back-lat" x1="0%" y1="0%" x2="0%" y2="100%">
-                                    <Stop offset="0%" stopColor={colors['Costas']} stopOpacity="0.9" />
+                                    <Stop offset="0%" stopColor={colors['Costas']} stopOpacity="0.95" />
                                     <Stop offset="100%" stopColor={colors['Costas']} stopOpacity="0.45" />
                                 </LinearGradient>
                             )}
@@ -534,51 +608,51 @@ export function AnatomicalMuscleBody({
                             {colors['Ombros'] && (
                                 <LinearGradient id="grad-delts-back" x1="0%" y1="0%" x2="0%" y2="100%">
                                     <Stop offset="0%" stopColor={colors['Ombros']} stopOpacity="0.95" />
-                                    <Stop offset="100%" stopColor={colors['Ombros']} stopOpacity="0.45" />
+                                    <Stop offset="100%" stopColor={colors['Ombros']} stopOpacity="0.5" />
                                 </LinearGradient>
                             )}
 
                             {colors['Tríceps'] && (
-                                <LinearGradient id="grad-triceps-back" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <LinearGradient id="grad-triceps-back" x1="0%" y1="0%" x2="0%" y2="100%">
                                     <Stop offset="0%" stopColor={colors['Tríceps']} stopOpacity="0.95" />
-                                    <Stop offset="100%" stopColor={colors['Tríceps']} stopOpacity="0.45" />
+                                    <Stop offset="100%" stopColor={colors['Tríceps']} stopOpacity="0.5" />
                                 </LinearGradient>
                             )}
 
                             {colors['Glúteos'] && (
-                                <RadialGradient id="grad-glutes-back" cx="50%" cy="40%" rx="60%" ry="60%">
-                                    <Stop offset="0%" stopColor={colors['Glúteos']} stopOpacity="0.9" />
+                                <RadialGradient id="grad-glutes-back" cx="50%" cy="50%" rx="60%" ry="60%">
+                                    <Stop offset="0%" stopColor={colors['Glúteos']} stopOpacity="0.95" />
                                     <Stop offset="100%" stopColor={colors['Glúteos']} stopOpacity="0.4" />
                                 </RadialGradient>
                             )}
 
                             {colors['Isquiotibiais'] && (
                                 <LinearGradient id="grad-hamstrings-back" x1="0%" y1="0%" x2="0%" y2="100%">
-                                    <Stop offset="0%" stopColor={colors['Isquiotibiais']} stopOpacity="0.9" />
+                                    <Stop offset="0%" stopColor={colors['Isquiotibiais']} stopOpacity="0.92" />
                                     <Stop offset="100%" stopColor={colors['Isquiotibiais']} stopOpacity="0.4" />
                                 </LinearGradient>
                             )}
 
                             {colors['Panturrilhas'] && (
                                 <LinearGradient id="grad-calves-back" x1="0%" y1="0%" x2="0%" y2="100%">
-                                    <Stop offset="0%" stopColor={colors['Panturrilhas']} stopOpacity="0.9" />
+                                    <Stop offset="0%" stopColor={colors['Panturrilhas']} stopOpacity="0.92" />
                                     <Stop offset="100%" stopColor={colors['Panturrilhas']} stopOpacity="0.4" />
                                 </LinearGradient>
                             )}
 
                             {colors['Antebraços'] && (
                                 <LinearGradient id="grad-forearms-back" x1="0%" y1="0%" x2="0%" y2="100%">
-                                    <Stop offset="0%" stopColor={colors['Antebraços']} stopOpacity="0.9" />
-                                    <Stop offset="100%" stopColor={colors['Antebraços']} stopOpacity="0.35" />
+                                    <Stop offset="0%" stopColor={colors['Antebraços']} stopOpacity="0.95" />
+                                    <Stop offset="100%" stopColor={colors['Antebraços']} stopOpacity="0.45" />
                                 </LinearGradient>
                             )}
                         </Defs>
 
                         <G>
-                            {/* Trapézio Dorsal Superior & Médio */}
+                            {/* Trapézio Dorsal Superior & Médio - Acompanha a curvatura ergonômica da nuca, pescoço e crista da escápula */}
                             <G {...getSvgPressProps('Trapézio')}>
                                 <Path
-                                    d="M512 182 C488 200 445 224 416 235 C434 246 470 262 512 320 C554 262 590 246 608 235 C579 224 536 200 512 182 Z"
+                                    d="M 256 142 C 242 152 230 172 210 192 C 190 204 174 210 162 214 C 176 226 205 236 228 260 C 244 278 252 298 256 318 C 260 298 268 278 284 260 C 307 236 336 226 350 214 C 338 210 322 204 302 192 C 282 172 270 152 256 142 Z"
                                     fill={getMuscleFill('Trapézio', 'grad-traps-back')}
                                     fillOpacity={getMuscleOpacity('Trapézio')}
                                     stroke={getMuscleStroke('Trapézio')}
@@ -586,17 +660,17 @@ export function AnatomicalMuscleBody({
                                 />
                             </G>
 
-                            {/* Deltoides Posteriores */}
+                            {/* Deltoides Posteriores (Ombros) */}
                             <G {...getSvgPressProps('Ombros')}>
                                 <Path
-                                    d="M416 235 C394 244 374 268 370 298 C366 324 374 346 388 358 C396 342 404 316 414 290 C420 270 422 250 424 242 Z"
+                                    d="M 162 214 C 144 218 126 235 122 255 C 118 276 124 296 138 310 C 148 312 158 296 164 274 C 170 252 174 232 176 226 Z"
                                     fill={getMuscleFill('Ombros', 'grad-delts-back')}
                                     fillOpacity={getMuscleOpacity('Ombros')}
                                     stroke={getMuscleStroke('Ombros')}
                                     strokeWidth={getMuscleStrokeWidth('Ombros')}
                                 />
                                 <Path
-                                    d="M608 235 C630 244 650 268 654 298 C658 324 650 346 636 358 C628 342 620 316 610 290 C604 270 602 250 600 242 Z"
+                                    d="M 350 214 C 368 218 386 235 390 255 C 394 276 388 296 374 310 C 364 312 354 296 348 274 C 342 252 338 232 336 226 Z"
                                     fill={getMuscleFill('Ombros', 'grad-delts-back')}
                                     fillOpacity={getMuscleOpacity('Ombros')}
                                     stroke={getMuscleStroke('Ombros')}
@@ -604,17 +678,17 @@ export function AnatomicalMuscleBody({
                                 />
                             </G>
 
-                            {/* Costas & Grandes Dorsais */}
+                            {/* Costas & Grandes Dorsais (V-Taper anatômico) */}
                             <G {...getSvgPressProps('Costas')}>
                                 <Path
-                                    d="M510 324 C474 280 434 264 416 280 C406 312 402 360 412 414 C422 452 444 480 476 498 C484 480 496 440 502 400 C508 360 510 335 510 324 Z"
+                                    d="M 254 318 C 238 285 212 250 176 262 C 160 275 152 298 160 324 C 168 344 176 368 190 392 C 206 414 228 428 254 428 Z"
                                     fill={getMuscleFill('Costas', 'grad-back-lat')}
                                     fillOpacity={getMuscleOpacity('Costas')}
                                     stroke={getMuscleStroke('Costas')}
                                     strokeWidth={getMuscleStrokeWidth('Costas')}
                                 />
                                 <Path
-                                    d="M514 324 C550 280 590 264 608 280 C618 312 622 360 612 414 C602 452 580 480 548 498 C540 480 528 440 522 400 C516 360 514 335 514 324 Z"
+                                    d="M 258 318 C 274 285 300 250 336 262 C 352 275 360 298 352 324 C 344 344 336 368 322 392 C 306 414 284 428 258 428 Z"
                                     fill={getMuscleFill('Costas', 'grad-back-lat')}
                                     fillOpacity={getMuscleOpacity('Costas')}
                                     stroke={getMuscleStroke('Costas')}
@@ -622,17 +696,17 @@ export function AnatomicalMuscleBody({
                                 />
                             </G>
 
-                            {/* Tríceps */}
+                            {/* Tríceps (Braço Posterior Completo) */}
                             <G {...getSvgPressProps('Tríceps')}>
                                 <Path
-                                    d="M386 338 C372 354 366 376 368 410 C370 438 380 458 390 468 C398 448 402 418 404 390 C406 366 402 350 396 335 Z"
+                                    d="M 138 310 C 124 318 116 335 116 355 C 116 368 124 374 136 372 C 146 368 155 355 158 338 C 160 322 154 312 144 310 Z"
                                     fill={getMuscleFill('Tríceps', 'grad-triceps-back')}
                                     fillOpacity={getMuscleOpacity('Tríceps')}
                                     stroke={getMuscleStroke('Tríceps')}
                                     strokeWidth={getMuscleStrokeWidth('Tríceps')}
                                 />
                                 <Path
-                                    d="M638 338 C652 354 658 376 656 410 C654 438 644 458 634 468 C626 448 622 418 620 390 C618 366 622 350 628 335 Z"
+                                    d="M 374 310 C 388 318 396 335 396 355 C 396 368 388 374 376 372 C 366 368 357 355 354 338 C 352 322 358 312 368 310 Z"
                                     fill={getMuscleFill('Tríceps', 'grad-triceps-back')}
                                     fillOpacity={getMuscleOpacity('Tríceps')}
                                     stroke={getMuscleStroke('Tríceps')}
@@ -643,14 +717,14 @@ export function AnatomicalMuscleBody({
                             {/* Antebraços Dorsais */}
                             <G {...getSvgPressProps('Antebraços')}>
                                 <Path
-                                    d="M388 472 C376 492 368 522 364 555 C360 584 364 612 372 630 L388 628 C394 600 402 556 404 520 C406 495 400 480 394 470 Z"
+                                    d="M 124 370 C 112 395 96 426 82 454 C 74 468 74 476 84 476 C 96 476 112 454 128 424 C 138 395 140 376 134 370 Z"
                                     fill={getMuscleFill('Antebraços', 'grad-forearms-back')}
                                     fillOpacity={getMuscleOpacity('Antebraços')}
                                     stroke={getMuscleStroke('Antebraços')}
                                     strokeWidth={getMuscleStrokeWidth('Antebraços')}
                                 />
                                 <Path
-                                    d="M636 472 C648 492 656 522 660 555 C664 584 660 612 652 630 L636 628 C630 600 622 556 620 520 C618 495 624 480 630 470 Z"
+                                    d="M 388 370 C 400 395 416 426 430 454 C 438 468 438 476 428 476 C 416 476 400 454 384 424 C 374 395 372 376 378 370 Z"
                                     fill={getMuscleFill('Antebraços', 'grad-forearms-back')}
                                     fillOpacity={getMuscleOpacity('Antebraços')}
                                     stroke={getMuscleStroke('Antebraços')}
@@ -661,14 +735,14 @@ export function AnatomicalMuscleBody({
                             {/* Glúteos */}
                             <G {...getSvgPressProps('Glúteos')}>
                                 <Path
-                                    d="M510 522 C476 520 442 534 436 570 C430 608 448 644 480 656 C498 662 508 650 510 636 Z"
+                                    d="M 254 430 C 220 426 178 440 166 470 C 158 500 172 528 212 530 C 236 531 250 518 254 490 Z"
                                     fill={getMuscleFill('Glúteos', 'grad-glutes-back')}
                                     fillOpacity={getMuscleOpacity('Glúteos')}
                                     stroke={getMuscleStroke('Glúteos')}
                                     strokeWidth={getMuscleStrokeWidth('Glúteos')}
                                 />
                                 <Path
-                                    d="M514 522 C548 520 582 534 588 570 C594 608 576 644 544 656 C526 662 516 650 514 636 Z"
+                                    d="M 258 430 C 292 426 334 440 346 470 C 354 500 340 528 300 530 C 276 531 262 518 258 490 Z"
                                     fill={getMuscleFill('Glúteos', 'grad-glutes-back')}
                                     fillOpacity={getMuscleOpacity('Glúteos')}
                                     stroke={getMuscleStroke('Glúteos')}
@@ -679,14 +753,14 @@ export function AnatomicalMuscleBody({
                             {/* Isquiotibiais (Posterior de Coxa) */}
                             <G {...getSvgPressProps('Isquiotibiais')}>
                                 <Path
-                                    d="M440 660 C430 690 428 730 436 764 C448 766 462 764 472 754 C478 732 482 696 484 664 C470 664 452 662 440 660 Z"
+                                    d="M 252 533 C 242 560 234 605 230 650 C 230 670 236 672 228 672 C 210 672 188 650 176 610 C 168 565 174 533 198 533 Z"
                                     fill={getMuscleFill('Isquiotibiais', 'grad-hamstrings-back')}
                                     fillOpacity={getMuscleOpacity('Isquiotibiais')}
                                     stroke={getMuscleStroke('Isquiotibiais')}
                                     strokeWidth={getMuscleStrokeWidth('Isquiotibiais')}
                                 />
                                 <Path
-                                    d="M584 660 C594 690 596 730 588 764 C576 766 562 764 552 754 C546 732 542 696 540 664 C554 664 572 662 584 660 Z"
+                                    d="M 260 533 C 270 560 278 605 282 650 C 282 670 276 672 284 672 C 302 672 324 650 336 610 C 344 565 338 533 314 533 Z"
                                     fill={getMuscleFill('Isquiotibiais', 'grad-hamstrings-back')}
                                     fillOpacity={getMuscleOpacity('Isquiotibiais')}
                                     stroke={getMuscleStroke('Isquiotibiais')}
@@ -694,17 +768,17 @@ export function AnatomicalMuscleBody({
                                 />
                             </G>
 
-                            {/* Panturrilhas Traseiras */}
+                            {/* Panturrilhas Traseiras (Perna inferior completa até o tendão de aquiles e tornozelo) */}
                             <G {...getSvgPressProps('Panturrilhas')}>
                                 <Path
-                                    d="M438 782 C426 805 422 840 432 878 C442 914 456 942 462 954 L474 952 C478 934 480 895 480 864 C480 830 476 802 466 782 Z"
+                                    d="M 200 695 C 182 725 174 765 176 815 C 180 860 190 895 198 915 C 210 915 220 895 226 845 C 228 795 226 745 218 705 Z"
                                     fill={getMuscleFill('Panturrilhas', 'grad-calves-back')}
                                     fillOpacity={getMuscleOpacity('Panturrilhas')}
                                     stroke={getMuscleStroke('Panturrilhas')}
                                     strokeWidth={getMuscleStrokeWidth('Panturrilhas')}
                                 />
                                 <Path
-                                    d="M586 782 C598 805 602 840 592 878 C582 914 568 942 562 954 L550 952 C546 934 544 895 544 864 C544 830 548 802 558 782 Z"
+                                    d="M 312 695 C 330 725 338 765 336 815 C 332 860 322 895 314 915 C 302 915 292 895 286 845 C 284 795 286 745 294 705 Z"
                                     fill={getMuscleFill('Panturrilhas', 'grad-calves-back')}
                                     fillOpacity={getMuscleOpacity('Panturrilhas')}
                                     stroke={getMuscleStroke('Panturrilhas')}

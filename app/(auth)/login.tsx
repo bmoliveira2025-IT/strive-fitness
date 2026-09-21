@@ -21,6 +21,9 @@ import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
 import { supabase } from '../../lib/supabase';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useUserStore } from '../../store/useUserStore';
+
 WebBrowser.maybeCompleteAuthSession();
 
 export default function LoginScreen() {
@@ -30,6 +33,8 @@ export default function LoginScreen() {
     const { continueAsGuest } = useAuth();
 
     // Form State
+    const [name, setName] = useState('');
+    const [age, setAge] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -54,20 +59,55 @@ export default function LoginScreen() {
 
     const handleAuth = async () => {
         if (!email.trim() || !password.trim()) {
-            Alert.alert('Atenção', 'Por favor, preencha todos os campos.');
+            Alert.alert('Atenção', 'Por favor, preencha todos os campos obrigatórios.');
             return;
+        }
+
+        if (isSignUp) {
+            if (!age.trim()) {
+                Alert.alert('Idade obrigatória', 'Por favor, informe sua idade para o cálculo inteligente de cargas e recuperação.');
+                return;
+            }
+            const parsedAge = parseInt(age.trim(), 10);
+            if (isNaN(parsedAge) || parsedAge < 10 || parsedAge > 120) {
+                Alert.alert('Idade inválida', 'Por favor, insira uma idade válida entre 10 e 120 anos.');
+                return;
+            }
         }
 
         setLoading(true);
 
         try {
             if (isSignUp) {
-                const { error } = await withTimeout(supabase.auth.signUp({
+                const parsedAge = parseInt(age.trim(), 10);
+                const { data, error } = await withTimeout(supabase.auth.signUp({
                     email: email.trim(),
                     password,
+                    options: {
+                        data: {
+                            full_name: name.trim() || undefined,
+                            age: parsedAge,
+                        },
+                    },
                 }));
                 if (error) throw error;
-                Alert.alert('Sucesso', 'Conta criada com sucesso! Verifique seu e-mail para confirmar o cadastro.');
+
+                // Persiste imediatamente o nome e a idade para nunca mais ser perguntado
+                if (name.trim()) {
+                    useUserStore.getState().setUserName(name.trim());
+                }
+                useUserStore.getState().updateProfile({
+                    age: parsedAge,
+                    hasOnboarded: true,
+                });
+                await AsyncStorage.setItem('@strive_user_age', String(parsedAge));
+                await AsyncStorage.setItem('@strive_has_onboarded', 'true');
+
+                if (data?.session) {
+                    router.replace('/(tabs)');
+                } else {
+                    Alert.alert('Sucesso', 'Conta criada com sucesso! Verifique seu e-mail para confirmar o cadastro.');
+                }
             } else {
                 const { data, error } = await withTimeout(supabase.auth.signInWithPassword({
                     email: email.trim(),
@@ -210,6 +250,40 @@ export default function LoginScreen() {
                     </View>
 
                     <View className="space-y-4">
+                        {isSignUp && (
+                            <>
+                                <View>
+                                    <Text className="text-text-secondary text-xs font-bold uppercase mb-2 ml-1" style={{ fontFamily: "Inter_700Bold" }}>
+                                        Nome (opcional)
+                                    </Text>
+                                    <TextInput
+                                        value={name}
+                                        onChangeText={setName}
+                                        className="p-4 rounded-2xl text-base"
+                                        style={{ backgroundColor: theme.colors.card, borderColor: theme.colors.border, borderWidth: 1, color: theme.colors.text, fontFamily: 'Inter_400Regular' }}
+                                        placeholderTextColor={theme.colors.textMuted}
+                                        placeholder="Como devemos te chamar?"
+                                    />
+                                </View>
+
+                                <View>
+                                    <Text className="text-text-secondary text-xs font-bold uppercase mb-2 ml-1" style={{ fontFamily: "Inter_700Bold" }}>
+                                        Idade
+                                    </Text>
+                                    <TextInput
+                                        value={age}
+                                        onChangeText={setAge}
+                                        keyboardType="numeric"
+                                        maxLength={3}
+                                        className="p-4 rounded-2xl text-base"
+                                        style={{ backgroundColor: theme.colors.card, borderColor: theme.colors.border, borderWidth: 1, color: theme.colors.text, fontFamily: 'Inter_400Regular' }}
+                                        placeholderTextColor={theme.colors.textMuted}
+                                        placeholder="Ex: 25"
+                                    />
+                                </View>
+                            </>
+                        )}
+
                         <View>
                             <Text className="text-text-secondary text-xs font-bold uppercase mb-2 ml-1" style={{ fontFamily: "Inter_700Bold" }}>
                                 E-mail

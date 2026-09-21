@@ -134,7 +134,7 @@ export default function WebInstallBanner() {
                         <Text style={{ color: '#F8FAFC', fontSize: 13, fontFamily: FontFamily.sansBold }}>
                             {isIOSDevice ? 'Instalar no iPhone (App PWA)' : 'Instalar Strive no Aparelho'}
                         </Text>
-                        <Text style={{ color: '#94A3B8', fontSize: 11, fontFamily: FontFamily.sansRegular }}>
+                        <Text style={{ color: '#94A3B8', fontSize: 11, fontFamily: FontFamily.sans }}>
                             {isIOSDevice
                                 ? 'Use sem navegador com 60 FPS e tela cheia'
                                 : 'Acesse direto pela tela inicial com alta performance'}
@@ -326,7 +326,7 @@ const styles = StyleSheet.create({
     stepDesc: {
         color: '#94A3B8',
         fontSize: 12,
-        fontFamily: FontFamily.sansRegular,
+        fontFamily: FontFamily.sans,
         lineHeight: 18,
     },
 });

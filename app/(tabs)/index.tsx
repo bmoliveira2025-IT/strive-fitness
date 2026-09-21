@@ -2,6 +2,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useMemo, useState } from 'react';
 import { ScrollView, View } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ActivityFeed } from '../../components/home/ActivityFeed';
 import { CardioSummaryWidget } from '../../components/home/CardioSummaryWidget';
@@ -70,9 +71,14 @@ export default function Home() {
 
     useEffect(() => {
         if (!profile) return;
-        if (!profile.hasOnboarded) {
-            setSurveyType('onboarding');
-            setShowSurvey(true);
+
+        // A idade e onboarding só devem ser perguntados uma única vez! Se já tem idade ou já completou, não pergunta mais.
+        if (!profile.hasOnboarded && !profile.age && !(profile.onboardingData as any)?.age) {
+            AsyncStorage.getItem('@strive_has_onboarded').then((val) => {
+                if (val === 'true') {
+                    updateProfile({ hasOnboarded: true });
+                }
+            });
             return;
         }
 
@@ -107,12 +113,14 @@ export default function Home() {
 
     const handleSurveyComplete = (answers: any) => {
         if (surveyType === 'onboarding') {
+            const ageNum = parseInt(answers.age, 10);
             if (answers.name) {
                 setUserName(answers.name);
             }
 
             updateProfile({
                 hasOnboarded: true,
+                age: !isNaN(ageNum) ? ageNum : profile?.age,
                 onboardingData: answers as any,
                 weight: parseFloat(answers.weight) || profile?.weight,
                 height: parseFloat(answers.height) || profile?.height,
@@ -123,6 +131,10 @@ export default function Home() {
                     lastWeeklyMonitoring: new Date().toISOString()
                 }
             });
+            if (!isNaN(ageNum)) {
+                AsyncStorage.setItem('@strive_user_age', String(ageNum)).catch(() => {});
+            }
+            AsyncStorage.setItem('@strive_has_onboarded', 'true').catch(() => {});
         } else if (surveyType === 'weekly') {
             addWeeklyMonitoring({
                 date: new Date().toISOString(),
@@ -307,14 +319,23 @@ export default function Home() {
                     description={getSurveyConfig().description}
                     questions={getSurveyConfig().questions as any}
                     onComplete={handleSurveyComplete}
-                    onClose={() => setShowSurvey(false)}
+                    onClose={() => {
+                        setShowSurvey(false);
+                        if (surveyType === 'onboarding') {
+                            updateProfile({ hasOnboarded: true });
+                            AsyncStorage.setItem('@strive_has_onboarded', 'true').catch(() => {});
+                        }
+                    }}
                 />
             )}
 
-            {/* Novo Onboarding Visual por Gênero & Planos de Treino */}
+            {/* Novo Onboarding Visual por Gênero & Planos de Treino — Só se não completou */}
             <VisualOnboardingModal
-                visible={!!profile && !profile.hasOnboarded}
-                onClose={() => {}}
+                visible={!!profile && !profile.hasOnboarded && !profile.age}
+                onClose={() => {
+                    updateProfile({ hasOnboarded: true });
+                    AsyncStorage.setItem('@strive_has_onboarded', 'true').catch(() => {});
+                }}
             />
         </View>
     );

@@ -1,8 +1,9 @@
+import Palette from '../../constants/palette.json';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { Alert, FlatList, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, FlatList, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AchievementBadge } from '../../components/profile/AchievementBadge';
@@ -12,9 +13,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { useUserStore } from '../../store/useUserStore';
 import { useWorkoutHistory } from '../../context/WorkoutHistoryContext';
-import { supabase } from '../../lib/supabase';
 import { buildAchievements, getGoalMotivation } from '../../utils/achievements';
-
 
 // ── 2×2 Shortcut Card ────────────────────────────────────────────────────────
 const ShortcutCard = memo(function ShortcutCard({ icon, title, subtitle, onPress, color }: {
@@ -35,9 +34,9 @@ const ShortcutCard = memo(function ShortcutCard({ icon, title, subtitle, onPress
                     padding: 18,
                     height: 148,
                     justifyContent: 'space-between',
-                    shadowColor: '#000',
+                    shadowColor: Palette.ink,
                     shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: theme.mode === 'light' ? 0.05 : 0.2,
+                    shadowOpacity: theme.mode === 'light' ? 0.05 : 0.1,
                     shadowRadius: 8,
                     elevation: 1,
                 }}
@@ -46,8 +45,8 @@ const ShortcutCard = memo(function ShortcutCard({ icon, title, subtitle, onPress
                     <Ionicons name={icon as any} size={22} color={color} />
                 </View>
                 <View style={{ minHeight: 52 }}>
-                    <Text style={{ color: theme.colors.text, fontSize: 14, fontWeight: '800', lineHeight: 18, minHeight: 36 }} numberOfLines={2}>{title}</Text>
-                    <Text style={{ color: theme.colors.textSecondary, fontSize: 11, fontWeight: '600', lineHeight: 15 }} numberOfLines={1}>{subtitle}</Text>
+                    <Text style={{ color: theme.colors.text, fontSize: 14, fontFamily: 'Inter_700Bold', fontWeight: '700', lineHeight: 18, minHeight: 36 }} numberOfLines={2}>{title}</Text>
+                    <Text style={{ color: theme.colors.textSecondary, fontSize: 11, fontFamily: 'Inter_600SemiBold', fontWeight: '600', lineHeight: 15 }} numberOfLines={1}>{subtitle}</Text>
                 </View>
             </TouchableOpacity>
         </View>
@@ -72,8 +71,8 @@ const DataCell = memo(function DataCell({ icon, label, value, sub, color }: {
             <View style={{ backgroundColor: color + '18', width: 38, height: 38, borderRadius: 12, alignItems: 'center', justifyContent: 'center', marginBottom: 8 }}>
                 <Ionicons name={icon as any} size={18} color={color} />
             </View>
-            <Text style={{ color: theme.colors.text, fontSize: 15, fontWeight: '900', textAlign: 'center' }}>{value}</Text>
-            <Text style={{ color: sub ? color : theme.colors.textSecondary, fontSize: 9, fontWeight: '800', textTransform: 'uppercase', textAlign: 'center', marginTop: 2 }}>
+            <Text style={{ color: theme.colors.text, fontSize: 15, fontFamily: 'Inter_700Bold', fontWeight: '700', textAlign: 'center' }}>{value}</Text>
+            <Text style={{ color: sub ? color : theme.colors.textSecondary, fontSize: 9, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase', textAlign: 'center', marginTop: 2 }}>
                 {sub || label}
             </Text>
         </View>
@@ -88,7 +87,7 @@ export default function ProfileScreen() {
     const { profile, updateProfile } = useUserStore();
     const { history } = useWorkoutHistory();
     const { userName, setUserName } = useUserStore();
-    const { session } = useAuth();
+    const { session, signOut } = useAuth();
     const insets = useSafeAreaInsets();
     const params = useLocalSearchParams();
 
@@ -153,6 +152,25 @@ export default function ProfileScreen() {
     const handleAsymmetryPress = useCallback(() => router.push('/asymmetry-analysis'), [router]);
 
     const handleLogout = async () => {
+        if (Platform.OS === 'web') {
+            const confirmed = typeof window !== 'undefined'
+                ? window.confirm('Deseja realmente sair da sua conta?')
+                : true;
+            if (confirmed) {
+                try {
+                    await signOut();
+                    if (typeof window !== 'undefined') {
+                        window.location.href = '/login';
+                    } else {
+                        router.replace('/(auth)/login');
+                    }
+                } catch (err: any) {
+                    console.error('Erro ao sair:', err);
+                }
+            }
+            return;
+        }
+
         Alert.alert(
             'Sair',
             'Deseja realmente sair da sua conta?',
@@ -162,8 +180,12 @@ export default function ProfileScreen() {
                     text: 'Sair',
                     style: 'destructive',
                     onPress: async () => {
-                        const { error } = await supabase.auth.signOut();
-                        if (error) Alert.alert('Erro', error.message);
+                        try {
+                            await signOut();
+                            router.replace('/(auth)/login');
+                        } catch (err: any) {
+                            Alert.alert('Erro ao sair', err?.message || 'Tente novamente.');
+                        }
                     },
                 },
             ]
@@ -212,8 +234,8 @@ export default function ProfileScreen() {
                 <Animated.View entering={FadeInDown.delay(50).duration(400)} style={{ paddingHorizontal: 20, marginBottom: 28 }}>
                     <SectionHeader title="Dados Físicos" />
                     <View style={{ flexDirection: 'row', gap: 10 }}>
-                        <DataCell icon="resize-outline" label="Altura" value={profile?.height ? `${profile.height} cm` : '--'} color="#4F8FF7" />
-                        <DataCell icon="barbell-outline" label="Peso" value={profile?.weight ? `${profile.weight} kg` : '--'} color="#22C55E" />
+                        <DataCell icon="resize-outline" label="Altura" value={profile?.height ? `${profile.height} cm` : '--'} color={theme.colors.info} />
+                        <DataCell icon="barbell-outline" label="Peso" value={profile?.weight ? `${profile.weight} kg` : '--'} color={theme.colors.success} />
                         <DataCell
                             icon="fitness-outline"
                             label="IMC"
@@ -221,11 +243,9 @@ export default function ProfileScreen() {
                             sub={bmiLabel}
                             color={bmiColor}
                         />
-                        <DataCell icon="flag-outline" label="Objetivo" value={getObjectiveLabel(profile?.objective)} color="#A855F7" />
+                        <DataCell icon="flag-outline" label="Objetivo" value={getObjectiveLabel(profile?.objective)} color={theme.colors.primary} />
                     </View>
                 </Animated.View>
-
-
 
                 {/* ── Central de Atleta — 2×2 grid ── */}
                 <Animated.View entering={FadeInDown.delay(100).duration(400)} style={{ paddingHorizontal: 20, marginBottom: 28 }}>
@@ -236,14 +256,14 @@ export default function ProfileScreen() {
                             title="Histórico"
                             subtitle={`${history.length} sessão${history.length !== 1 ? 'ões' : ''}`}
                             onPress={handleHistoryPress}
-                            color="#4F8FF7"
+                            color={theme.colors.info}
                         />
                         <ShortcutCard
                             icon="stats-chart-outline"
                             title="Estatísticas & PRs"
                             subtitle="Evolução pessoal"
                             onPress={handleStatsPress}
-                            color="#A855F7"
+                            color={theme.colors.primary}
                         />
                     </View>
                     <View style={{ flexDirection: 'row', gap: 12 }}>
@@ -252,14 +272,14 @@ export default function ProfileScreen() {
                             title="Medidas"
                             subtitle="Composição corporal"
                             onPress={handleMeasuresPress}
-                            color="#F59E0B"
+                            color={theme.colors.warning}
                         />
                         <ShortcutCard
                             icon="scan-outline"
                             title="Diagnóstico"
                             subtitle="Análise de simetria"
                             onPress={handleAsymmetryPress}
-                            color="#EF4444"
+                            color={theme.colors.error}
                         />
                     </View>
                 </Animated.View>
@@ -269,7 +289,7 @@ export default function ProfileScreen() {
                     <View style={{ marginHorizontal: 20, marginBottom: 18, flexDirection: 'row', alignItems: 'center', backgroundColor: theme.colors.primary + '14', borderColor: theme.colors.primary + '35', borderWidth: 1, borderRadius: 16, padding: 14 }}>
                         <Ionicons name={goalMotivation.icon as any} size={21} color={theme.colors.primaryDark} style={{ marginRight: 12 }} />
                         <View style={{ flex: 1 }}>
-                            <Text style={{ color: theme.colors.text, fontSize: 13, fontWeight: '800' }}>{goalMotivation.title}</Text>
+                            <Text style={{ color: theme.colors.text, fontSize: 13, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>{goalMotivation.title}</Text>
                             <Text style={{ color: theme.colors.textSecondary, fontSize: 11, lineHeight: 16, marginTop: 2 }}>{goalMotivation.message}</Text>
                         </View>
                     </View>
@@ -279,7 +299,7 @@ export default function ProfileScreen() {
                             onPress={() => router.push('/achievements')}
                             style={{ backgroundColor: theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.primary, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 12 }}
                         >
-                            <Text style={{ color: theme.mode === 'light' ? '#FFFFFF' : theme.colors.onPrimary, fontSize: 10, fontWeight: '900', textTransform: 'uppercase' }}>Ver Todas</Text>
+                            <Text style={{ color: theme.mode === 'light' ? theme.colors.onImage : theme.colors.onPrimary, fontSize: 10, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase' }}>Ver Todas</Text>
                         </TouchableOpacity>
                     </View>
                     <FlatList
@@ -293,7 +313,7 @@ export default function ProfileScreen() {
                         renderItem={({ item }) => (
                             <View style={{ width: 92, alignItems: 'center' }}>
                                 <AchievementBadge icon={item.icon} type={item.tier} size={72} locked={!item.unlocked} />
-                                <Text style={{ color: item.unlocked ? theme.colors.text : theme.colors.textMuted, fontSize: 10, fontWeight: '700', textAlign: 'center', marginTop: 8 }} numberOfLines={2}>
+                                <Text style={{ color: item.unlocked ? theme.colors.text : theme.colors.textMuted, fontSize: 10, fontFamily: 'Inter_700Bold', fontWeight: '700', textAlign: 'center', marginTop: 8 }} numberOfLines={2}>
                                     {item.title}
                                 </Text>
                             </View>
@@ -311,13 +331,13 @@ export default function ProfileScreen() {
                             justifyContent: 'center',
                             padding: 16,
                             borderRadius: 18,
-                            backgroundColor: '#ef444410',
+                            backgroundColor: theme.colors.error + '10',
                             borderWidth: 1.5,
-                            borderColor: '#ef444422',
+                            borderColor: theme.colors.error + '22',
                         }}
                     >
-                        <Ionicons name="log-out-outline" size={20} color="#ef4444" style={{ marginRight: 8 }} />
-                        <Text style={{ color: '#ef4444', fontWeight: '900', fontSize: 12, textTransform: 'uppercase', letterSpacing: 1 }}>
+                        <Ionicons name="log-out-outline" size={20} color={theme.colors.error} style={{ marginRight: 8 }} />
+                        <Text style={{ color: theme.colors.error, fontFamily: 'Inter_700Bold', fontWeight: '700', fontSize: 12, textTransform: 'uppercase', letterSpacing: 1 }}>
                             Sair da Conta
                         </Text>
                     </TouchableOpacity>
@@ -344,9 +364,9 @@ function SectionHeader({ title, subtitle, noMargin }: { title: string; subtitle?
     const { theme } = useTheme();
     return (
         <View style={{ marginBottom: noMargin ? 0 : 14 }}>
-            <Text style={{ color: theme.colors.text, fontSize: 18, fontWeight: '900', letterSpacing: -0.4 }}>{title}</Text>
+            <Text style={{ color: theme.colors.text, fontSize: 18, fontFamily: 'Inter_700Bold', fontWeight: '700', letterSpacing: -0.4 }}>{title}</Text>
             {subtitle && (
-                <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 1, marginTop: 2 }}>
+                <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1, marginTop: 2 }}>
                     {subtitle}
                 </Text>
             )}

@@ -82,6 +82,8 @@ export interface UserProfile {
     measurements?: BodyMeasurements;
     progressPhotos?: ProgressPhoto[];
     height?: number; // cm
+    gender?: 'masculino' | 'feminino';
+    age?: number;
     objective?: TrainingObjective;
     bio?: string;
     photoUri?: string;
@@ -129,6 +131,8 @@ export const useUserStore = create<UserState>()(
 
                 const avatar = meta.avatar_url || meta.picture || idData.avatar_url || idData.picture;
                 const name = meta.full_name || meta.name || meta.user_name || idData.full_name || idData.name || user.email?.split('@')[0];
+                const rawAge = meta.age || idData.age;
+                const userAge = rawAge ? Number(rawAge) : undefined;
 
                 const currentProfile = get().profile;
                 const currentName = get().userName;
@@ -142,20 +146,31 @@ export const useUserStore = create<UserState>()(
                         profile: {
                             id: user.id || Date.now().toString(),
                             photoUri: avatar || undefined,
-                            hasOnboarded: false,
+                            age: userAge,
+                            hasOnboarded: !!userAge,
                             trackingStats: {},
                             createdAt: new Date().toISOString(),
                             updatedAt: new Date().toISOString(),
                         }
                     });
-                } else if (avatar && currentProfile.photoUri !== avatar) {
-                    set({
-                        profile: {
-                            ...currentProfile,
-                            photoUri: avatar,
-                            updatedAt: new Date().toISOString(),
-                        }
-                    });
+                } else {
+                    const updates: Partial<UserProfile> = {};
+                    if (avatar && currentProfile.photoUri !== avatar) {
+                        updates.photoUri = avatar;
+                    }
+                    if (userAge && !currentProfile.age) {
+                        updates.age = userAge;
+                        updates.hasOnboarded = true;
+                    }
+                    if (Object.keys(updates).length > 0) {
+                        set({
+                            profile: {
+                                ...currentProfile,
+                                ...updates,
+                                updatedAt: new Date().toISOString(),
+                            }
+                        });
+                    }
                 }
             },
 

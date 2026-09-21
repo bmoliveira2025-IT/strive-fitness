@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Alert, AppState, Linking, Modal, NativeModules, ScrollView, Switch, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, AppState, Linking, Modal, NativeModules, Platform, ScrollView, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SubscriptionModal } from '../components/settings/SubscriptionModal';
 import { useAuth } from '../context/AuthContext';
@@ -13,7 +13,7 @@ import { useUserStore } from '../store/useUserStore';
 
 const SectionLabel = React.memo(function SectionLabel({ title, theme }: { title: string; theme: any }) {
     return (
-    <Text style={{ color: theme.colors.textSecondary, fontSize: 11, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 1.2, marginBottom: 8, marginLeft: 4 }}>
+    <Text style={{ color: theme.colors.textSecondary, fontSize: 11, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1.2, marginBottom: 8, marginLeft: 4 }}>
         {title}
     </Text>
     );
@@ -36,7 +36,7 @@ const SettingsRow = React.memo(function SettingsRow({ icon, iconColor, title, su
             <Ionicons name={icon as any} size={19} color={iconColor} />
         </View>
         <View style={{ flex: 1 }}>
-            <Text style={{ color: theme.colors.text, fontSize: 15, fontWeight: '700' }}>{title}</Text>
+            <Text style={{ color: theme.colors.text, fontSize: 15, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>{title}</Text>
             {subtitle && <Text style={{ color: theme.colors.textSecondary, fontSize: 12, marginTop: 2 }}>{subtitle}</Text>}
         </View>
         {onPress && <Ionicons name="chevron-forward" size={18} color={theme.colors.textMuted} />}
@@ -52,7 +52,7 @@ export default function SettingsScreen() {
     const settingsActionText = theme.mode === 'light' ? '#FFFFFF' : theme.colors.onPrimary;
     const { prefs, updatePrefs, requestPermission, refreshPermission, testNotification } = usePushNotifications();
     const { userName } = useUserStore();
-    const { session } = useAuth();
+    const { session, signOut } = useAuth();
 
     const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
     const [showTimePicker, setShowTimePicker] = useState(false);
@@ -132,6 +132,49 @@ export default function SettingsScreen() {
         );
     }, [router]);
 
+    const handleLogout = useCallback(() => {
+        if (Platform.OS === 'web') {
+            const confirmed = typeof window !== 'undefined'
+                ? window.confirm('Deseja realmente sair da sua conta?')
+                : true;
+            if (confirmed) {
+                (async () => {
+                    try {
+                        await signOut();
+                        if (typeof window !== 'undefined') {
+                            window.location.href = '/login';
+                        } else {
+                            router.replace('/(auth)/login');
+                        }
+                    } catch (err: any) {
+                        console.error('Erro ao sair:', err);
+                    }
+                })();
+            }
+            return;
+        }
+
+        Alert.alert(
+            'Sair da Conta',
+            'Deseja realmente sair da sua conta?',
+            [
+                { text: 'Cancelar', style: 'cancel' },
+                {
+                    text: 'Sair',
+                    style: 'destructive',
+                    onPress: async () => {
+                        try {
+                            await signOut();
+                            router.replace('/(auth)/login');
+                        } catch (err: any) {
+                            Alert.alert('Erro ao sair', err?.message || 'Tente novamente.');
+                        }
+                    },
+                },
+            ]
+        );
+    }, [signOut, router]);
+
     const userInitial = userName ? userName.charAt(0).toUpperCase() : 'A';
     const userEmail = session?.user?.email || '';
 
@@ -166,10 +209,10 @@ export default function SettingsScreen() {
                     <Ionicons name="chevron-back" size={24} color={theme.colors.text} />
                 </TouchableOpacity>
                 <View>
-                    <Text style={{ color: theme.colors.text, fontSize: 24, fontWeight: '900', letterSpacing: -0.5 }}>
+                    <Text style={{ color: theme.colors.text, fontSize: 24, fontFamily: 'Inter_700Bold', fontWeight: '700', letterSpacing: -0.5 }}>
                         Configurações
                     </Text>
-                    <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1 }}>
+                    <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1 }}>
                         Sua conta & preferências
                     </Text>
                 </View>
@@ -208,23 +251,23 @@ export default function SettingsScreen() {
                                     borderWidth: 2,
                                     borderColor: settingsAccent + '45',
                                 }}>
-                                    <Text style={{ color: settingsAccent, fontSize: 26, fontWeight: '900' }}>
+                                    <Text style={{ color: settingsAccent, fontSize: 26, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>
                                         {userInitial}
                                     </Text>
                                 </View>
 
                                 <View style={{ flex: 1 }}>
-                                    <Text style={{ color: theme.colors.text, fontSize: 18, fontWeight: '800', marginBottom: 2 }}>
+                                    <Text style={{ color: theme.colors.text, fontSize: 18, fontFamily: 'Inter_700Bold', fontWeight: '700', marginBottom: 2 }}>
                                         {userName || 'Atleta'}
                                     </Text>
-                                    <Text style={{ color: theme.colors.textSecondary, fontSize: 12, fontWeight: '500' }} numberOfLines={1}>
+                                    <Text style={{ color: theme.colors.textSecondary, fontSize: 12, fontFamily: 'Inter_500Medium', fontWeight: '500' }} numberOfLines={1}>
                                         {userEmail}
                                     </Text>
                                     {/* Premium badge */}
                                     <View style={{
-                                        backgroundColor: '#F59E0B20',
+                                        backgroundColor: theme.colors.warning + '20',
                                         borderWidth: 1,
-                                        borderColor: '#F59E0B40',
+                                        borderColor: theme.colors.warning + '40',
                                         borderRadius: 8,
                                         paddingHorizontal: 8,
                                         paddingVertical: 3,
@@ -234,8 +277,8 @@ export default function SettingsScreen() {
                                         alignItems: 'center',
                                         gap: 4,
                                     }}>
-                                        <Ionicons name="ribbon" size={11} color="#F59E0B" />
-                                        <Text style={{ color: '#F59E0B', fontSize: 10, fontWeight: '900', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                                        <Ionicons name="ribbon" size={11} color={theme.colors.warning} />
+                                        <Text style={{ color: theme.colors.warning, fontSize: 10, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5 }}>
                                             Premium
                                         </Text>
                                     </View>
@@ -253,7 +296,7 @@ export default function SettingsScreen() {
                     <CardGroup theme={theme}>
                         <SettingsRow
                             icon="ribbon-outline"
-                            iconColor="#F59E0B"
+                            iconColor={theme.colors.warning}
                             title="Assinatura"
                             subtitle="Plano Premium ativo"
                             onPress={() => setShowSubscriptionModal(true)}
@@ -279,14 +322,14 @@ export default function SettingsScreen() {
                             minHeight: 60,
                         }}>
                             <View style={{
-                                backgroundColor: '#F59E0B20',
+                                backgroundColor: theme.colors.warning + '20',
                                 width: 40, height: 40, borderRadius: 13,
                                 alignItems: 'center', justifyContent: 'center', marginRight: 14,
                             }}>
-                                <Ionicons name="alarm-outline" size={20} color="#F59E0B" />
+                                <Ionicons name="alarm-outline" size={20} color={theme.colors.warning} />
                             </View>
                             <View style={{ flex: 1 }}>
-                                <Text style={{ color: theme.colors.text, fontSize: 15, fontWeight: '700' }}>Lembrete de Treino</Text>
+                                <Text style={{ color: theme.colors.text, fontSize: 15, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>Lembrete de Treino</Text>
                                 <Text style={{ color: theme.colors.textSecondary, fontSize: 12, marginTop: 2 }}>
                                     {prefs.workoutReminderEnabled
                                         ? `Ativo todos os dias às ${formatTime(prefs.workoutReminderHour, prefs.workoutReminderMinute)}`
@@ -297,7 +340,7 @@ export default function SettingsScreen() {
                                 value={prefs.workoutReminderEnabled}
                                 onValueChange={handleToggleReminder}
                                 trackColor={{ false: theme.colors.border, true: theme.colors.primary }}
-                                thumbColor="#fff"
+                                thumbColor={theme.colors.onImage}
                             />
                         </View>
 
@@ -322,14 +365,14 @@ export default function SettingsScreen() {
                                 }}
                             >
                                 <View style={{
-                                    backgroundColor: '#4F8FF720',
+                                    backgroundColor: theme.colors.info + '20',
                                     width: 40, height: 40, borderRadius: 13,
                                     alignItems: 'center', justifyContent: 'center', marginRight: 14,
                                 }}>
-                                    <Ionicons name="time-outline" size={20} color="#4F8FF7" />
+                                    <Ionicons name="time-outline" size={20} color={theme.colors.info} />
                                 </View>
                                 <View style={{ flex: 1 }}>
-                                    <Text style={{ color: theme.colors.text, fontSize: 15, fontWeight: '700' }}>Horário do Lembrete</Text>
+                                    <Text style={{ color: theme.colors.text, fontSize: 15, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>Horário do Lembrete</Text>
                                 </View>
                                 <View style={{
                                     backgroundColor: theme.colors.primary + '15',
@@ -338,7 +381,7 @@ export default function SettingsScreen() {
                                     paddingVertical: 6,
                                     marginRight: 8,
                                 }}>
-                                    <Text style={{ color: theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.primary, fontSize: 15, fontWeight: '900' }}>
+                                    <Text style={{ color: theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.primary, fontSize: 15, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>
                                         {formatTime(prefs.workoutReminderHour, prefs.workoutReminderMinute)}
                                     </Text>
                                 </View>
@@ -355,14 +398,14 @@ export default function SettingsScreen() {
                             minHeight: 60,
                         }}>
                             <View style={{
-                                backgroundColor: '#EF444420',
+                                backgroundColor: theme.colors.error + '20',
                                 width: 40, height: 40, borderRadius: 13,
                                 alignItems: 'center', justifyContent: 'center', marginRight: 14,
                             }}>
-                                <Ionicons name="flame-outline" size={20} color="#EF4444" />
+                                <Ionicons name="flame-outline" size={20} color={theme.colors.error} />
                             </View>
                             <View style={{ flex: 1 }}>
-                                <Text style={{ color: theme.colors.text, fontSize: 15, fontWeight: '700' }}>Alerta de Streak</Text>
+                                <Text style={{ color: theme.colors.text, fontSize: 15, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>Alerta de Streak</Text>
                                 <Text style={{ color: theme.colors.textSecondary, fontSize: 12, marginTop: 2 }}>
                                     {prefs.streakAlertEnabled ? 'Ativo às 20h quando não houver treino' : 'Desativado'}
                                 </Text>
@@ -371,7 +414,7 @@ export default function SettingsScreen() {
                                 value={prefs.streakAlertEnabled}
                                 onValueChange={handleToggleStreakAlert}
                                 trackColor={{ false: theme.colors.border, true: '#F59E0B' }}
-                                thumbColor="#fff"
+                                thumbColor={theme.colors.onImage}
                             />
                         </View>
 
@@ -388,7 +431,7 @@ export default function SettingsScreen() {
                                 <Ionicons name="notifications-outline" size={20} color={settingsAccent} />
                             </View>
                             <View style={{ flex: 1 }}>
-                                <Text style={{ color: theme.colors.text, fontSize: 15, fontWeight: '700' }}>Testar Notificação</Text>
+                                <Text style={{ color: theme.colors.text, fontSize: 15, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>Testar Notificação</Text>
                                 <Text style={{ color: prefs.permissionGranted ? settingsAccent : theme.colors.textSecondary, fontSize: 12, marginTop: 2 }}>
                                     {prefs.permissionGranted ? 'Permissão ativa no aparelho' : 'Permissão bloqueada ou não concedida'}
                                 </Text>
@@ -430,7 +473,7 @@ export default function SettingsScreen() {
                             <Text style={{
                                 color: theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.text,
                                 fontSize: 13,
-                                fontWeight: '800',
+                                fontFamily: 'Inter_700Bold', fontWeight: '700',
                             }}>
                                 Claro
                             </Text>
@@ -464,7 +507,7 @@ export default function SettingsScreen() {
                             <Text style={{
                                 color: theme.mode === 'dark' ? theme.colors.primary : theme.colors.text,
                                 fontSize: 13,
-                                fontWeight: '800',
+                                fontFamily: 'Inter_700Bold', fontWeight: '700',
                             }}>
                                 Escuro
                             </Text>
@@ -476,13 +519,39 @@ export default function SettingsScreen() {
                 <View>
                     <SectionLabel title="Zona de Risco" theme={theme} />
                     <View style={{
-                        backgroundColor: '#EF444408',
+                        backgroundColor: theme.colors.error + '08',
                         borderRadius: 22,
                         borderWidth: 1,
-                        borderColor: '#EF444425',
+                        borderColor: theme.colors.error + '25',
                         overflow: 'hidden',
                         marginBottom: 24,
                     }}>
+                        <TouchableOpacity
+                            onPress={handleLogout}
+                            activeOpacity={0.7}
+                            style={{
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                padding: 16,
+                                minHeight: 60,
+                                borderBottomWidth: 1,
+                                borderBottomColor: theme.colors.error + '20',
+                            }}
+                        >
+                            <View style={{
+                                backgroundColor: theme.colors.error + '20',
+                                width: 40, height: 40, borderRadius: 13,
+                                alignItems: 'center', justifyContent: 'center', marginRight: 14,
+                            }}>
+                                <Ionicons name="log-out-outline" size={20} color={theme.colors.error} />
+                            </View>
+                            <View style={{ flex: 1 }}>
+                                <Text style={{ color: theme.colors.error, fontSize: 15, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>Sair da Conta</Text>
+                                <Text style={{ color: theme.colors.error + '80', fontSize: 12, marginTop: 2 }}>Desconectar desta sessão</Text>
+                            </View>
+                            <Ionicons name="chevron-forward" size={18} color={theme.colors.error + '50'} />
+                        </TouchableOpacity>
+
                         <TouchableOpacity
                             onPress={handleResetApp}
                             activeOpacity={0.7}
@@ -494,24 +563,24 @@ export default function SettingsScreen() {
                             }}
                         >
                             <View style={{
-                                backgroundColor: '#EF444420',
+                                backgroundColor: theme.colors.error + '20',
                                 width: 40, height: 40, borderRadius: 13,
                                 alignItems: 'center', justifyContent: 'center', marginRight: 14,
                             }}>
-                                <Ionicons name="trash-outline" size={20} color="#EF4444" />
+                                <Ionicons name="trash-outline" size={20} color={theme.colors.error} />
                             </View>
                             <View style={{ flex: 1 }}>
-                                <Text style={{ color: '#EF4444', fontSize: 15, fontWeight: '700' }}>Redefinir Aplicativo</Text>
-                                <Text style={{ color: '#EF444480', fontSize: 12, marginTop: 2 }}>Apaga todos os dados locais permanentemente</Text>
+                                <Text style={{ color: theme.colors.error, fontSize: 15, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>Redefinir Aplicativo</Text>
+                                <Text style={{ color: theme.colors.error + '80', fontSize: 12, marginTop: 2 }}>Apaga todos os dados locais permanentemente</Text>
                             </View>
-                            <Ionicons name="chevron-forward" size={18} color="#EF444450" />
+                            <Ionicons name="chevron-forward" size={18} color={theme.colors.error + '50'} />
                         </TouchableOpacity>
                     </View>
                 </View>
 
                 {/* Footer */}
                 <View style={{ alignItems: 'center', paddingVertical: 12 }}>
-                    <Text style={{ color: theme.colors.textMuted, fontSize: 11, fontWeight: '600' }}>Versão 1.0.0 (Build 42)</Text>
+                    <Text style={{ color: theme.colors.textMuted, fontSize: 11, fontFamily: 'Inter_600SemiBold', fontWeight: '600' }}>Versão 1.0.0 (Build 42)</Text>
                     <Text style={{ color: theme.colors.textMuted, fontSize: 11, marginTop: 4 }}>Feito com ❤️ pelo time Strive</Text>
                 </View>
 
@@ -530,7 +599,7 @@ export default function SettingsScreen() {
                             borderColor: theme.colors.cardBorder,
                         }}
                     >
-                        <Text style={{ color: theme.colors.text, fontSize: 18, fontWeight: '900', textAlign: 'center', marginBottom: 24 }}>
+                        <Text style={{ color: theme.colors.text, fontSize: 18, fontFamily: 'Inter_700Bold', fontWeight: '700', textAlign: 'center', marginBottom: 24 }}>
                             Horário do Lembrete
                         </Text>
 
@@ -545,7 +614,7 @@ export default function SettingsScreen() {
                                     borderRadius: 16, width: 72, height: 72,
                                     alignItems: 'center', justifyContent: 'center',
                                 }}>
-                                    <Text style={{ color: theme.colors.text, fontSize: 38, fontWeight: '900' }}>
+                                    <Text style={{ color: theme.colors.text, fontSize: 38, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>
                                         {String(pickerHour).padStart(2, '0')}
                                     </Text>
                                 </View>
@@ -554,7 +623,7 @@ export default function SettingsScreen() {
                                 </TouchableOpacity>
                             </View>
 
-                            <Text style={{ color: theme.colors.text, fontSize: 36, fontWeight: '900', marginBottom: 4 }}>:</Text>
+                            <Text style={{ color: theme.colors.text, fontSize: 36, fontFamily: 'Inter_700Bold', fontWeight: '700', marginBottom: 4 }}>:</Text>
 
                             {/* Minute */}
                             <View style={{ alignItems: 'center' }}>
@@ -566,7 +635,7 @@ export default function SettingsScreen() {
                                     borderRadius: 16, width: 72, height: 72,
                                     alignItems: 'center', justifyContent: 'center',
                                 }}>
-                                    <Text style={{ color: theme.colors.text, fontSize: 38, fontWeight: '900' }}>
+                                    <Text style={{ color: theme.colors.text, fontSize: 38, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>
                                         {String(pickerMinute).padStart(2, '0')}
                                     </Text>
                                 </View>
@@ -586,7 +655,7 @@ export default function SettingsScreen() {
                                     borderWidth: 1, borderColor: theme.colors.cardBorder,
                                 }}
                             >
-                                <Text style={{ color: theme.colors.textSecondary, fontWeight: '700', fontSize: 14 }}>Cancelar</Text>
+                                <Text style={{ color: theme.colors.textSecondary, fontFamily: 'Inter_700Bold', fontWeight: '700', fontSize: 14 }}>Cancelar</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
                                 onPress={handleSaveTime}
@@ -596,7 +665,7 @@ export default function SettingsScreen() {
                                     backgroundColor: settingsAccent,
                                 }}
                             >
-                                <Text style={{ color: settingsActionText, fontWeight: '900', fontSize: 14 }}>Salvar</Text>
+                                <Text style={{ color: settingsActionText, fontFamily: 'Inter_700Bold', fontWeight: '700', fontSize: 14 }}>Salvar</Text>
                             </TouchableOpacity>
                         </View>
                     </View>

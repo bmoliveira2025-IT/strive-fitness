@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
 import { Session } from '@supabase/supabase-js';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
@@ -91,11 +92,24 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const signOut = async () => {
         try {
-            await supabase.auth.signOut();
+            // Safety timeout so sign out never hangs offline or on slow network
+            const timeoutPromise = new Promise((resolve) => setTimeout(resolve, 1500));
+            await Promise.race([supabase.auth.signOut(), timeoutPromise]);
         } catch (e) {
             console.warn('SignOut error or offline:', e);
         }
         await AsyncStorage.removeItem(GUEST_KEY);
+        if (Platform.OS === 'web' && typeof window !== 'undefined') {
+            try {
+                Object.keys(localStorage).forEach((key) => {
+                    if (key.startsWith('sb-') || key.includes('supabase.auth.token') || key.includes('auth-token')) {
+                        localStorage.removeItem(key);
+                    }
+                });
+            } catch (storageErr) {
+                console.warn('Error clearing localStorage on web signOut:', storageErr);
+            }
+        }
         setIsOfflineGuest(false);
         setSession(null);
     };

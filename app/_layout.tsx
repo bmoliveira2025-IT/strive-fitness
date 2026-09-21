@@ -1,4 +1,6 @@
+import Palette from '../constants/palette.json';
 import { Ionicons } from '@expo/vector-icons';
+import { themeVariables } from '../constants/theme-variables';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFonts } from 'expo-font';
 import {
@@ -30,11 +32,9 @@ import * as Notifications from 'expo-notifications';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ActiveWorkoutBanner } from '../components/ActiveWorkoutBanner';
-import { FloatingMusicPlayer } from '../components/FloatingMusicPlayer';
 import { UpdateAvailableModal } from '../components/UpdateAvailableModal';
 import WebInstallBanner from '../components/WebInstallBanner';
 import { AuthProvider, useAuth } from '../context/AuthContext';
-import { MusicPlayerProvider } from '../context/MusicPlayerContext';
 import { MuscleTrackerProvider } from '../context/MuscleTrackerContext';
 import { NotificationProvider } from '../context/NotificationContext';
 import { PushNotificationProvider } from '../context/PushNotificationContext';
@@ -129,8 +129,8 @@ function StackContent() {
           </Stack>
 
           {showNotification && <ActiveWorkoutBanner draggable />}
-          <FloatingMusicPlayer />
           <UpdateAvailableModal />
+          <WebInstallBanner />
         </NavThemeProvider>
       </AuthProtection>
     </>
@@ -142,7 +142,7 @@ function RootLayoutContent() {
 
   return (
     <SafeAreaProvider>
-      <GestureHandlerRootView style={{ flex: 1, backgroundColor: Platform.OS === 'web' ? '#0D0F12' : 'transparent' }}>
+      <GestureHandlerRootView style={[themeVariables(theme.colors), { flex: 1, backgroundColor: Platform.OS === 'web' ? theme.colors.background : 'transparent' }]}>
         <View
           style={{
             flex: 1,
@@ -151,16 +151,16 @@ function RootLayoutContent() {
             alignSelf: 'center',
             backgroundColor: theme.colors.background,
             ...(Platform.OS === 'web' ? {
-              shadowColor: '#000',
+              shadowColor: Palette.ink,
               shadowOffset: { width: 0, height: 0 },
-              shadowOpacity: 0.5,
-              shadowRadius: 20,
+              shadowOpacity: 0.1,
+              shadowRadius: 8,
               elevation: 10,
             } : {})
           }}
         >
           <LinearGradient
-            colors={theme.mode === 'dark' ? ['#13161B', '#0D0F12', '#0A0C0E'] : ['#FFFFFF', '#F8FAFC', '#F1F5F9']}
+            colors={theme.mode === 'dark' ? [theme.colors.backgroundSecondary, theme.colors.background, theme.colors.background] : [theme.colors.onImage, theme.colors.background, theme.colors.backgroundSecondary]}
             style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
           />
           <StackContent />
@@ -217,11 +217,9 @@ export default function TabLayout() {
                 <PushNotificationProvider>
                   <MuscleTrackerProvider>
                     <NotificationProvider>
-                      <MusicPlayerProvider>
-                        <ToastProvider>
-                          <RootLayoutContent />
-                        </ToastProvider>
-                      </MusicPlayerProvider>
+                      <ToastProvider>
+                        <RootLayoutContent />
+                      </ToastProvider>
                     </NotificationProvider>
                   </MuscleTrackerProvider>
                 </PushNotificationProvider>

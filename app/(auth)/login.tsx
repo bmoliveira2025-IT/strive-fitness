@@ -1,3 +1,4 @@
+import Palette from '../../constants/palette.json';
 import { Ionicons } from '@expo/vector-icons';
 import * as AuthSession from 'expo-auth-session';
 import * as Linking from 'expo-linking';
@@ -95,6 +96,31 @@ export default function LoginScreen() {
         try {
             setGoogleLoading(true);
 
+            // Web browser flow (Vercel, Chrome, Safari iOS)
+            if (Platform.OS === 'web') {
+                const redirectUrl = typeof window !== 'undefined'
+                    ? `${window.location.origin}/auth/callback`
+                    : 'https://strivefitness-mu.vercel.app/auth/callback';
+
+                const { data, error } = await supabase.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: {
+                        redirectTo: redirectUrl,
+                        queryParams: {
+                            access_type: 'offline',
+                            prompt: 'consent',
+                        },
+                    },
+                });
+
+                if (error) throw error;
+                if (data?.url && typeof window !== 'undefined') {
+                    window.location.href = data.url;
+                }
+                return;
+            }
+
+            // Native Mobile flow (Android APK / iOS App)
             const redirectUrl = AuthSession.makeRedirectUri({
                 scheme: 'strive-fitness-br',
                 path: 'auth/callback',
@@ -144,13 +170,13 @@ export default function LoginScreen() {
     };
 
     return (
-        <View className="flex-1 bg-black">
+        <View className="flex-1 bg-background">
             <ImageBackground
                 source={{ uri: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1470&auto=format&fit=crop' }}
                 className="flex-1 justify-center"
                 resizeMode="cover"
             >
-                <View className="absolute inset-0 bg-black/75" />
+                <View className="absolute inset-0" style={{ backgroundColor: theme.mode === 'dark' ? theme.colors.background + 'EB' : theme.colors.background }} />
 
                 <KeyboardAvoidingView
                     behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -168,24 +194,24 @@ export default function LoginScreen() {
                                 marginBottom: 20,
                                 shadowColor: theme.colors.primary,
                                 shadowOffset: { width: 0, height: 6 },
-                                shadowOpacity: 0.35,
-                                shadowRadius: 12,
+                                shadowOpacity: 0.1,
+                                shadowRadius: 8,
                                 elevation: 8,
                             }}
                         >
                             <Ionicons name="barbell" size={34} color={theme.colors.onPrimary} />
                         </View>
-                        <Text className="text-white text-4xl font-black mb-2 tracking-tighter" style={{ fontFamily: 'Sora_800ExtraBold' }}>
+                        <Text className="text-text text-4xl font-bold mb-2 tracking-tighter" style={{ fontFamily: "Inter_700Bold" }}>
                             STRIVE
                         </Text>
-                        <Text className="text-zinc-400 text-base" style={{ fontFamily: 'Inter_500Medium' }}>
+                        <Text className="text-text-secondary text-base" style={{ fontFamily: 'Inter_500Medium' }}>
                             Evolua seu treino com inteligência.
                         </Text>
                     </View>
 
                     <View className="space-y-4">
                         <View>
-                            <Text className="text-zinc-400 text-xs font-bold uppercase mb-2 ml-1" style={{ fontFamily: 'Sora_700Bold' }}>
+                            <Text className="text-text-secondary text-xs font-bold uppercase mb-2 ml-1" style={{ fontFamily: "Inter_700Bold" }}>
                                 E-mail
                             </Text>
                             <TextInput
@@ -193,22 +219,24 @@ export default function LoginScreen() {
                                 onChangeText={setEmail}
                                 autoCapitalize="none"
                                 keyboardType="email-address"
-                                className="bg-zinc-900/90 border border-zinc-800 text-white p-4 rounded-2xl text-base"
-                                placeholderTextColor="#71717a"
+                                className="p-4 rounded-2xl text-base"
+                                style={{ backgroundColor: theme.colors.card, borderColor: theme.colors.border, borderWidth: 1, color: theme.colors.text, fontFamily: 'Inter_400Regular' }}
+                                placeholderTextColor={theme.colors.textMuted}
                                 placeholder="seu@email.com"
                             />
                         </View>
 
                         <View className="mb-6">
-                            <Text className="text-zinc-400 text-xs font-bold uppercase mb-2 ml-1" style={{ fontFamily: 'Sora_700Bold' }}>
+                            <Text className="text-text-secondary text-xs font-bold uppercase mb-2 ml-1" style={{ fontFamily: "Inter_700Bold" }}>
                                 Senha
                             </Text>
                             <TextInput
                                 value={password}
                                 onChangeText={setPassword}
                                 secureTextEntry
-                                className="bg-zinc-900/90 border border-zinc-800 text-white p-4 rounded-2xl text-base"
-                                placeholderTextColor="#71717a"
+                                className="p-4 rounded-2xl text-base"
+                                style={{ backgroundColor: theme.colors.card, borderColor: theme.colors.border, borderWidth: 1, color: theme.colors.text, fontFamily: 'Inter_400Regular' }}
+                                placeholderTextColor={theme.colors.textMuted}
                                 placeholder="••••••••"
                             />
                         </View>
@@ -225,8 +253,8 @@ export default function LoginScreen() {
                                 justifyContent: 'center',
                                 shadowColor: theme.colors.primary,
                                 shadowOffset: { width: 0, height: 4 },
-                                shadowOpacity: 0.3,
-                                shadowRadius: 10,
+                                shadowOpacity: 0.1,
+                                shadowRadius: 8,
                                 elevation: 6,
                             }}
                         >
@@ -236,7 +264,7 @@ export default function LoginScreen() {
                                 <Text
                                     style={{
                                         color: theme.colors.onPrimary,
-                                        fontFamily: 'Sora_700Bold',
+                                        fontFamily: "Inter_700Bold",
                                         fontSize: 16,
                                     }}
                                 >
@@ -246,11 +274,11 @@ export default function LoginScreen() {
                         </TouchableOpacity>
 
                         <View className="flex-row items-center my-6">
-                            <View className="flex-1 h-[1px] bg-zinc-800" />
-                            <Text className="text-zinc-500 mx-4 text-xs font-bold uppercase" style={{ fontFamily: 'Inter_600SemiBold' }}>
+                            <View className="flex-1 h-[1px] bg-backgroundTertiary" />
+                            <Text className="text-text-muted mx-4 text-xs font-bold uppercase" style={{ fontFamily: 'Inter_600SemiBold' }}>
                                 Ou continue com
                             </Text>
-                            <View className="flex-1 h-[1px] bg-zinc-800" />
+                            <View className="flex-1 h-[1px] bg-backgroundTertiary" />
                         </View>
 
                         <TouchableOpacity
@@ -258,28 +286,30 @@ export default function LoginScreen() {
                             disabled={loading || googleLoading}
                             activeOpacity={0.85}
                             style={{
-                                backgroundColor: '#FFFFFF',
+                                backgroundColor: theme.colors.card,
+                                borderWidth: 1,
+                                borderColor: theme.colors.border,
                                 borderRadius: 16,
                                 paddingVertical: 16,
                                 alignItems: 'center',
                                 flexDirection: 'row',
                                 justifyContent: 'center',
-                                shadowColor: '#000',
+                                shadowColor: Palette.ink,
                                 shadowOffset: { width: 0, height: 4 },
-                                shadowOpacity: 0.15,
+                                shadowOpacity: 0.1,
                                 shadowRadius: 8,
                                 elevation: 4,
                             }}
                         >
                             {googleLoading ? (
-                                <ModernLoading size={22} color="#000000" />
+                                <ModernLoading size={22} color={theme.colors.text} />
                             ) : (
                                 <>
-                                    <Ionicons name="logo-google" size={22} color="#000000" style={{ marginRight: 10 }} />
+                                    <Ionicons name="logo-google" size={22} color={theme.colors.text} style={{ marginRight: 10 }} />
                                     <Text
                                         style={{
-                                            color: '#000000',
-                                            fontFamily: 'Sora_700Bold',
+                                            color: theme.colors.text,
+                                            fontFamily: "Inter_700Bold",
                                             fontSize: 15,
                                         }}
                                     >
@@ -293,10 +323,10 @@ export default function LoginScreen() {
                             onPress={() => setIsSignUp(!isSignUp)}
                             className="mt-6 p-2 items-center"
                         >
-                            <Text className="text-zinc-400 text-sm">
+                            <Text className="text-text-secondary text-sm">
                                 {isSignUp ? 'Já tem uma conta? ' : 'Não tem uma conta? '}
                                 <Text
-                                    style={{ color: theme.colors.primary, fontFamily: 'Sora_700Bold' }}
+                                    style={{ color: theme.colors.primary, fontFamily: "Inter_700Bold" }}
                                 >
                                     {isSignUp ? 'Fazer Login' : 'Cadastre-se'}
                                 </Text>
@@ -315,17 +345,17 @@ export default function LoginScreen() {
                                 paddingVertical: 12,
                                 paddingHorizontal: 16,
                                 borderRadius: 14,
-                                backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                                backgroundColor: theme.colors.backgroundSecondary,
                                 borderWidth: 1,
-                                borderColor: 'rgba(255, 255, 255, 0.1)',
+                                borderColor: theme.colors.border,
                                 flexDirection: 'row',
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 gap: 8,
                             }}
                         >
-                            <Ionicons name="cloud-offline-outline" size={16} color="#A1A1AA" />
-                            <Text style={{ color: '#E4E4E7', fontSize: 13, fontFamily: 'Sora_600SemiBold' }}>
+                            <Ionicons name="cloud-offline-outline" size={16} color={theme.colors.textSecondary} />
+                            <Text style={{ color: theme.colors.textSecondary, fontSize: 13, fontFamily: "Inter_600SemiBold" }}>
                                 Continuar Offline (Sem Login)
                             </Text>
                         </TouchableOpacity>

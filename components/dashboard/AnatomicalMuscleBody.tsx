@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
     Animated,
     Easing,
@@ -40,7 +40,7 @@ export interface MuscleIntensityMap {
 }
 
 interface AnatomicalMuscleBodyProps {
-    viewSide: 'Front' | 'Back';
+    viewSide?: 'Front' | 'Back';
     colors: MuscleColorMap;
     intensities?: MuscleIntensityMap;
     mode?: 'load' | 'recovery' | 'carga' | 'recuperacao';
@@ -49,10 +49,11 @@ interface AnatomicalMuscleBodyProps {
     width?: number;
     height?: number;
     onToggleSide?: () => void;
+    resetTrigger?: number;
 }
 
 export function AnatomicalMuscleBody({
-    viewSide,
+    viewSide = 'Front',
     colors,
     intensities = {},
     mode = 'load',
@@ -61,35 +62,42 @@ export function AnatomicalMuscleBody({
     width = 230,
     height = 345,
     onToggleSide,
+    resetTrigger,
 }: AnatomicalMuscleBodyProps) {
     const { theme } = useTheme();
     const isDark = theme.mode === 'dark';
 
-    // 1. Idle 3D Micro-Motion (Breathing & Floating)
+    // 1. Idle 3D Micro-Motion (Breathing & Subtle Float)
     const idleAnim = useRef(new Animated.Value(0)).current;
 
-    // 2. 3D Rotation Value (Continuous degrees for smooth 360° rotation)
-    const rotateYAnim = useRef(new Animated.Value(viewSide === 'Front' ? 0 : 180)).current;
+    // 2. Active Side ('Front' or 'Back') & Volumetric Continuous 360 System
+    const [currentSide, setCurrentSide] = useState<'Front' | 'Back'>(viewSide);
+    const continuousAngle = useRef(new Animated.Value(viewSide === 'Front' ? 0 : 180)).current;
     const currentAngle = useRef(viewSide === 'Front' ? 0 : 180);
-    const dragStartAngle = useRef(viewSide === 'Front' ? 0 : 180);
+    const pitchAnim = useRef(new Animated.Value(0)).current; // -22° to +22° (Pitch)
+    const currentPitch = useRef(0);
+    const dragStartAngle = useRef(0);
+    const dragStartPitch = useRef(0);
 
+    // Keep currentAngle and currentPitch updated via listeners
     useEffect(() => {
-        const isCurrentlyBack = Math.abs(Math.round(currentAngle.current / 180) % 2) === 1;
-        const currentSide = isCurrentlyBack ? 'Back' : 'Front';
-        if (viewSide === currentSide) return;
-
-        // Smoothly rotate 180° in the natural direction
-        const target = currentAngle.current + (viewSide === 'Back' ? 180 : -180);
-        Animated.spring(rotateYAnim, {
-            toValue: target,
-            useNativeDriver: true,
-            friction: 8,
-            tension: 32,
-        }).start(() => {
-            currentAngle.current = target;
+        const id = continuousAngle.addListener(({ value }) => {
+            currentAngle.current = value;
+            const norm = ((value % 360) + 360) % 360;
+            const isBack = norm >= 90 && norm < 270;
+            const side = isBack ? 'Back' : 'Front';
+            setCurrentSide((prev) => (prev !== side ? side : prev));
         });
-    }, [viewSide, rotateYAnim]);
+        const pid = pitchAnim.addListener(({ value }) => {
+            currentPitch.current = value;
+        });
+        return () => {
+            continuousAngle.removeListener(id);
+            pitchAnim.removeListener(pid);
+        };
+    }, []);
 
+    // Idle breathing animation
     useEffect(() => {
         const loop = Animated.loop(
             Animated.sequence([
@@ -111,65 +119,164 @@ export function AnatomicalMuscleBody({
         return () => loop.stop();
     }, [idleAnim]);
 
-    // 3. Touch / Mouse Gesture PanResponder for Complete 360° Dragging
+    // Flip action
+    const triggerFlip = (targetSide?: 'Front' | 'Back') => {
+        const raw = currentAngle.current;
+        const norm = ((raw % 360) + 360) % 360;
+        const isBack = norm >= 90 && norm < 270;
+        const nextSide = targetSide || (isBack ? 'Front' : 'Back');
+        const targetNormalized = nextSide === 'Back' ? 180 : 0;
+
+        const base = Math.floor(raw / 360) * 360;
+        let snap = base + targetNormalized;
+        if (Math.abs(snap - raw) > 180) {
+            snap += snap > raw ? -360 : 360;
+        }
+
+        Animated.parallel([
+            Animated.spring(continuousAngle, {
+                toValue: snap,
+                friction: 8,
+                tension: 38,
+                useNativeDriver: true,
+            }),
+            Animated.spring(pitchAnim, {
+                toValue: 0,
+                friction: 8,
+                tension: 34,
+                useNativeDriver: true,
+            }),
+        ]).start();
+    };
+
+    // Synchronize if parent viewSide changes
+    useEffect(() => {
+        if (viewSide !== currentSide) {
+            triggerFlip(viewSide);
+        }
+    }, [viewSide]);
+
+    // Reset view trigger (returns to Front and zeroes out tilt)
+    useEffect(() => {
+        if (resetTrigger === undefined || resetTrigger === 0) return;
+        Animated.parallel([
+            Animated.spring(continuousAngle, {
+                toValue: 0,
+                friction: 8,
+                tension: 38,
+                useNativeDriver: true,
+            }),
+            Animated.spring(pitchAnim, {
+                toValue: 0,
+                friction: 8,
+                tension: 34,
+                useNativeDriver: true,
+            }),
+        ]).start();
+    }, [resetTrigger]);
+
+    // 3. Touch/Drag PanResponder - Continuous 360° Drag + Vertical Pitch Tilt
     const panResponder = useRef(
         PanResponder.create({
             onStartShouldSetPanResponder: () => false,
             onMoveShouldSetPanResponder: (_, gestureState: PanResponderGestureState) => {
-                return Math.abs(gestureState.dx) > 6 && Math.abs(gestureState.dx) > Math.abs(gestureState.dy);
+                return Math.hypot(gestureState.dx, gestureState.dy) > 4;
             },
             onPanResponderTerminationRequest: () => false,
             onPanResponderGrant: () => {
                 dragStartAngle.current = currentAngle.current;
+                dragStartPitch.current = currentPitch.current;
             },
             onPanResponderMove: (_: GestureResponderEvent, gestureState: PanResponderGestureState) => {
-                const deltaAngle = gestureState.dx * 1.05;
-                rotateYAnim.setValue(dragStartAngle.current + deltaAngle);
+                // Continuous 360° horizontal drag
+                const nextAngle = dragStartAngle.current + gestureState.dx * 0.45;
+                continuousAngle.setValue(nextAngle);
+
+                // Vertical pitch tilt (-22° to +22°)
+                const nextPitch = Math.max(-22, Math.min(22, dragStartPitch.current - gestureState.dy * 0.3));
+                pitchAnim.setValue(nextPitch);
             },
             onPanResponderRelease: (_: GestureResponderEvent, gestureState: PanResponderGestureState) => {
-                const finalRaw = dragStartAngle.current + gestureState.dx * 1.05;
-                const flickMomentum = gestureState.vx * 65;
-                const projected = finalRaw + flickMomentum;
-                const nearestSnap = Math.round(projected / 180) * 180;
+                const raw = currentAngle.current;
+                const norm = ((raw % 360) + 360) % 360;
 
-                Animated.spring(rotateYAnim, {
-                    toValue: nearestSnap,
-                    velocity: gestureState.vx,
-                    useNativeDriver: true,
-                    friction: 7,
-                    tension: 32,
-                }).start(() => {
-                    currentAngle.current = nearestSnap;
-                    const isBack = Math.abs(Math.round(nearestSnap / 180) % 2) === 1;
-                    const targetSide = isBack ? 'Back' : 'Front';
-                    if (targetSide !== viewSide) {
-                        onToggleSide?.();
-                    }
-                });
+                // Snap to Front (0) or Back (180) based on drag direction or closeness
+                let targetNorm = 0;
+                if (gestureState.vx > 0.45) {
+                    targetNorm = norm > 90 && norm < 270 ? 0 : 180;
+                } else if (gestureState.vx < -0.45) {
+                    targetNorm = norm > 90 && norm < 270 ? 0 : 180;
+                } else {
+                    targetNorm = (norm >= 45 && norm < 225) ? 180 : 0;
+                }
+
+                const base = Math.floor(raw / 360) * 360;
+                let snap = base + targetNorm;
+                if (Math.abs(snap - raw) > 180) {
+                    snap += snap > raw ? -360 : 360;
+                }
+
+                Animated.parallel([
+                    Animated.spring(continuousAngle, {
+                        toValue: snap,
+                        friction: 8,
+                        tension: 36,
+                        useNativeDriver: true,
+                    }),
+                    Animated.spring(pitchAnim, {
+                        toValue: 0,
+                        friction: 8,
+                        tension: 32,
+                        useNativeDriver: true,
+                    }),
+                ]).start();
             },
         })
     ).current;
 
-    const rotateYFront = rotateYAnim.interpolate({
-        inputRange: [-360, 0, 360],
-        outputRange: ['-360deg', '0deg', '360deg'],
-        extrapolate: 'extend',
+    // Volumetric Continuous 360° Transform Interpolations
+    // Normalized angle [0, 360)
+    const normAngle = Animated.modulo(
+        Animated.add(Animated.modulo(continuousAngle, 360), 360),
+        360
+    );
+
+    // Front is visible when facing camera (-90° to +90°, i.e. [270° to 360°] and [0° to 90°])
+    const opacityFront = normAngle.interpolate({
+        inputRange: [0, 75, 90, 270, 285, 360],
+        outputRange: [1, 1, 0, 0, 1, 1],
+        extrapolate: 'clamp',
     });
 
-    const rotateYBack = rotateYAnim.interpolate({
-        inputRange: [-360, 0, 360],
-        outputRange: ['-180deg', '180deg', '540deg'],
-        extrapolate: 'extend',
+    // Back is visible when facing camera (90° to 270°)
+    const opacityBack = normAngle.interpolate({
+        inputRange: [0, 89, 90, 180, 270, 271, 360],
+        outputRange: [0, 0, 1, 1, 1, 0, 0],
+        extrapolate: 'clamp',
+    });
+
+    // Volumetric 3D tilt: max ±24° so the body NEVER flattens into a thin stick
+    const rotateYFront = normAngle.interpolate({
+        inputRange: [0, 90, 180, 270, 360],
+        outputRange: ['0deg', '24deg', '0deg', '-24deg', '0deg'],
+        extrapolate: 'clamp',
+    });
+
+    const rotateYBack = normAngle.interpolate({
+        inputRange: [0, 90, 180, 270, 360],
+        outputRange: ['0deg', '-24deg', '0deg', '24deg', '0deg'],
+        extrapolate: 'clamp',
+    });
+
+    const rotateXDegrees = pitchAnim.interpolate({
+        inputRange: [-30, 0, 30],
+        outputRange: ['-24deg', '0deg', '24deg'],
+        extrapolate: 'clamp',
     });
 
     const translateY = idleAnim.interpolate({
         inputRange: [0, 1],
-        outputRange: [0, -3],
-    });
-
-    const rotateXIdle = idleAnim.interpolate({
-        inputRange: [0, 1],
-        outputRange: ['0deg', '1.2deg'],
+        outputRange: [0, -2.5],
     });
 
     // Helper to get fill for active muscles
@@ -181,10 +288,10 @@ export function AnatomicalMuscleBody({
     };
 
     const getMuscleOpacity = (muscleName: keyof MuscleColorMap) => {
-        if (selectedMuscle === muscleName) return 0.95;
+        if (selectedMuscle === muscleName) return 0.96;
         if (!colors[muscleName]) return 0;
         const intensity = intensities[muscleName] ?? 70;
-        return Math.max(0.55, Math.min(0.92, (intensity / 100) * 0.95));
+        return Math.max(0.65, Math.min(0.95, (intensity / 100) * 0.95));
     };
 
     const getMuscleStroke = (muscleName: keyof MuscleColorMap) => {
@@ -236,15 +343,17 @@ export function AnatomicalMuscleBody({
         >
             {/* ════════════════════════════ FRONT 3D VIEW ════════════════════════════ */}
             <Animated.View
+                pointerEvents={currentSide === 'Front' ? 'auto' : 'none'}
                 style={[
                     StyleSheet.absoluteFill,
                     {
+                        opacity: opacityFront,
                         backfaceVisibility: 'hidden',
                         transform: [
                             { perspective: 1000 },
                             { translateY },
                             { rotateY: rotateYFront },
-                            { rotateX: rotateXIdle },
+                            { rotateX: rotateXDegrees },
                         ],
                     },
                 ]}
@@ -274,60 +383,60 @@ export function AnatomicalMuscleBody({
                         <Defs>
                             {colors['Peito'] && (
                                 <RadialGradient id="grad-pec-front" cx="50%" cy="50%" rx="60%" ry="50%">
-                                    <Stop offset="0%" stopColor={colors['Peito']} stopOpacity="0.95" />
-                                    <Stop offset="75%" stopColor={colors['Peito']} stopOpacity="0.75" />
-                                    <Stop offset="100%" stopColor={colors['Peito']} stopOpacity="0.35" />
+                                    <Stop offset="0%" stopColor={colors['Peito']} stopOpacity="0.96" />
+                                    <Stop offset="80%" stopColor={colors['Peito']} stopOpacity="0.88" />
+                                    <Stop offset="100%" stopColor={colors['Peito']} stopOpacity="0.75" />
                                 </RadialGradient>
                             )}
 
                             {colors['Ombros'] && (
                                 <LinearGradient id="grad-delts-front" x1="0%" y1="0%" x2="0%" y2="100%">
-                                    <Stop offset="0%" stopColor={colors['Ombros']} stopOpacity="0.95" />
-                                    <Stop offset="100%" stopColor={colors['Ombros']} stopOpacity="0.55" />
+                                    <Stop offset="0%" stopColor={colors['Ombros']} stopOpacity="0.96" />
+                                    <Stop offset="100%" stopColor={colors['Ombros']} stopOpacity="0.78" />
                                 </LinearGradient>
                             )}
 
                             {colors['Bíceps'] && (
                                 <LinearGradient id="grad-biceps-front" x1="0%" y1="0%" x2="0%" y2="100%">
-                                    <Stop offset="0%" stopColor={colors['Bíceps']} stopOpacity="0.95" />
-                                    <Stop offset="100%" stopColor={colors['Bíceps']} stopOpacity="0.55" />
+                                    <Stop offset="0%" stopColor={colors['Bíceps']} stopOpacity="0.96" />
+                                    <Stop offset="100%" stopColor={colors['Bíceps']} stopOpacity="0.78" />
                                 </LinearGradient>
                             )}
 
                             {colors['Antebraços'] && (
                                 <LinearGradient id="grad-forearms-front" x1="0%" y1="0%" x2="0%" y2="100%">
-                                    <Stop offset="0%" stopColor={colors['Antebraços']} stopOpacity="0.95" />
-                                    <Stop offset="100%" stopColor={colors['Antebraços']} stopOpacity="0.5" />
+                                    <Stop offset="0%" stopColor={colors['Antebraços']} stopOpacity="0.96" />
+                                    <Stop offset="100%" stopColor={colors['Antebraços']} stopOpacity="0.75" />
                                 </LinearGradient>
                             )}
 
                             {colors['Abdômen'] && (
                                 <RadialGradient id="grad-abs-front" cx="50%" cy="50%" rx="50%" ry="50%">
-                                    <Stop offset="0%" stopColor={colors['Abdômen']} stopOpacity="0.95" />
-                                    <Stop offset="80%" stopColor={colors['Abdômen']} stopOpacity="0.75" />
-                                    <Stop offset="100%" stopColor={colors['Abdômen']} stopOpacity="0.35" />
+                                    <Stop offset="0%" stopColor={colors['Abdômen']} stopOpacity="0.96" />
+                                    <Stop offset="80%" stopColor={colors['Abdômen']} stopOpacity="0.88" />
+                                    <Stop offset="100%" stopColor={colors['Abdômen']} stopOpacity="0.75" />
                                 </RadialGradient>
                             )}
 
                             {colors['Quadríceps'] && (
                                 <LinearGradient id="grad-quads-front" x1="0%" y1="0%" x2="0%" y2="100%">
-                                    <Stop offset="0%" stopColor={colors['Quadríceps']} stopOpacity="0.92" />
-                                    <Stop offset="70%" stopColor={colors['Quadríceps']} stopOpacity="0.7" />
-                                    <Stop offset="100%" stopColor={colors['Quadríceps']} stopOpacity="0.3" />
+                                    <Stop offset="0%" stopColor={colors['Quadríceps']} stopOpacity="0.96" />
+                                    <Stop offset="80%" stopColor={colors['Quadríceps']} stopOpacity="0.88" />
+                                    <Stop offset="100%" stopColor={colors['Quadríceps']} stopOpacity="0.78" />
                                 </LinearGradient>
                             )}
 
                             {colors['Panturrilhas'] && (
                                 <LinearGradient id="grad-calves-front" x1="0%" y1="0%" x2="0%" y2="100%">
-                                    <Stop offset="0%" stopColor={colors['Panturrilhas']} stopOpacity="0.92" />
-                                    <Stop offset="100%" stopColor={colors['Panturrilhas']} stopOpacity="0.45" />
+                                    <Stop offset="0%" stopColor={colors['Panturrilhas']} stopOpacity="0.95" />
+                                    <Stop offset="100%" stopColor={colors['Panturrilhas']} stopOpacity="0.75" />
                                 </LinearGradient>
                             )}
 
                             {colors['Trapézio'] && (
                                 <LinearGradient id="grad-traps-front" x1="0%" y1="0%" x2="0%" y2="100%">
-                                    <Stop offset="0%" stopColor={colors['Trapézio']} stopOpacity="0.92" />
-                                    <Stop offset="100%" stopColor={colors['Trapézio']} stopOpacity="0.5" />
+                                    <Stop offset="0%" stopColor={colors['Trapézio']} stopOpacity="0.95" />
+                                    <Stop offset="100%" stopColor={colors['Trapézio']} stopOpacity="0.75" />
                                 </LinearGradient>
                             )}
                         </Defs>
@@ -427,17 +536,17 @@ export function AnatomicalMuscleBody({
                                 />
                             </G>
 
-                            {/* Quadríceps */}
+                            {/* Quadríceps (Coxas Completas - Do Quadril à Patela) */}
                             <G {...getSvgPressProps('Quadríceps')}>
                                 <Path
-                                    d="M 340 755 L 338 800 L 337 850 L 342 900 L 353 950 L 372 1000 L 377 1050 L 378 1090 L 448 1090 L 454 1050 L 457 1000 L 457 950 L 462 900 L 469 850 L 469 800 L 472 755 Z"
+                                    d="M 349 680 L 337 740 L 330 800 L 329 830 L 334 900 L 345 950 L 365 1000 L 369 1050 L 370 1095 L 452 1095 L 456 1050 L 459 1000 L 460 950 L 465 900 L 470 840 L 474 780 L 476 745 L 415 710 Z"
                                     fill={getMuscleFill('Quadríceps', 'grad-quads-front')}
                                     fillOpacity={getMuscleOpacity('Quadríceps')}
                                     stroke={getMuscleStroke('Quadríceps')}
                                     strokeWidth={getMuscleStrokeWidth('Quadríceps')}
                                 />
                                 <Path
-                                    d="M 493 755 L 497 800 L 496 850 L 503 900 L 509 950 L 509 1000 L 512 1050 L 518 1090 L 588 1090 L 589 1050 L 593 1000 L 612 950 L 624 900 L 629 850 L 627 800 L 625 755 Z"
+                                    d="M 616 680 L 629 740 L 635 800 L 637 830 L 632 900 L 620 950 L 601 1000 L 597 1050 L 596 1095 L 514 1095 L 510 1050 L 507 1000 L 506 950 L 501 900 L 496 840 L 492 780 L 490 745 L 551 710 Z"
                                     fill={getMuscleFill('Quadríceps', 'grad-quads-front')}
                                     fillOpacity={getMuscleOpacity('Quadríceps')}
                                     stroke={getMuscleStroke('Quadríceps')}
@@ -469,15 +578,17 @@ export function AnatomicalMuscleBody({
 
             {/* ════════════════════════════ BACK 3D VIEW ════════════════════════════ */}
             <Animated.View
+                pointerEvents={currentSide === 'Back' ? 'auto' : 'none'}
                 style={[
                     StyleSheet.absoluteFill,
                     {
+                        opacity: opacityBack,
                         backfaceVisibility: 'hidden',
                         transform: [
                             { perspective: 1000 },
                             { translateY },
                             { rotateY: rotateYBack },
-                            { rotateX: rotateXIdle },
+                            { rotateX: rotateXDegrees },
                         ],
                     },
                 ]}
@@ -507,57 +618,60 @@ export function AnatomicalMuscleBody({
                         <Defs>
                             {colors['Trapézio'] && (
                                 <LinearGradient id="grad-traps-back" x1="0%" y1="0%" x2="0%" y2="100%">
-                                    <Stop offset="0%" stopColor={colors['Trapézio']} stopOpacity="0.95" />
-                                    <Stop offset="100%" stopColor={colors['Trapézio']} stopOpacity="0.5" />
+                                    <Stop offset="0%" stopColor={colors['Trapézio']} stopOpacity="0.96" />
+                                    <Stop offset="100%" stopColor={colors['Trapézio']} stopOpacity="0.75" />
                                 </LinearGradient>
                             )}
 
                             {colors['Costas'] && (
                                 <LinearGradient id="grad-back-lat" x1="0%" y1="0%" x2="0%" y2="100%">
-                                    <Stop offset="0%" stopColor={colors['Costas']} stopOpacity="0.95" />
-                                    <Stop offset="100%" stopColor={colors['Costas']} stopOpacity="0.5" />
+                                    <Stop offset="0%" stopColor={colors['Costas']} stopOpacity="0.96" />
+                                    <Stop offset="80%" stopColor={colors['Costas']} stopOpacity="0.88" />
+                                    <Stop offset="100%" stopColor={colors['Costas']} stopOpacity="0.75" />
                                 </LinearGradient>
                             )}
 
                             {colors['Ombros'] && (
                                 <LinearGradient id="grad-delts-back" x1="0%" y1="0%" x2="0%" y2="100%">
-                                    <Stop offset="0%" stopColor={colors['Ombros']} stopOpacity="0.95" />
-                                    <Stop offset="100%" stopColor={colors['Ombros']} stopOpacity="0.55" />
+                                    <Stop offset="0%" stopColor={colors['Ombros']} stopOpacity="0.96" />
+                                    <Stop offset="100%" stopColor={colors['Ombros']} stopOpacity="0.78" />
                                 </LinearGradient>
                             )}
 
                             {colors['Tríceps'] && (
                                 <LinearGradient id="grad-triceps-back" x1="0%" y1="0%" x2="0%" y2="100%">
-                                    <Stop offset="0%" stopColor={colors['Tríceps']} stopOpacity="0.95" />
-                                    <Stop offset="100%" stopColor={colors['Tríceps']} stopOpacity="0.55" />
+                                    <Stop offset="0%" stopColor={colors['Tríceps']} stopOpacity="0.96" />
+                                    <Stop offset="100%" stopColor={colors['Tríceps']} stopOpacity="0.78" />
                                 </LinearGradient>
                             )}
 
                             {colors['Glúteos'] && (
                                 <RadialGradient id="grad-glutes-back" cx="50%" cy="50%" rx="60%" ry="60%">
-                                    <Stop offset="0%" stopColor={colors['Glúteos']} stopOpacity="0.95" />
-                                    <Stop offset="100%" stopColor={colors['Glúteos']} stopOpacity="0.45" />
+                                    <Stop offset="0%" stopColor={colors['Glúteos']} stopOpacity="0.96" />
+                                    <Stop offset="85%" stopColor={colors['Glúteos']} stopOpacity="0.88" />
+                                    <Stop offset="100%" stopColor={colors['Glúteos']} stopOpacity="0.75" />
                                 </RadialGradient>
                             )}
 
                             {colors['Isquiotibiais'] && (
                                 <LinearGradient id="grad-hamstrings-back" x1="0%" y1="0%" x2="0%" y2="100%">
-                                    <Stop offset="0%" stopColor={colors['Isquiotibiais']} stopOpacity="0.92" />
-                                    <Stop offset="100%" stopColor={colors['Isquiotibiais']} stopOpacity="0.45" />
+                                    <Stop offset="0%" stopColor={colors['Isquiotibiais']} stopOpacity="0.96" />
+                                    <Stop offset="85%" stopColor={colors['Isquiotibiais']} stopOpacity="0.88" />
+                                    <Stop offset="100%" stopColor={colors['Isquiotibiais']} stopOpacity="0.75" />
                                 </LinearGradient>
                             )}
 
                             {colors['Panturrilhas'] && (
                                 <LinearGradient id="grad-calves-back" x1="0%" y1="0%" x2="0%" y2="100%">
-                                    <Stop offset="0%" stopColor={colors['Panturrilhas']} stopOpacity="0.92" />
-                                    <Stop offset="100%" stopColor={colors['Panturrilhas']} stopOpacity="0.45" />
+                                    <Stop offset="0%" stopColor={colors['Panturrilhas']} stopOpacity="0.95" />
+                                    <Stop offset="100%" stopColor={colors['Panturrilhas']} stopOpacity="0.75" />
                                 </LinearGradient>
                             )}
 
                             {colors['Antebraços'] && (
                                 <LinearGradient id="grad-forearms-back" x1="0%" y1="0%" x2="0%" y2="100%">
-                                    <Stop offset="0%" stopColor={colors['Antebraços']} stopOpacity="0.95" />
-                                    <Stop offset="100%" stopColor={colors['Antebraços']} stopOpacity="0.5" />
+                                    <Stop offset="0%" stopColor={colors['Antebraços']} stopOpacity="0.96" />
+                                    <Stop offset="100%" stopColor={colors['Antebraços']} stopOpacity="0.75" />
                                 </LinearGradient>
                             )}
                         </Defs>
@@ -649,14 +763,14 @@ export function AnatomicalMuscleBody({
                             {/* Glúteos */}
                             <G {...getSvgPressProps('Glúteos')}>
                                 <Path
-                                    d="M 462 699 L 408 696 L 352 686 L 345 729 L 338 784 L 340 836 L 371 862 L 418 862 L 462 855 Z"
+                                    d="M 468 700 L 410 690 L 350 686 L 330 730 L 318 780 L 317 820 L 318 860 L 350 842 L 380 834 L 410 828 L 440 818 L 468 805 Z"
                                     fill={getMuscleFill('Glúteos', 'grad-glutes-back')}
                                     fillOpacity={getMuscleOpacity('Glúteos')}
                                     stroke={getMuscleStroke('Glúteos')}
                                     strokeWidth={getMuscleStrokeWidth('Glúteos')}
                                 />
                                 <Path
-                                    d="M 480 699 L 544 696 L 605 686 L 613 733 L 620 784 L 618 836 L 581 862 L 534 862 L 482 859 Z"
+                                    d="M 479 700 L 538 690 L 598 686 L 618 730 L 630 780 L 631 820 L 630 860 L 598 842 L 568 834 L 538 828 L 508 818 L 479 805 Z"
                                     fill={getMuscleFill('Glúteos', 'grad-glutes-back')}
                                     fillOpacity={getMuscleOpacity('Glúteos')}
                                     stroke={getMuscleStroke('Glúteos')}
@@ -664,17 +778,17 @@ export function AnatomicalMuscleBody({
                                 />
                             </G>
 
-                            {/* Isquiotibiais (Posterior de Coxa) */}
+                            {/* Isquiotibiais (Posterior de Coxa Completo - Da Dobra Glútea ao Joelho) */}
                             <G {...getSvgPressProps('Isquiotibiais')}>
                                 <Path
-                                    d="M 462 900 L 458 950 L 455 1000 L 454 1050 L 450 1100 L 370 1100 L 364 1050 L 350 1000 L 338 950 L 330 900 Z"
+                                    d="M 468 805 L 440 818 L 410 828 L 380 834 L 350 842 L 318 860 L 318 865 L 320 890 L 323 920 L 331 960 L 342 1000 L 357 1050 L 361 1095 L 459 1095 L 463 1050 L 464 1000 L 466 950 L 471 900 L 473 870 L 472 835 Z"
                                     fill={getMuscleFill('Isquiotibiais', 'grad-hamstrings-back')}
                                     fillOpacity={getMuscleOpacity('Isquiotibiais')}
                                     stroke={getMuscleStroke('Isquiotibiais')}
                                     strokeWidth={getMuscleStrokeWidth('Isquiotibiais')}
                                 />
                                 <Path
-                                    d="M 486 900 L 490 950 L 492 1000 L 493 1050 L 497 1100 L 579 1100 L 583 1050 L 598 1000 L 610 950 L 618 900 Z"
+                                    d="M 479 805 L 508 818 L 538 828 L 568 834 L 598 842 L 630 860 L 630 865 L 628 890 L 624 920 L 617 960 L 606 1000 L 591 1050 L 587 1095 L 489 1095 L 485 1050 L 484 1000 L 482 950 L 478 900 L 475 870 L 475 835 Z"
                                     fill={getMuscleFill('Isquiotibiais', 'grad-hamstrings-back')}
                                     fillOpacity={getMuscleOpacity('Isquiotibiais')}
                                     stroke={getMuscleStroke('Isquiotibiais')}

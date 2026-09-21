@@ -80,6 +80,68 @@ function formatRelativeTime(dateIso: string | null): string {
     }
 }
 
+// Robust anatomical muscle detector for exercises (checks body_parts, catalog, and names/keywords)
+function detectMuscleGroupsForExercise(ex: { id?: string | number; name?: string; body_parts?: string[] }): string[] {
+    const matched = new Set<string>();
+    let parts: string[] = (ex.body_parts || []).slice();
+
+    // Fallback to library catalog if body_parts is empty
+    if (parts.length === 0) {
+        const details = exercisesData.find(
+            (d: any) =>
+                (ex.id && d.id?.toString() === ex.id.toString()) ||
+                (ex.name && d.name?.toLowerCase().trim() === ex.name.toLowerCase().trim())
+        );
+        if (details?.body_parts) {
+            parts = details.body_parts;
+        }
+    }
+
+    const rawParts = parts.map((p) => p.toLowerCase().trim());
+    const exName = (ex.name || '').toLowerCase().trim();
+
+    const has = (terms: string[]) => terms.some((t) => rawParts.some((p) => p.includes(t)) || exName.includes(t));
+
+    if (has(['peito', 'chest', 'supino', 'crucifixo', 'crossover', 'peck deck', 'voador', 'flexão'])) {
+        matched.add('Peito');
+    }
+    if (has(['costas', 'back', 'dorsal', 'puxada', 'remada', 'pulldown', 'barra fixa', 'serrote', 'lat pulldown', 'chin-up'])) {
+        matched.add('Costas');
+    }
+    if (has(['ombro', 'shoulder', 'deltoid', 'deltoide', 'desenvolvimento', 'elevação lateral', 'elevação frontal', 'arnold', 'militar'])) {
+        matched.add('Ombros');
+    }
+    if (has(['bíceps', 'biceps', 'bicep', 'rosca', 'scott'])) {
+        matched.add('Bíceps');
+    }
+    if (has(['tríceps', 'triceps', 'tricep', 'testa', 'pulley', 'corda', 'coice', 'francês', 'mergulho', 'paralela'])) {
+        matched.add('Tríceps');
+    }
+    if (has(['abdômen', 'abdomen', 'abs', 'core', 'cintura', 'waist', 'abdominal', 'prancha', 'infra', 'supra', 'crunch'])) {
+        matched.add('Abdômen');
+    }
+    if (has(['quadríceps', 'quadriceps', 'quad', 'coxa', 'thigh', 'agachamento', 'leg press', 'extensora', 'hack', 'afundo', 'passada', 'sissy', 'avanço', 'squat'])) {
+        matched.add('Quadríceps');
+    }
+    if (has(['isquiotibiais', 'isquio', 'hamstring', 'posterior de coxa', 'flexora', 'stiff', 'mesa flexora', 'cadeira flexora', 'rdl'])) {
+        matched.add('Isquiotibiais');
+    }
+    if (has(['glúteo', 'gluteo', 'glute', 'glutes', 'hip', 'elevação pélvica', 'abdução', 'coice glúteo', 'bumbum'])) {
+        matched.add('Glúteos');
+    }
+    if (has(['panturrilha', 'calf', 'calves', 'gêmeos', 'solear', 'panturrilhas'])) {
+        matched.add('Panturrilhas');
+    }
+    if (has(['trapézio', 'trapezio', 'trap', 'traps', 'encolhimento', 'remada alta'])) {
+        matched.add('Trapézio');
+    }
+    if (has(['antebraço', 'antebraco', 'forearm', 'forearms', 'punho', 'rosca inversa', 'rosca punho'])) {
+        matched.add('Antebraços');
+    }
+
+    return Array.from(matched);
+}
+
 export function MuscleGroupHeatmapWidget() {
     const { theme } = useTheme();
     const isDark = theme.mode === 'dark';
@@ -93,6 +155,7 @@ export function MuscleGroupHeatmapWidget() {
     const [period, setPeriod] = useState<PeriodType>('semana');
     const [mode, setMode] = useState<ViewMode>('carga');
     const [viewSide, setViewSide] = useState<'Front' | 'Back'>('Front');
+    const [resetTrigger, setResetTrigger] = useState(0);
     const [selectedMuscle, setSelectedMuscle] = useState<string | null>(null);
     const [showInfoModal, setShowInfoModal] = useState(false);
 
@@ -156,31 +219,9 @@ export function MuscleGroupHeatmapWidget() {
         // Search in ALL history for lastTrainedDate to compute accurate recovery
         (history || []).forEach((record) => {
             (record.exercises || []).forEach((ex) => {
-                let parts: string[] = (ex as any).body_parts || [];
-                if (parts.length === 0) {
-                    const details = exercisesData.find((d: any) => d.id?.toString() === ex.id?.toString());
-                    if (details?.body_parts) parts = details.body_parts;
-                }
-                const rawParts = parts.map((p) => p.toLowerCase().trim());
-
-                baseGroups.forEach((group) => {
-                    const gLow = group.toLowerCase();
-                    const matches =
-                        rawParts.some((p) => p.includes(gLow)) ||
-                        (group === 'Peito' && rawParts.some((p) => p.includes('chest'))) ||
-                        (group === 'Costas' && rawParts.some((p) => p.includes('back'))) ||
-                        (group === 'Ombros' && rawParts.some((p) => p.includes('shoulder'))) ||
-                        (group === 'Bíceps' && rawParts.some((p) => p.includes('bicep'))) ||
-                        (group === 'Tríceps' && rawParts.some((p) => p.includes('tricep'))) ||
-                        (group === 'Abdômen' && rawParts.some((p) => p.includes('abs') || p.includes('waist') || p.includes('core'))) ||
-                        (group === 'Quadríceps' && rawParts.some((p) => p.includes('quad') || p.includes('thigh'))) ||
-                        (group === 'Isquiotibiais' && rawParts.some((p) => p.includes('hamstring') || p.includes('isquio'))) ||
-                        (group === 'Panturrilhas' && rawParts.some((p) => p.includes('calf'))) ||
-                        (group === 'Glúteos' && rawParts.some((p) => p.includes('glute') || p.includes('hip'))) ||
-                        (group === 'Trapézio' && rawParts.some((p) => p.includes('trap'))) ||
-                        (group === 'Antebraços' && rawParts.some((p) => p.includes('forearm')));
-
-                    if (matches) {
+                const detected = detectMuscleGroupsForExercise(ex);
+                detected.forEach((group) => {
+                    if (data[group]) {
                         if (!data[group].lastTrainedDate || new Date(record.date) > new Date(data[group].lastTrainedDate!)) {
                             data[group].lastTrainedDate = record.date;
                         }
@@ -196,32 +237,10 @@ export function MuscleGroupHeatmapWidget() {
             (record.exercises || []).forEach((ex) => {
                 const setsCount = ex.sets && ex.sets.length > 0 ? ex.sets.length : 1;
                 const exVolume = (ex.sets || []).reduce((acc, s) => acc + (s.kg || 0) * (s.reps || 1), 0);
+                const detected = detectMuscleGroupsForExercise(ex);
 
-                let parts: string[] = (ex as any).body_parts || [];
-                if (parts.length === 0) {
-                    const details = exercisesData.find((d: any) => d.id?.toString() === ex.id?.toString());
-                    if (details?.body_parts) parts = details.body_parts;
-                }
-                const rawParts = parts.map((p) => p.toLowerCase().trim());
-
-                baseGroups.forEach((group) => {
-                    const gLow = group.toLowerCase();
-                    const matches =
-                        rawParts.some((p) => p.includes(gLow)) ||
-                        (group === 'Peito' && rawParts.some((p) => p.includes('chest'))) ||
-                        (group === 'Costas' && rawParts.some((p) => p.includes('back'))) ||
-                        (group === 'Ombros' && rawParts.some((p) => p.includes('shoulder'))) ||
-                        (group === 'Bíceps' && rawParts.some((p) => p.includes('bicep'))) ||
-                        (group === 'Tríceps' && rawParts.some((p) => p.includes('tricep'))) ||
-                        (group === 'Abdômen' && rawParts.some((p) => p.includes('abs') || p.includes('waist') || p.includes('core'))) ||
-                        (group === 'Quadríceps' && rawParts.some((p) => p.includes('quad') || p.includes('thigh'))) ||
-                        (group === 'Isquiotibiais' && rawParts.some((p) => p.includes('hamstring') || p.includes('isquio'))) ||
-                        (group === 'Panturrilhas' && rawParts.some((p) => p.includes('calf'))) ||
-                        (group === 'Glúteos' && rawParts.some((p) => p.includes('glute') || p.includes('hip'))) ||
-                        (group === 'Trapézio' && rawParts.some((p) => p.includes('trap'))) ||
-                        (group === 'Antebraços' && rawParts.some((p) => p.includes('forearm')));
-
-                    if (matches) {
+                detected.forEach((group) => {
+                    if (data[group]) {
                         data[group].sets += setsCount;
                         data[group].volumeKg += exVolume;
                         data[group].exercises.add(ex.name);
@@ -231,7 +250,9 @@ export function MuscleGroupHeatmapWidget() {
             });
 
             groupsTrainedInThisWorkout.forEach((group) => {
-                data[group].workoutsCount += 1;
+                if (data[group]) {
+                    data[group].workoutsCount += 1;
+                }
             });
         });
 
@@ -242,18 +263,20 @@ export function MuscleGroupHeatmapWidget() {
             const item = data[g];
             const loadPct = item.sets > 0 ? Math.min(100, Math.round((item.sets / maxSets) * 100)) : 0;
 
-            // Compute scientific recovery estimation
+            // Compute biological recovery estimation (48-72h supercompensation window)
             let recoveryPct = 100;
             if (item.lastTrainedDate) {
                 const elapsedHours = (Date.now() - new Date(item.lastTrainedDate).getTime()) / (1000 * 60 * 60);
-                if (elapsedHours < 24) {
-                    recoveryPct = Math.round(25 + (elapsedHours / 24) * 20); // 25-45%
+                if (elapsedHours < 0) {
+                    recoveryPct = 25;
+                } else if (elapsedHours < 24) {
+                    recoveryPct = Math.round(25 + (elapsedHours / 24) * 20); // 25-45% (Fadiga aguda)
                 } else if (elapsedHours < 48) {
-                    recoveryPct = Math.round(45 + ((elapsedHours - 24) / 24) * 35); // 45-80%
+                    recoveryPct = Math.round(45 + ((elapsedHours - 24) / 24) * 35); // 45-80% (Em recuperação)
                 } else if (elapsedHours < 72) {
-                    recoveryPct = Math.round(80 + ((elapsedHours - 48) / 24) * 18); // 80-98%
+                    recoveryPct = Math.round(80 + ((elapsedHours - 48) / 24) * 18); // 80-98% (Quase pronto)
                 } else {
-                    recoveryPct = 100;
+                    recoveryPct = 100; // Totalmente recuperado
                 }
             }
 
@@ -284,11 +307,19 @@ export function MuscleGroupHeatmapWidget() {
                     map[muscle as keyof MuscleColorMap] = item.loadColor;
                 }
             } else if (item.lastTrainedDate) {
+                // In recovery mode, color muscles that have been trained with their recovery status
                 map[muscle as keyof MuscleColorMap] = item.recoveryColor;
             }
         });
         return map;
     }, [muscleMap, mode]);
+
+    // Recovery muscles list (ranked by recovery percentage ascending - lowest recovery first)
+    const recoveryList = useMemo(() => {
+        return Object.values(muscleMap)
+            .filter((m) => m.lastTrainedDate !== null)
+            .sort((a, b) => a.recoveryPercentage - b.recoveryPercentage);
+    }, [muscleMap]);
 
     // Top 3 most trained muscles
     const topMuscles = useMemo(() => {
@@ -542,78 +573,77 @@ export function MuscleGroupHeatmapWidget() {
                         shadowRadius: 22,
                     }}
                 >
-                    {/* Botões Frente | Costas e Dica 3D */}
+                    {/* 3D Omnidirectional Controls Header */}
                     <View
                         style={{
                             flexDirection: 'row',
                             alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: 10,
+                            justifyContent: 'space-between',
+                            width: '100%',
+                            paddingHorizontal: 4,
                             marginBottom: 8,
                         }}
                     >
-                        <View
+                        <TouchableOpacity
+                            onPress={() => setViewSide((prev) => (prev === 'Front' ? 'Back' : 'Front'))}
+                            activeOpacity={0.75}
                             style={{
                                 flexDirection: 'row',
+                                alignItems: 'center',
+                                gap: 6,
+                                backgroundColor: isDark ? 'rgba(30, 41, 59, 0.7)' : 'rgba(241, 245, 249, 0.95)',
+                                paddingHorizontal: 10,
+                                paddingVertical: 5,
+                                borderRadius: 10,
+                                borderWidth: 1,
+                                borderColor: isDark ? 'rgba(148, 163, 184, 0.16)' : 'rgba(148, 163, 184, 0.28)',
+                            }}
+                        >
+                            <Ionicons name="sync-outline" size={13} color={theme.colors.primary} />
+                            <Text
+                                style={{
+                                    color: theme.colors.text,
+                                    fontSize: 11,
+                                    fontFamily: FontFamily.sansBold,
+                                    letterSpacing: 0.2,
+                                }}
+                            >
+                                Giro 360° Livre {viewSide === 'Front' ? '(Frente)' : '(Costas)'}
+                            </Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            onPress={() => {
+                                setViewSide('Front');
+                                setResetTrigger((prev) => prev + 1);
+                            }}
+                            activeOpacity={0.75}
+                            style={{
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                gap: 4,
                                 backgroundColor: theme.colors.backgroundSecondary,
-                                borderRadius: 12,
-                                padding: 2,
+                                paddingHorizontal: 10,
+                                paddingVertical: 5,
+                                borderRadius: 10,
                                 borderWidth: 1,
                                 borderColor: theme.colors.border,
                             }}
                         >
-                            <TouchableOpacity
-                                onPress={() => setViewSide('Front')}
-                                activeOpacity={0.75}
+                            <Ionicons name="refresh" size={12} color={theme.colors.textSecondary} />
+                            <Text
                                 style={{
-                                    paddingHorizontal: 12,
-                                    paddingVertical: 4,
-                                    borderRadius: 9,
-                                    backgroundColor: viewSide === 'Front' ? theme.colors.primary : 'transparent',
+                                    color: theme.colors.textSecondary,
+                                    fontSize: 11,
+                                    fontFamily: FontFamily.sansMedium,
                                 }}
                             >
-                                <Text
-                                    style={{
-                                        color: viewSide === 'Front' ? theme.colors.onPrimary : theme.colors.textSecondary,
-                                        fontSize: 11,
-                                        fontFamily: FontFamily.sansBold,
-                                    }}
-                                >
-                                    Frente
-                                </Text>
-                            </TouchableOpacity>
-
-                            <TouchableOpacity
-                                onPress={() => setViewSide('Back')}
-                                activeOpacity={0.75}
-                                style={{
-                                    paddingHorizontal: 12,
-                                    paddingVertical: 4,
-                                    borderRadius: 9,
-                                    backgroundColor: viewSide === 'Back' ? theme.colors.primary : 'transparent',
-                                }}
-                            >
-                                <Text
-                                    style={{
-                                        color: viewSide === 'Back' ? theme.colors.onPrimary : theme.colors.textSecondary,
-                                        fontSize: 11,
-                                        fontFamily: FontFamily.sansBold,
-                                    }}
-                                >
-                                    Costas
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
-
-                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                            <Ionicons name="hand-left-outline" size={13} color={theme.colors.textMuted} />
-                            <Text style={{ color: theme.colors.textMuted, fontSize: 10, fontFamily: FontFamily.sansMedium }}>
-                                Arraste ou toque
+                                Centralizar
                             </Text>
-                        </View>
+                        </TouchableOpacity>
                     </View>
 
-                    {/* Corpo anatômico realista com mapa de calor por treino */}
+                    {/* Corpo anatômico realista com mapa de calor 360° */}
                     <View
                         style={{
                             height: 355,
@@ -630,14 +660,15 @@ export function MuscleGroupHeatmapWidget() {
                             mode={mode}
                             selectedMuscle={selectedMuscle}
                             onSelectMuscle={(m) => setSelectedMuscle(m)}
-                            onToggleSide={() => setViewSide((side) => side === 'Front' ? 'Back' : 'Front')}
+                            onToggleSide={() => setViewSide((prev) => (prev === 'Front' ? 'Back' : 'Front'))}
+                            resetTrigger={resetTrigger}
                             width={250}
                             height={345}
                         />
                     </View>
                 </View>
 
-                {/* Desktop Side Column: Top Músculos & Equilíbrio */}
+                {/* Desktop Side Column: Top Músculos & Recuperação */}
                 {isDesktop && (
                     <View style={{ flex: 1, minWidth: 260, gap: 14 }}>
                         <Text
@@ -649,45 +680,85 @@ export function MuscleGroupHeatmapWidget() {
                                 letterSpacing: 0.6,
                             }}
                         >
-                            Destaques do Período
+                            {mode === 'carga' ? 'Destaques de Volume' : 'Status de Recuperação'}
                         </Text>
 
-                        {topMuscles.length > 0 ? (
-                            <View style={{ gap: 8 }}>
-                                {topMuscles.map((m, idx) => (
-                                    <TouchableOpacity
-                                        key={m.name}
-                                        onPress={() => setSelectedMuscle(m.name)}
-                                        activeOpacity={0.8}
-                                        style={{
-                                            backgroundColor: theme.colors.backgroundSecondary,
-                                            padding: 12,
-                                            borderRadius: 14,
-                                            borderWidth: 1,
-                                            borderColor: selectedMuscle === m.name ? theme.colors.primary : theme.colors.border,
-                                        }}
-                                    >
-                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 }}>
-                                            <Text style={{ color: theme.colors.text, fontSize: 13, fontFamily: FontFamily.sansBold }}>
-                                                #{idx + 1} {m.displayName}
+                        {mode === 'carga' ? (
+                            topMuscles.length > 0 ? (
+                                <View style={{ gap: 8 }}>
+                                    {topMuscles.map((m, idx) => (
+                                        <TouchableOpacity
+                                            key={m.name}
+                                            onPress={() => setSelectedMuscle(m.name)}
+                                            activeOpacity={0.8}
+                                            style={{
+                                                backgroundColor: theme.colors.backgroundSecondary,
+                                                padding: 12,
+                                                borderRadius: 14,
+                                                borderWidth: 1,
+                                                borderColor: selectedMuscle === m.name ? theme.colors.primary : theme.colors.border,
+                                            }}
+                                        >
+                                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 }}>
+                                                <Text style={{ color: theme.colors.text, fontSize: 13, fontFamily: FontFamily.sansBold }}>
+                                                    #{idx + 1} {m.displayName}
+                                                </Text>
+                                                <Text style={{ color: theme.colors.primary, fontSize: 13, fontFamily: FontFamily.sansBold }}>
+                                                    {m.loadPercentage}%
+                                                </Text>
+                                            </View>
+                                            <View style={{ height: 6, backgroundColor: theme.colors.cardBorder, borderRadius: 3, overflow: 'hidden' }}>
+                                                <View style={{ width: `${m.loadPercentage}%`, height: '100%', backgroundColor: m.loadColor || theme.colors.primary, borderRadius: 3 }} />
+                                            </View>
+                                            <Text style={{ color: theme.colors.textMuted, fontSize: 10, marginTop: 5 }}>
+                                                {m.sets} séries • {m.volumeKg} kg levantados
                                             </Text>
-                                            <Text style={{ color: theme.colors.primary, fontSize: 13, fontFamily: FontFamily.sansBold }}>
-                                                {m.loadPercentage}%
-                                            </Text>
-                                        </View>
-                                        <View style={{ height: 6, backgroundColor: theme.colors.cardBorder, borderRadius: 3, overflow: 'hidden' }}>
-                                            <View style={{ width: `${m.loadPercentage}%`, height: '100%', backgroundColor: m.loadColor || theme.colors.primary, borderRadius: 3 }} />
-                                        </View>
-                                        <Text style={{ color: theme.colors.textMuted, fontSize: 10, marginTop: 5 }}>
-                                            {m.sets} séries • {m.volumeKg} kg levantados
-                                        </Text>
-                                    </TouchableOpacity>
-                                ))}
-                            </View>
+                                        </TouchableOpacity>
+                                    ))}
+                                </View>
+                            ) : (
+                                <Text style={{ color: theme.colors.textMuted, fontSize: 12, fontStyle: 'italic' }}>
+                                    Nenhum treino registrado neste período.
+                                </Text>
+                            )
                         ) : (
-                            <Text style={{ color: theme.colors.textMuted, fontSize: 12, fontStyle: 'italic' }}>
-                                Nenhum treino registrado neste período.
-                            </Text>
+                            recoveryList.length > 0 ? (
+                                <View style={{ gap: 8 }}>
+                                    {recoveryList.map((m) => (
+                                        <TouchableOpacity
+                                            key={m.name}
+                                            onPress={() => setSelectedMuscle(m.name)}
+                                            activeOpacity={0.8}
+                                            style={{
+                                                backgroundColor: theme.colors.backgroundSecondary,
+                                                padding: 12,
+                                                borderRadius: 14,
+                                                borderWidth: 1,
+                                                borderColor: selectedMuscle === m.name ? m.recoveryColor : theme.colors.border,
+                                            }}
+                                        >
+                                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 }}>
+                                                <Text style={{ color: theme.colors.text, fontSize: 13, fontFamily: FontFamily.sansBold }}>
+                                                    {m.displayName}
+                                                </Text>
+                                                <Text style={{ color: m.recoveryColor, fontSize: 13, fontFamily: FontFamily.sansBold }}>
+                                                    {m.recoveryPercentage}%
+                                                </Text>
+                                            </View>
+                                            <View style={{ height: 6, backgroundColor: theme.colors.cardBorder, borderRadius: 3, overflow: 'hidden' }}>
+                                                <View style={{ width: `${m.recoveryPercentage}%`, height: '100%', backgroundColor: m.recoveryColor, borderRadius: 3 }} />
+                                            </View>
+                                            <Text style={{ color: theme.colors.textMuted, fontSize: 10, marginTop: 5 }}>
+                                                {formatRelativeTime(m.lastTrainedDate)} • {m.recoveryPercentage < 40 ? 'Descanso recomendado' : m.recoveryPercentage < 80 ? 'Em recuperação' : 'Pronto para treinar'}
+                                            </Text>
+                                        </TouchableOpacity>
+                                    ))}
+                                </View>
+                            ) : (
+                                <Text style={{ color: theme.colors.textMuted, fontSize: 12, fontStyle: 'italic' }}>
+                                    Todos os grupos musculares estão totalmente recuperados.
+                                </Text>
+                            )
                         )}
                     </View>
                 )}
@@ -760,8 +831,8 @@ export function MuscleGroupHeatmapWidget() {
                 )}
             </View>
 
-            {/* ══════════════ 5. TOP MÚSCULOS NO MOBILE ══════════════ */}
-            {!isDesktop && topMuscles.length > 0 && (
+            {/* ══════════════ 5. DESTAQUES NO MOBILE (CARGA OU RECUPERAÇÃO) ══════════════ */}
+            {!isDesktop && (
                 <View style={{ marginTop: 14, paddingTop: 12, borderTopWidth: 1, borderTopColor: theme.colors.border }}>
                     <Text
                         style={{
@@ -773,61 +844,132 @@ export function MuscleGroupHeatmapWidget() {
                             marginBottom: 8,
                         }}
                     >
-                        Músculos Mais Trabalhados ({period === 'ultimo' ? 'Último Treino' : period === 'hoje' ? 'Hoje' : period === 'semana' ? 'Esta Semana' : 'Este Mês'})
+                        {mode === 'carga'
+                            ? `Músculos Mais Trabalhados (${period === 'ultimo' ? 'Último Treino' : period === 'hoje' ? 'Hoje' : period === 'semana' ? 'Esta Semana' : 'Este Mês'})`
+                            : 'Status de Recuperação Muscular'}
                     </Text>
 
-                    <View style={{ gap: 8 }}>
-                        {topMuscles.map((m, idx) => (
-                            <TouchableOpacity
-                                key={m.name}
-                                onPress={() => setSelectedMuscle(m.name)}
-                                activeOpacity={0.8}
-                                style={{
-                                    flexDirection: 'row',
-                                    alignItems: 'center',
-                                    justifyContent: 'space-between',
-                                    backgroundColor: theme.colors.backgroundSecondary,
-                                    paddingHorizontal: 12,
-                                    paddingVertical: 9,
-                                    borderRadius: 12,
-                                    borderWidth: 1,
-                                    borderColor: selectedMuscle === m.name ? theme.colors.primary : theme.colors.border,
-                                }}
-                            >
-                                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                                    <View
+                    {mode === 'carga' ? (
+                        topMuscles.length > 0 ? (
+                            <View style={{ gap: 8 }}>
+                                {topMuscles.map((m, idx) => (
+                                    <TouchableOpacity
+                                        key={m.name}
+                                        onPress={() => setSelectedMuscle(m.name)}
+                                        activeOpacity={0.8}
                                         style={{
-                                            width: 10,
-                                            height: 10,
-                                            borderRadius: 5,
-                                            backgroundColor: m.loadColor || theme.colors.primary,
-                                        }}
-                                    />
-                                    <Text style={{ color: theme.colors.text, fontSize: 13, fontFamily: FontFamily.sansBold }}>
-                                        {m.displayName}
-                                    </Text>
-                                </View>
-
-                                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-                                    <Text style={{ color: theme.colors.textMuted, fontSize: 11, fontFamily: FontFamily.sansMedium }}>
-                                        {m.sets} séries • {m.volumeKg} kg
-                                    </Text>
-                                    <View
-                                        style={{
-                                            backgroundColor: isDark ? 'rgba(56, 189, 248, 0.12)' : 'rgba(2, 132, 199, 0.1)',
-                                            paddingHorizontal: 7,
-                                            paddingVertical: 2,
-                                            borderRadius: 6,
+                                            flexDirection: 'row',
+                                            alignItems: 'center',
+                                            justifyContent: 'space-between',
+                                            backgroundColor: theme.colors.backgroundSecondary,
+                                            paddingHorizontal: 12,
+                                            paddingVertical: 9,
+                                            borderRadius: 12,
+                                            borderWidth: 1,
+                                            borderColor: selectedMuscle === m.name ? theme.colors.primary : theme.colors.border,
                                         }}
                                     >
-                                        <Text style={{ color: theme.colors.primary, fontSize: 11, fontFamily: FontFamily.sansBold }}>
-                                            {m.loadPercentage}%
-                                        </Text>
-                                    </View>
-                                </View>
-                            </TouchableOpacity>
-                        ))}
-                    </View>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                                            <View
+                                                style={{
+                                                    width: 10,
+                                                    height: 10,
+                                                    borderRadius: 5,
+                                                    backgroundColor: m.loadColor || theme.colors.primary,
+                                                }}
+                                            />
+                                            <Text style={{ color: theme.colors.text, fontSize: 13, fontFamily: FontFamily.sansBold }}>
+                                                {m.displayName}
+                                            </Text>
+                                        </View>
+
+                                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                                            <Text style={{ color: theme.colors.textMuted, fontSize: 11, fontFamily: FontFamily.sansMedium }}>
+                                                {m.sets} séries • {m.volumeKg} kg
+                                            </Text>
+                                            <View
+                                                style={{
+                                                    backgroundColor: isDark ? 'rgba(56, 189, 248, 0.12)' : 'rgba(2, 132, 199, 0.1)',
+                                                    paddingHorizontal: 7,
+                                                    paddingVertical: 2,
+                                                    borderRadius: 6,
+                                                }}
+                                            >
+                                                <Text style={{ color: theme.colors.primary, fontSize: 11, fontFamily: FontFamily.sansBold }}>
+                                                    {m.loadPercentage}%
+                                                </Text>
+                                            </View>
+                                        </View>
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
+                        ) : (
+                            <Text style={{ color: theme.colors.textMuted, fontSize: 12, fontStyle: 'italic', paddingVertical: 4 }}>
+                                Nenhum treino registrado neste período.
+                            </Text>
+                        )
+                    ) : (
+                        recoveryList.length > 0 ? (
+                            <View style={{ gap: 8 }}>
+                                {recoveryList.map((m) => (
+                                    <TouchableOpacity
+                                        key={m.name}
+                                        onPress={() => setSelectedMuscle(m.name)}
+                                        activeOpacity={0.8}
+                                        style={{
+                                            flexDirection: 'row',
+                                            alignItems: 'center',
+                                            justifyContent: 'space-between',
+                                            backgroundColor: theme.colors.backgroundSecondary,
+                                            paddingHorizontal: 12,
+                                            paddingVertical: 9,
+                                            borderRadius: 12,
+                                            borderWidth: 1,
+                                            borderColor: selectedMuscle === m.name ? m.recoveryColor : theme.colors.border,
+                                        }}
+                                    >
+                                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                                            <View
+                                                style={{
+                                                    width: 10,
+                                                    height: 10,
+                                                    borderRadius: 5,
+                                                    backgroundColor: m.recoveryColor,
+                                                }}
+                                            />
+                                            <Text style={{ color: theme.colors.text, fontSize: 13, fontFamily: FontFamily.sansBold }}>
+                                                {m.displayName}
+                                            </Text>
+                                        </View>
+
+                                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                                            <Text style={{ color: theme.colors.textMuted, fontSize: 11, fontFamily: FontFamily.sansMedium }}>
+                                                {formatRelativeTime(m.lastTrainedDate)}
+                                            </Text>
+                                            <View
+                                                style={{
+                                                    backgroundColor: isDark ? 'rgba(30, 41, 59, 0.8)' : 'rgba(241, 245, 249, 0.95)',
+                                                    paddingHorizontal: 7,
+                                                    paddingVertical: 2,
+                                                    borderRadius: 6,
+                                                    borderWidth: 1,
+                                                    borderColor: m.recoveryColor,
+                                                }}
+                                            >
+                                                <Text style={{ color: m.recoveryColor, fontSize: 11, fontFamily: FontFamily.sansBold }}>
+                                                    {m.recoveryPercentage}%
+                                                </Text>
+                                            </View>
+                                        </View>
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
+                        ) : (
+                            <Text style={{ color: theme.colors.textMuted, fontSize: 12, fontStyle: 'italic', paddingVertical: 4 }}>
+                                Todos os grupos musculares estão totalmente recuperados.
+                            </Text>
+                        )
+                    )}
                 </View>
             )}
 
@@ -879,14 +1021,14 @@ export function MuscleGroupHeatmapWidget() {
 
                             {/* Header */}
                             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-                                <div>
+                                <View style={{ flex: 1 }}>
                                     <Text style={{ color: theme.colors.textSecondary, fontSize: 11, fontFamily: FontFamily.sansBold, textTransform: 'uppercase', letterSpacing: 0.8 }}>
                                         Análise Muscular
                                     </Text>
                                     <Text style={{ color: theme.colors.text, fontSize: 20, fontFamily: FontFamily.display, fontWeight: '700' }}>
                                         {activeDetail.displayName}
                                     </Text>
-                                </div>
+                                </View>
                                 <TouchableOpacity
                                     onPress={() => setSelectedMuscle(null)}
                                     activeOpacity={0.7}

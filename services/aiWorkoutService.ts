@@ -132,16 +132,16 @@ const ensureMockPlansPopulated = (): AIWorkoutPlan[] => {
     const fbIds = ['2', '18', '105', '145', '107', '6'];
     MOCK_AI_PLANS[0].exercises = fbIds.map(getEx).filter(Boolean) as SavedExercise[];
 
-    // Push identifiers (Chest/Triceps/Shoulders)
-    const pushIds = ['2', '136', '145', '107', '18'];
+    // Push identifiers (Peito, Tríceps, Ombros)
+    const pushIds = ['2', '136', '176', '145', '107', '230'];
     MOCK_AI_PLANS[1].exercises = pushIds.map(getEx).filter(Boolean) as SavedExercise[];
 
-    // Legs identifiers
-    const legIds = ['105', '107', '145', '6']; // Note: IDs might need adjustment to be pure legs, kept previous logic
+    // Legs identifiers (Quadríceps, Isquiotibiais, Glúteos)
+    const legIds = ['18', '235', '212', '222', '36'];
     MOCK_AI_PLANS[2].exercises = legIds.map(getEx).filter(Boolean) as SavedExercise[];
 
-    // Pull identifiers
-    const pullIds = ['18', '136', '2', '107'];
+    // Pull identifiers (Costas, Bíceps, Antebraços)
+    const pullIds = ['105', '4', '120', '6', '134'];
     MOCK_AI_PLANS[3].exercises = pullIds.map(getEx).filter(Boolean) as SavedExercise[];
 
     console.log('[AI Service] Populated:', MOCK_AI_PLANS.map(p => `${p.name}=${p.exercises.length}ex`).join(', '));
@@ -365,7 +365,7 @@ export async function generateWorkoutPlans(suggestedFocus?: string, suggestedMus
                 const exercises: SavedExercise[] = plan.exerciseIds
                     .map((id: any) => {
                         const ex = exercisesData.find((e: any) => e.id.toString() === id.toString());
-                        if (!ex) return null;
+                        if (!ex || !ex.image_url) return null;
                         return {
                             id: ex.id.toString(),
                             name: ex.name,
@@ -376,6 +376,21 @@ export async function generateWorkoutPlans(suggestedFocus?: string, suggestedMus
                         };
                     })
                     .filter((ex: any) => ex !== null);
+
+                if (exercises.length < 5) {
+                    const extra = exercisesData
+                        .filter((e: any) => e.image_url && !exercises.some(existing => existing.id === e.id.toString()))
+                        .slice(0, 6 - exercises.length)
+                        .map((e: any) => ({
+                            id: e.id.toString(),
+                            name: e.name,
+                            image_url: e.image_url,
+                            video_url: e.video_url,
+                            body_parts: e.body_parts || [],
+                            equipment: e.equipment || []
+                        }));
+                    exercises.push(...extra);
+                }
 
                 return {
                     id: `ai-plan-${index + 1}`,

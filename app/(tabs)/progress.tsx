@@ -207,7 +207,7 @@ export default function ProgressScreen() {
             </View>
 
             {/* Collapsible floating section navigator — stays clear of the main tab bar */}
-            <View style={{ position: 'absolute', right: 14, bottom: 124, alignItems: 'flex-end', zIndex: 80 }} pointerEvents="box-none">
+            <View style={{ position: 'absolute', right: 14, bottom: Math.max(insets.bottom, 16) + 68, alignItems: 'flex-end', zIndex: 80 }} pointerEvents="box-none">
                 {showSectionMenu && (
                     <View style={{ gap: 9, alignItems: 'flex-end', marginBottom: 10 }}>
                         {[...TABS].reverse().map((tab, index) => {

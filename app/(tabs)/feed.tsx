@@ -3,7 +3,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
     ActivityIndicator,
     Alert,
@@ -24,6 +24,7 @@ import { FontFamily, Radius } from '../../constants/theme';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { useToast } from '../../context/ToastContext';
+import { useWorkoutHistory } from '../../context/WorkoutHistoryContext';
 import {
     CommunityComment,
     CommunityPost,
@@ -45,52 +46,57 @@ const INITIAL_FEED_POSTS: CommunityPost[] = [
         id: 'post-seed-tamiris',
         userId: 'seed-tamiris',
         userName: 'Tamiris Abreu',
-        userAvatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=300&auto=format&fit=crop&q=80',
-        imageUrl: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=800&auto=format&fit=crop&q=80',
+        userAvatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=70',
+        imageUrl: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=600&auto=format&fit=crop&q=70',
         content: 'Treino de membros inferiores pago com sucesso! Foco na consistência e evolução diária 💪✨',
         category: 'Treinos',
         groupName: 'Mulheres no Treino',
+        workoutTag: 'Inferiores Completo',
+        workoutStats: { durationMinutes: 52, calories: 340, exercisesCount: 6, volumeKg: 3250 },
         likesCount: 14,
         dislikesCount: 0,
         commentsCount: 3,
         isLikedByMe: false,
         isDislikedByMe: false,
         isStarred: false,
-        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(), // 2 horas atrás
+        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 6).toISOString(),
     },
     {
         id: 'post-seed-breno',
         userId: 'seed-breno',
         userName: 'Breno Fagundes',
-        userAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&auto=format&fit=crop&q=80',
-        imageUrl: 'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?w=800&auto=format&fit=crop&q=80',
+        userAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=70',
+        imageUrl: 'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?w=600&auto=format&fit=crop&q=70',
         content: 'Corrida matinal concluída! 8km no ritmo constante. A mente agradece antes do trabalho 🏃‍♂️🔥',
         category: 'Treinos',
         groupName: 'Corrida & Cardio',
+        workoutTag: 'Corrida Matinal',
+        workoutStats: { durationMinutes: 42, calories: 410, exercisesCount: 1 },
         likesCount: 22,
         dislikesCount: 0,
         commentsCount: 5,
         isLikedByMe: true,
         isDislikedByMe: false,
         isStarred: true,
-        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString(),
+        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 10).toISOString(),
     },
     {
         id: 'post-seed-lucas',
         userId: 'seed-lucas',
         userName: 'Lucas Silva',
-        userAvatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&auto=format&fit=crop&q=80',
-        imageUrl: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=800&auto=format&fit=crop&q=80',
-        content: 'Peito e ombros finalizado! Nova carga máxima no supino reto atingida hoje. O plano dá resultado!',
+        userAvatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=70',
+        content: 'Peito e ombros finalizado! Nova carga máxima no supino reto atingida hoje (94kg). O plano dá resultado! 💪',
         category: 'Treinos',
         groupName: 'Foco Hipertrofia',
+        workoutTag: 'Peito & Ombros',
+        workoutStats: { durationMinutes: 65, calories: 480, exercisesCount: 7, volumeKg: 5800 },
         likesCount: 38,
         dislikesCount: 1,
         commentsCount: 8,
         isLikedByMe: false,
         isDislikedByMe: false,
         isStarred: false,
-        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 12).toISOString(),
+        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 18).toISOString(),
     },
 ];
 
@@ -100,8 +106,11 @@ export default function FeedScreen() {
     const router = useRouter();
     const { session } = useAuth();
     const { profile } = useUserStore();
+    const { history } = useWorkoutHistory();
     const toast = useToast();
 
+    const PAGE_BATCH = 4;
+    const [visibleCount, setVisibleCount] = useState(PAGE_BATCH);
     const [posts, setPosts] = useState<CommunityPost[]>(INITIAL_FEED_POSTS);
     const [selectedGroup, setSelectedGroup] = useState<string>('todos');
     const [isGroupModalOpen, setIsGroupModalOpen] = useState(false);
@@ -124,24 +133,71 @@ export default function FeedScreen() {
     const currentUserName = session?.user?.user_metadata?.full_name || session?.user?.email?.split('@')[0] || 'Atleta Strive';
     const currentUserAvatar = profile?.photoUri || session?.user?.user_metadata?.avatar_url;
 
-    // Load posts from CommunityService
+    // Load posts from CommunityService and integrate user's local history
     const loadPosts = useCallback(async () => {
         try {
             const fetched = await CommunityService.getPosts();
-            if (fetched && fetched.length > 0) {
-                // Merge with seeds if needed
-                const combined = [...fetched];
-                INITIAL_FEED_POSTS.forEach((seed) => {
-                    if (!combined.some((p) => p.id === seed.id)) {
-                        combined.push(seed);
-                    }
+
+            // Build posts from user's local workout history so their latest training is in the feed!
+            const historyPosts: CommunityPost[] = (history || [])
+                .filter((h) => h.exercises && h.exercises.length > 0)
+                .map((h) => {
+                    const durationMin = Math.max(1, Math.round((h.duration || 0) / 60));
+                    const calories = Math.round(durationMin * 6.5);
+                    return {
+                        id: `my-workout-${h.id}`,
+                        userId: currentUserId,
+                        userName: currentUserName || 'Você',
+                        userAvatar: currentUserAvatar,
+                        userBadge: 'Meu Treino',
+                        content: `Treino "${h.workoutName || 'Personalizado'}" concluído! ${h.exercises.length} exercícios, ${h.totalSeries || 0} séries e ${Math.round(h.totalVolume || 0)}kg de volume total acumulado. 💪🔥`,
+                        category: 'Treinos' as const,
+                        groupName: 'Treinos',
+                        workoutTag: h.workoutName,
+                        workoutStats: {
+                            durationMinutes: durationMin,
+                            calories,
+                            exercisesCount: h.exercises.length,
+                            volumeKg: Math.round(h.totalVolume || 0),
+                        },
+                        imageUrl: h.media && h.media.length > 0 ? h.media[0] : undefined,
+                        likesCount: 3,
+                        dislikesCount: 0,
+                        commentsCount: 0,
+                        isLikedByMe: false,
+                        isDislikedByMe: false,
+                        isStarred: false,
+                        createdAt: h.date || new Date().toISOString(),
+                    };
                 });
-                setPosts(combined);
+
+            const combinedMap = new Map<string, CommunityPost>();
+
+            // 1. Add remote posts
+            if (fetched && fetched.length > 0) {
+                fetched.forEach((p) => combinedMap.set(p.id, p));
             }
+
+            // 2. Add local user workout posts (real workouts from Strive)
+            historyPosts.forEach((p) => combinedMap.set(p.id, p));
+
+            // 3. Fallback seeds
+            INITIAL_FEED_POSTS.forEach((seed) => {
+                if (!combinedMap.has(seed.id)) {
+                    combinedMap.set(seed.id, seed);
+                }
+            });
+
+            // Sort descending by date so the LATEST post is ALWAYS FIRST
+            const sorted = Array.from(combinedMap.values()).sort(
+                (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+            );
+
+            setPosts(sorted);
         } catch (e) {
             console.warn('Error loading feed:', e);
         }
-    }, []);
+    }, [history, currentUserId, currentUserName, currentUserAvatar]);
 
     useEffect(() => {
         loadPosts();
@@ -154,12 +210,24 @@ export default function FeedScreen() {
     };
 
     // Filtered by selected group
-    const displayedPosts = posts.filter((p) => {
-        if (selectedGroup === 'todos') return true;
-        const groupObj = GROUPS.find((g) => g.id === selectedGroup);
-        if (!groupObj) return true;
-        return p.groupName?.toLowerCase() === groupObj.name.toLowerCase() || p.category?.toLowerCase() === groupObj.name.toLowerCase();
-    });
+    const displayedPosts = useMemo(() => {
+        return posts.filter((p) => {
+            if (selectedGroup === 'todos') return true;
+            const groupObj = GROUPS.find((g) => g.id === selectedGroup);
+            if (!groupObj) return true;
+            return p.groupName?.toLowerCase() === groupObj.name.toLowerCase() || p.category?.toLowerCase() === groupObj.name.toLowerCase();
+        });
+    }, [posts, selectedGroup]);
+
+    const handleLoadMore = useCallback(() => {
+        if (visibleCount < displayedPosts.length) {
+            setVisibleCount((prev) => Math.min(prev + PAGE_BATCH, displayedPosts.length));
+        }
+    }, [visibleCount, displayedPosts.length]);
+
+    const visiblePosts = useMemo(() => {
+        return displayedPosts.slice(0, visibleCount);
+    }, [displayedPosts, visibleCount]);
 
     // Image Picker
     const pickImage = async (useCamera = false) => {
@@ -387,7 +455,7 @@ export default function FeedScreen() {
 
             {/* ════════════════ POSTS LIST ════════════════ */}
             <FlatList
-                data={displayedPosts}
+                data={visiblePosts}
                 keyExtractor={(item) => item.id}
                 refreshControl={
                     <RefreshControl
@@ -397,7 +465,48 @@ export default function FeedScreen() {
                     />
                 }
                 contentContainerStyle={{
-                    paddingBottom: insets.bottom + 80,
+                    paddingBottom: insets.bottom + 90,
+                }}
+                initialNumToRender={3}
+                maxToRenderPerBatch={3}
+                windowSize={5}
+                onEndReached={handleLoadMore}
+                onEndReachedThreshold={0.4}
+                ListFooterComponent={() => {
+                    if (displayedPosts.length === 0) return null;
+                    if (visibleCount < displayedPosts.length) {
+                        return (
+                            <TouchableOpacity
+                                onPress={handleLoadMore}
+                                activeOpacity={0.8}
+                                style={{
+                                    marginHorizontal: 16,
+                                    marginVertical: 14,
+                                    paddingVertical: 12,
+                                    borderRadius: Radius.md,
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    backgroundColor: 'rgba(56, 189, 248, 0.1)',
+                                    borderWidth: 1,
+                                    borderColor: 'rgba(56, 189, 248, 0.25)',
+                                    flexDirection: 'row',
+                                    gap: 6,
+                                }}
+                            >
+                                <Ionicons name="chevron-down" size={16} color="#38BDF8" />
+                                <Text style={{ color: '#38BDF8', fontSize: 12, fontFamily: FontFamily.sansBold }}>
+                                    Carregar mais publicações ({visiblePosts.length} de {displayedPosts.length})
+                                </Text>
+                            </TouchableOpacity>
+                        );
+                    }
+                    return (
+                        <View style={{ paddingVertical: 18, alignItems: 'center' }}>
+                            <Text style={{ color: '#64748B', fontSize: 11, fontFamily: FontFamily.sansMedium }}>
+                                Todas as publicações carregadas • Você está em dia!
+                            </Text>
+                        </View>
+                    );
                 }}
                 renderItem={({ item }) => (
                     <View
@@ -423,6 +532,7 @@ export default function FeedScreen() {
                                     source={{ uri: item.userAvatar }}
                                     style={{ width: 38, height: 38, borderRadius: 19 }}
                                     contentFit="cover"
+                                    cachePolicy="memory-disk"
                                 />
                             ) : (
                                 <View
@@ -450,10 +560,12 @@ export default function FeedScreen() {
                                     >
                                         {item.userName}
                                     </Text>
-                                    {item.groupName && (
+                                    {(item.groupName || item.userBadge) && (
                                         <View
                                             style={{
-                                                backgroundColor: 'rgba(56, 189, 248, 0.12)',
+                                                backgroundColor: item.userBadge === 'Meu Treino' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(56, 189, 248, 0.12)',
+                                                borderColor: item.userBadge === 'Meu Treino' ? 'rgba(16, 185, 129, 0.3)' : 'transparent',
+                                                borderWidth: item.userBadge === 'Meu Treino' ? 1 : 0,
                                                 paddingHorizontal: 6,
                                                 paddingVertical: 2,
                                                 borderRadius: 4,
@@ -461,12 +573,12 @@ export default function FeedScreen() {
                                         >
                                             <Text
                                                 style={{
-                                                    color: '#38BDF8',
+                                                    color: item.userBadge === 'Meu Treino' ? '#10B981' : '#38BDF8',
                                                     fontSize: 10,
                                                     fontFamily: FontFamily.sansMedium,
                                                 }}
                                             >
-                                                {item.groupName}
+                                                {item.userBadge || item.groupName}
                                             </Text>
                                         </View>
                                     )}
@@ -484,13 +596,56 @@ export default function FeedScreen() {
                             </View>
                         </View>
 
-                        {/* Full Width Media Image */}
+                        {/* Workout Stats Pills */}
+                        {item.workoutStats && (
+                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 14, marginBottom: 10 }}>
+                                <View style={{ backgroundColor: 'rgba(56, 189, 248, 0.1)', borderColor: 'rgba(56, 189, 248, 0.25)', borderWidth: 1, borderRadius: 10, paddingHorizontal: 8, paddingVertical: 4, flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                                    <Ionicons name="time-outline" size={13} color="#38BDF8" />
+                                    <Text style={{ color: '#38BDF8', fontSize: 11, fontFamily: FontFamily.sansBold }}>{item.workoutStats.durationMinutes} min</Text>
+                                </View>
+                                {item.workoutStats.volumeKg ? (
+                                    <View style={{ backgroundColor: 'rgba(16, 185, 129, 0.1)', borderColor: 'rgba(16, 185, 129, 0.25)', borderWidth: 1, borderRadius: 10, paddingHorizontal: 8, paddingVertical: 4, flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                                        <Ionicons name="barbell-outline" size={13} color="#10B981" />
+                                        <Text style={{ color: '#10B981', fontSize: 11, fontFamily: FontFamily.sansBold }}>{item.workoutStats.volumeKg} kg</Text>
+                                    </View>
+                                ) : (
+                                    <View style={{ backgroundColor: 'rgba(16, 185, 129, 0.1)', borderColor: 'rgba(16, 185, 129, 0.25)', borderWidth: 1, borderRadius: 10, paddingHorizontal: 8, paddingVertical: 4, flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                                        <Ionicons name="barbell-outline" size={13} color="#10B981" />
+                                        <Text style={{ color: '#10B981', fontSize: 11, fontFamily: FontFamily.sansBold }}>{item.workoutStats.exercisesCount} exerc.</Text>
+                                    </View>
+                                )}
+                                <View style={{ backgroundColor: 'rgba(245, 158, 11, 0.1)', borderColor: 'rgba(245, 158, 11, 0.25)', borderWidth: 1, borderRadius: 10, paddingHorizontal: 8, paddingVertical: 4, flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                                    <Ionicons name="flame-outline" size={13} color="#F59E0B" />
+                                    <Text style={{ color: '#F59E0B', fontSize: 11, fontFamily: FontFamily.sansBold }}>{item.workoutStats.calories} kcal</Text>
+                                </View>
+                            </View>
+                        )}
+
+                        {/* Caption Text */}
+                        {item.content ? (
+                            <View style={{ paddingHorizontal: 14, marginBottom: item.imageUrl ? 10 : 8 }}>
+                                <Text
+                                    style={{
+                                        color: '#E2E8F0',
+                                        fontSize: 14,
+                                        lineHeight: 20,
+                                        fontFamily: FontFamily.sans,
+                                    }}
+                                >
+                                    {item.content}
+                                </Text>
+                            </View>
+                        ) : null}
+
+                        {/* Media Image: Responsive, Rounded, Memory-Disk Cached */}
                         {item.imageUrl && (
-                            <View style={{ width: '100%', height: 420, backgroundColor: '#000000' }}>
+                            <View style={{ marginHorizontal: 14, marginBottom: 8, borderRadius: 14, overflow: 'hidden', height: 250, backgroundColor: '#000000' }}>
                                 <Image
                                     source={{ uri: item.imageUrl }}
                                     style={{ width: '100%', height: '100%' }}
                                     contentFit="cover"
+                                    cachePolicy="memory-disk"
+                                    transition={200}
                                 />
                             </View>
                         )}
@@ -581,25 +736,6 @@ export default function FeedScreen() {
                                 />
                             </TouchableOpacity>
                         </View>
-
-                        {/* Caption Text Below Photo */}
-                        {item.content ? (
-                            <View style={{ paddingHorizontal: 16, paddingBottom: 14 }}>
-                                <Text
-                                    style={{
-                                        color: '#E2E8F0',
-                                        fontSize: 14,
-                                        lineHeight: 20,
-                                        fontFamily: FontFamily.sans,
-                                    }}
-                                >
-                                    <Text style={{ fontFamily: FontFamily.sansBold, color: '#FFFFFF' }}>
-                                        {item.userName}{' '}
-                                    </Text>
-                                    {item.content}
-                                </Text>
-                            </View>
-                        ) : null}
                     </View>
                 )}
             />

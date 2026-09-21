@@ -376,7 +376,7 @@ export function ProgressOverviewView({
             className="flex-1"
             showsVerticalScrollIndicator={false}
             removeClippedSubviews
-            contentContainerStyle={{ paddingBottom: 160 }}
+            contentContainerStyle={{ paddingBottom: 40 }}
         >
 
             {/* ─── Today at a Glance ─── */}
@@ -463,6 +463,8 @@ export function ProgressOverviewView({
                 </View>
             </View>
 
+
+
             {/* ─── Range Selector ─── */}
             <View style={{ paddingHorizontal: 20, paddingVertical: 16 }}>
                 <View
@@ -499,13 +501,40 @@ export function ProgressOverviewView({
             </View>
 
             {/* ─── 2×2 Summary Cards Grid ─── */}
-            <View style={{ paddingHorizontal: 20, marginBottom: 28 }}>
-                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
-                    {summaryCards.map((card, idx) => (
+            <View style={{ paddingHorizontal: 20, marginBottom: 28, gap: 12 }}>
+                <View style={{ flexDirection: 'row', gap: 12 }}>
+                    {[summaryCards[0], summaryCards[1]].map((card, idx) => (
                         <View
                             key={idx}
                             style={{
-                                width: (screenWidth - 52) / 2,
+                                flex: 1,
+                                backgroundColor: theme.colors.card,
+                                borderRadius: 18,
+                                borderWidth: 1,
+                                borderColor: theme.colors.cardBorder,
+                                padding: 16,
+                            }}
+                        >
+                            <View style={{
+                                backgroundColor: card.color + '18',
+                                width: 36, height: 36, borderRadius: 11,
+                                alignItems: 'center', justifyContent: 'center',
+                                marginBottom: 12
+                            }}>
+                                <Ionicons name={card.icon as any} size={19} color={card.color} />
+                            </View>
+                            <Text style={{ color: theme.colors.textSecondary, fontSize: 11, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>{card.label}</Text>
+                            <Text style={{ color: theme.colors.text, fontSize: 25, fontFamily: 'Inter_700Bold', fontWeight: '700', letterSpacing: -0.7, marginTop: 3 }}>{card.value}</Text>
+                            <Text style={{ color: theme.colors.textMuted, fontSize: 11, fontFamily: 'Inter_500Medium', fontWeight: '500', marginTop: 2 }}>{card.sub}</Text>
+                        </View>
+                    ))}
+                </View>
+                <View style={{ flexDirection: 'row', gap: 12 }}>
+                    {[summaryCards[2], summaryCards[3]].map((card, idx) => (
+                        <View
+                            key={idx}
+                            style={{
+                                flex: 1,
                                 backgroundColor: theme.colors.card,
                                 borderRadius: 18,
                                 borderWidth: 1,
@@ -959,11 +988,11 @@ export function ProgressOverviewView({
             </Animated.View>
 
             {/* ─── Load Evolution Cards ─── */}
-            <View className="px-6 mb-8">
-                <View className="flex-row items-center justify-between mb-4">
+            <View style={{ paddingHorizontal: 20, marginBottom: 28 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
                     <View style={{ flex: 1, marginRight: 12 }}>
-                        <Text style={{ color: theme.colors.textSecondary }} className="text-[9px] font-bold uppercase tracking-widest">Progressão</Text>
-                        <Text style={{ color: theme.colors.text }} className="text-lg font-bold italic uppercase tracking-tighter">Evolução de Cargas</Text>
+                        <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1.2, marginBottom: 4 }}>Progressão</Text>
+                        <Text style={{ color: theme.colors.text, fontSize: 20, fontFamily: 'Inter_700Bold', fontWeight: '700', fontStyle: 'italic', textTransform: 'uppercase', letterSpacing: -0.5 }}>Evolução de Cargas</Text>
                     </View>
                     {loadEvolution.length > 3 && (
                         <TouchableOpacity
@@ -978,15 +1007,15 @@ export function ProgressOverviewView({
                 </View>
 
                 <View style={{ gap: 10 }}>
-                    {loadEvolution.slice(0, showAllEvolution ? undefined : 3).map((ex, index) => (
+                    {loadEvolution.slice(0, showAllEvolution ? undefined : 3).map((ex, idx) => (
                         <Animated.View
-                            key={index}
-                            entering={FadeInDown.delay(800 + index * 80).springify()}
+                            key={ex.name || idx}
+                            entering={FadeInDown.delay(700 + idx * 50).springify()}
                             style={{
                                 backgroundColor: theme.colors.card,
                                 borderColor: theme.colors.cardBorder,
                                 borderWidth: 1.5,
-                                borderRadius: 20,
+                                borderRadius: 18,
                                 padding: 16,
                                 flexDirection: 'row',
                                 alignItems: 'center',
@@ -1052,9 +1081,9 @@ export function ProgressOverviewView({
             </View>
 
             {/* ─── Achievements / Conquistas ─── */}
-            <Animated.View entering={FadeInDown.delay(900).springify()} className="px-6 mb-8">
-                <Text style={{ color: theme.colors.textSecondary }} className="text-[9px] font-bold uppercase tracking-widest mb-1">Motivação</Text>
-                <Text style={{ color: theme.colors.text, paddingRight: 6 }} className="text-lg font-bold italic uppercase tracking-tighter mb-4">Conquistas</Text>
+            <Animated.View entering={FadeInDown.delay(900).springify()} style={{ paddingHorizontal: 20, marginBottom: 28 }}>
+                <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1.2, marginBottom: 4 }}>Motivação</Text>
+                <Text style={{ color: theme.colors.text, fontSize: 20, fontFamily: 'Inter_700Bold', fontWeight: '700', fontStyle: 'italic', textTransform: 'uppercase', letterSpacing: -0.5, marginBottom: 16 }}>Conquistas</Text>
 
                 <View style={{ flexDirection: 'row', gap: 10 }}>
                     {achievements.map((ach, idx) => (
@@ -1096,21 +1125,28 @@ export function ProgressOverviewView({
             </Animated.View>
 
             {/* ─── Muscle Focus Radar ─── */}
-            <Animated.View entering={FadeInDown.delay(1000).springify()} className="px-6 mb-8">
+            <Animated.View entering={FadeInDown.delay(1000).springify()} style={{ paddingHorizontal: 20, marginBottom: 28 }}>
                 <View
-                    style={{ backgroundColor: theme.colors.card, borderColor: theme.colors.cardBorder, borderWidth: 1.5 }}
-                    className="rounded-[22px] p-6 overflow-hidden items-center"
+                    style={{
+                        backgroundColor: theme.colors.card,
+                        borderColor: theme.colors.cardBorder,
+                        borderWidth: 1.5,
+                        borderRadius: 22,
+                        padding: 20,
+                        overflow: 'hidden',
+                        alignItems: 'center'
+                    }}
                 >
-                    <View className="w-full mb-6">
-                        <Text style={{ color: theme.colors.textSecondary }} className="text-[9px] font-bold uppercase tracking-widest mb-1">Análise</Text>
-                        <Text style={{ color: theme.colors.text, paddingRight: 6 }} className="text-lg font-bold italic uppercase tracking-tighter">Equilíbrio Muscular</Text>
+                    <View style={{ width: '100%', marginBottom: 18 }}>
+                        <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1.2, marginBottom: 4 }}>Análise</Text>
+                        <Text style={{ color: theme.colors.text, fontSize: 20, fontFamily: 'Inter_700Bold', fontWeight: '700', fontStyle: 'italic', textTransform: 'uppercase', letterSpacing: -0.5 }}>Equilíbrio Muscular</Text>
                     </View>
                     <MuscleFocusRadar />
                 </View>
             </Animated.View>
 
             {/* ─── Consistency + Weight Boxes ─── */}
-            <View className="px-6 mb-12 flex-row" style={{ gap: 12 }}>
+            <View style={{ paddingHorizontal: 20, marginBottom: 16, flexDirection: 'row', gap: 12 }}>
                 {/* Consistency Box */}
                 <Animated.View
                     entering={FadeInDown.delay(1100).springify()}

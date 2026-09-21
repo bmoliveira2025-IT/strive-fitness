@@ -6,6 +6,7 @@ import {
     Alert,
     Animated,
     PanResponder,
+    Platform,
     StyleSheet,
     Text,
     TouchableOpacity,
@@ -79,6 +80,27 @@ function DraggableBanner({ onPress, showDiscard = true }: Omit<ActiveWorkoutBann
     };
 
     const handleDiscard = () => {
+        const executeDiscard = () => {
+            clearWorkout();
+            useWorkoutStore.getState().clearWorkout();
+            if (Platform.OS === 'web' && typeof window !== 'undefined') {
+                try {
+                    localStorage.removeItem('@active_workout_session');
+                } catch {}
+            }
+            router.navigate('/(tabs)');
+        };
+
+        if (Platform.OS === 'web') {
+            const confirmed = typeof window !== 'undefined'
+                ? window.confirm('Tem certeza que deseja descartar o treino atual? O progresso da sessão será perdido.')
+                : true;
+            if (confirmed) {
+                executeDiscard();
+            }
+            return;
+        }
+
         Alert.alert(
             'Descartar Treino',
             'Tem certeza que deseja descartar o treino atual?',
@@ -87,11 +109,7 @@ function DraggableBanner({ onPress, showDiscard = true }: Omit<ActiveWorkoutBann
                 {
                     text: 'Descartar',
                     style: 'destructive',
-                    onPress: () => {
-                        clearWorkout();
-                        useWorkoutStore.getState().clearWorkout();
-                        router.navigate('/(tabs)');
-                    },
+                    onPress: executeDiscard,
                 },
             ]
         );
@@ -165,6 +183,27 @@ function StaticBanner({ onPress, style, showDiscard = true }: Omit<ActiveWorkout
     };
 
     const handleDiscard = () => {
+        const executeDiscard = () => {
+            clearWorkout();
+            useWorkoutStore.getState().clearWorkout();
+            if (Platform.OS === 'web' && typeof window !== 'undefined') {
+                try {
+                    localStorage.removeItem('@active_workout_session');
+                } catch {}
+            }
+            router.navigate('/(tabs)');
+        };
+
+        if (Platform.OS === 'web') {
+            const confirmed = typeof window !== 'undefined'
+                ? window.confirm('Tem certeza que deseja descartar o treino atual? O progresso da sessão será perdido.')
+                : true;
+            if (confirmed) {
+                executeDiscard();
+            }
+            return;
+        }
+
         Alert.alert(
             'Descartar Treino',
             'Tem certeza que deseja descartar o treino atual?',
@@ -173,7 +212,7 @@ function StaticBanner({ onPress, style, showDiscard = true }: Omit<ActiveWorkout
                 {
                     text: 'Descartar',
                     style: 'destructive',
-                    onPress: () => { clearWorkout(); router.navigate('/(tabs)'); },
+                    onPress: executeDiscard,
                 },
             ]
         );

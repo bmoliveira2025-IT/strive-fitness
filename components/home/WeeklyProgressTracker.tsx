@@ -60,6 +60,7 @@ function ProgressDonut({
         width={RING_SIZE}
         height={RING_SIZE}
         viewBox={`0 0 ${RING_SIZE} ${RING_SIZE}`}
+        style={{ transform: [{ rotate: '-90deg' }] }}
       >
         {/* Track */}
         <Circle
@@ -81,8 +82,6 @@ function ProgressDonut({
           strokeDasharray={`${CIRCUMFERENCE} ${CIRCUMFERENCE}`}
           animatedProps={animatedProps}
           strokeLinecap="round"
-          rotation="-90"
-          origin={`${cx}, ${cy}`}
         />
       </Svg>
       <View

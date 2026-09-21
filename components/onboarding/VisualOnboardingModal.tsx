@@ -25,7 +25,29 @@ interface VisualOnboardingModalProps {
     onClose: () => void;
 }
 
-// 9 Planos Masculinos (idênticos aos prints)
+const exercisesData = require('../../assets/exercises.json');
+
+const getNativeExercise = (id: string, fallbackName?: string, bodyParts?: string[]): SavedExercise => {
+    const found = exercisesData.find((e: any) => e.id.toString() === id.toString());
+    if (found) {
+        return {
+            id: found.id.toString(),
+            name: found.name,
+            image_url: found.image_url,
+            video_url: found.video_url,
+            body_parts: found.body_parts || [],
+            equipment: found.equipment || [],
+        };
+    }
+    return {
+        id,
+        name: fallbackName || 'Exercício',
+        image_url: 'https://apilyfta.com/static/GymvisualPNG/00251101-Barbell-Bench-Press_Chest-FIX_small.png',
+        body_parts: bodyParts || [],
+    };
+};
+
+// 9 Planos Masculinos com exercícios nativos do aplicativo e imagens reais
 const MALE_PLANS = [
     {
         id: 'male-musculacao-geral',
@@ -33,11 +55,11 @@ const MALE_PLANS = [
         subtitle: 'Hipertrofia e força completa',
         image: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=800&auto=format&fit=crop&q=80',
         exercises: [
-            { id: '1', name: 'Supino Reto com Barra', image_url: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400', body_parts: ['chest', 'triceps'] },
-            { id: '2', name: 'Puxada Frontal Aberta', image_url: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400', body_parts: ['back', 'biceps'] },
-            { id: '3', name: 'Agachamento Livre', image_url: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400', body_parts: ['quadriceps', 'glutes'] },
-            { id: '4', name: 'Desenvolvimento Militar', image_url: 'https://images.unsplash.com/photo-1532029837206-abbe2b7620e3?w=400', body_parts: ['shoulders', 'triceps'] },
-        ] as SavedExercise[],
+            getNativeExercise('2', 'Supino Reto'),
+            getNativeExercise('105', 'Remada Baixa Sentada'),
+            getNativeExercise('18', 'Agachamento Livre'),
+            getNativeExercise('176', 'Desenvolvimento com Halteres'),
+        ],
     },
     {
         id: 'male-bracos-fortes',
@@ -45,11 +67,11 @@ const MALE_PLANS = [
         subtitle: 'Foco em bíceps massivos e tríceps em ferradura',
         image: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=800&auto=format&fit=crop&q=80',
         exercises: [
-            { id: '5', name: 'Rosca Direta com Barra W', image_url: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=400', body_parts: ['biceps'] },
-            { id: '6', name: 'Tríceps Corda no Pulley', image_url: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400', body_parts: ['triceps'] },
-            { id: '7', name: 'Rosca Martelo com Halteres', image_url: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400', body_parts: ['biceps', 'forearms'] },
-            { id: '8', name: 'Tríceps Testa com Halteres', image_url: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400', body_parts: ['triceps'] },
-        ] as SavedExercise[],
+            getNativeExercise('6', 'Rosca Direta'),
+            getNativeExercise('107', 'Tríceps Pulley'),
+            getNativeExercise('134', 'Rosca Martelo'),
+            getNativeExercise('1511', 'Tríceps Testa'),
+        ],
     },
     {
         id: 'male-peito-poderoso',
@@ -57,11 +79,11 @@ const MALE_PLANS = [
         subtitle: 'Volume peitoral e densidade superior',
         image: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=800&auto=format&fit=crop&q=80',
         exercises: [
-            { id: '9', name: 'Supino Inclinado com Halteres', image_url: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400', body_parts: ['chest'] },
-            { id: '10', name: 'Supino Reto', image_url: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400', body_parts: ['chest'] },
-            { id: '11', name: 'Crucifixo no Crossover', image_url: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400', body_parts: ['chest'] },
-            { id: '12', name: 'Paralelas com foco Peitoral', image_url: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400', body_parts: ['chest', 'triceps'] },
-        ] as SavedExercise[],
+            getNativeExercise('136', 'Supino Inclinado'),
+            getNativeExercise('2', 'Supino Reto'),
+            getNativeExercise('230', 'Flexão de Braço'),
+            getNativeExercise('4673', 'Mergulho Paralelas'),
+        ],
     },
     {
         id: 'male-costas-largas',
@@ -69,11 +91,11 @@ const MALE_PLANS = [
         subtitle: 'Construção do shape em V clássico',
         image: 'https://images.unsplash.com/photo-1605296867304-46d5465a13f1?w=800&auto=format&fit=crop&q=80',
         exercises: [
-            { id: '13', name: 'Barra Fixa Pronada', image_url: 'https://images.unsplash.com/photo-1605296867304-46d5465a13f1?w=400', body_parts: ['back'] },
-            { id: '14', name: 'Remada Curvada com Barra', image_url: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400', body_parts: ['back'] },
-            { id: '15', name: 'Puxada Alta Triângulo', image_url: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400', body_parts: ['back'] },
-            { id: '16', name: 'Remada Unilateral com Halter', image_url: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=400', body_parts: ['back'] },
-        ] as SavedExercise[],
+            getNativeExercise('4', 'Remada Curvada com Barra'),
+            getNativeExercise('105', 'Remada Baixa Sentada'),
+            getNativeExercise('120', 'Remada Unilateral com Halter'),
+            getNativeExercise('7', 'Levantamento Terra'),
+        ],
     },
     {
         id: 'male-ombros-grandes',
@@ -81,11 +103,11 @@ const MALE_PLANS = [
         subtitle: 'Deltoides 3D e aspecto imponente',
         image: 'https://images.unsplash.com/photo-1532029837206-abbe2b7620e3?w=800&auto=format&fit=crop&q=80',
         exercises: [
-            { id: '17', name: 'Desenvolvimento Halteres', image_url: 'https://images.unsplash.com/photo-1532029837206-abbe2b7620e3?w=400', body_parts: ['shoulders'] },
-            { id: '18', name: 'Elevação Lateral na Polia', image_url: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400', body_parts: ['shoulders'] },
-            { id: '19', name: 'Crucifixo Invertido', image_url: 'https://images.unsplash.com/photo-1605296867304-46d5465a13f1?w=400', body_parts: ['shoulders'] },
-            { id: '20', name: 'Encolhimento com Barra', image_url: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400', body_parts: ['shoulders', 'back'] },
-        ] as SavedExercise[],
+            getNativeExercise('176', 'Desenvolvimento Halteres'),
+            getNativeExercise('145', 'Elevação Lateral'),
+            getNativeExercise('371', 'Desenvolvimento na Máquina'),
+            getNativeExercise('120', 'Crucifixo Invertido'),
+        ],
     },
     {
         id: 'male-pernas-enormes',
@@ -93,11 +115,11 @@ const MALE_PLANS = [
         subtitle: 'Membros inferiores densos e cortados',
         image: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=800&auto=format&fit=crop&q=80',
         exercises: [
-            { id: '21', name: 'Agachamento Hack', image_url: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400', body_parts: ['quadriceps'] },
-            { id: '22', name: 'Leg Press 45°', image_url: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400', body_parts: ['quadriceps', 'glutes'] },
-            { id: '23', name: 'Mesa Flexora', image_url: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400', body_parts: ['isquiotibiais'] },
-            { id: '24', name: 'Gêmeos Sentado', image_url: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400', body_parts: ['panturrilhas'] },
-        ] as SavedExercise[],
+            getNativeExercise('18', 'Agachamento Livre'),
+            getNativeExercise('235', 'Leg Press 45°'),
+            getNativeExercise('212', 'Cadeira Extensora'),
+            getNativeExercise('222', 'Mesa Flexora'),
+        ],
     },
     {
         id: 'male-perda-peso',
@@ -105,11 +127,11 @@ const MALE_PLANS = [
         subtitle: 'Queima máxima de gordura e condicionamento',
         image: 'https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=800&auto=format&fit=crop&q=80',
         exercises: [
-            { id: '25', name: 'HIIT na Esteira', image_url: 'https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=400', body_parts: ['cardio'] },
-            { id: '26', name: 'Burpees & Polichinelos', image_url: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=400', body_parts: ['full_body'] },
-            { id: '27', name: 'Kettlebell Swing', image_url: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400', body_parts: ['glutes', 'back'] },
-            { id: '28', name: 'Remo Seco Cardio', image_url: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400', body_parts: ['back', 'cardio'] },
-        ] as SavedExercise[],
+            getNativeExercise('3439', 'Corrida na Esteira'),
+            getNativeExercise('293', 'Burpee'),
+            getNativeExercise('18', 'Agachamento Livre'),
+            getNativeExercise('1916', 'Prancha Frontal'),
+        ],
     },
     {
         id: 'male-corpo-esculpido',
@@ -117,11 +139,11 @@ const MALE_PLANS = [
         subtitle: 'Definição atlética e simetria muscular',
         image: 'https://images.unsplash.com/photo-1507398941214-572c25f4b1dc?w=800&auto=format&fit=crop&q=80',
         exercises: [
-            { id: '29', name: 'Supino Declinado Halteres', image_url: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400', body_parts: ['chest'] },
-            { id: '30', name: 'Puxada Articulada', image_url: 'https://images.unsplash.com/photo-1605296867304-46d5465a13f1?w=400', body_parts: ['back'] },
-            { id: '31', name: 'Afundo Búlgaro', image_url: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400', body_parts: ['quadriceps', 'glutes'] },
-            { id: '32', name: 'Elevação Frontal Cabo', image_url: 'https://images.unsplash.com/photo-1532029837206-abbe2b7620e3?w=400', body_parts: ['shoulders'] },
-        ] as SavedExercise[],
+            getNativeExercise('136', 'Supino Inclinado'),
+            getNativeExercise('105', 'Remada Baixa Sentada'),
+            getNativeExercise('18', 'Agachamento Livre'),
+            getNativeExercise('145', 'Elevação Lateral'),
+        ],
     },
     {
         id: 'male-abdomen-definido',
@@ -129,15 +151,15 @@ const MALE_PLANS = [
         subtitle: 'Core blindado e gominhos destacados',
         image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&auto=format&fit=crop&q=80',
         exercises: [
-            { id: '33', name: 'Abdominal Infra na Paralela', image_url: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400', body_parts: ['abs'] },
-            { id: '34', name: 'Prancha Isométrica com Carga', image_url: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=400', body_parts: ['abs'] },
-            { id: '35', name: 'Abdominal Supra na Polia (Cable Crunch)', image_url: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400', body_parts: ['abs'] },
-            { id: '36', name: 'Russian Twist com Anilha', image_url: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400', body_parts: ['abs'] },
-        ] as SavedExercise[],
+            getNativeExercise('1725', 'Abdominal no Solo'),
+            getNativeExercise('1916', 'Prancha Frontal'),
+            getNativeExercise('2138', 'Russian Twist'),
+            getNativeExercise('3144', 'Abdominal na Máquina'),
+        ],
     },
 ];
 
-// Planos Femininos (idênticos aos prints)
+// Planos Femininos com exercícios nativos do aplicativo e imagens reais
 const FEMALE_PLANS = [
     {
         id: 'female-perda-peso',
@@ -145,11 +167,11 @@ const FEMALE_PLANS = [
         subtitle: 'Queima de gordura e definição sem perder massa magra',
         image: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=800&auto=format&fit=crop&q=80',
         exercises: [
-            { id: '37', name: 'Tiro na Esteira Inclinada', image_url: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=400', body_parts: ['cardio'] },
-            { id: '38', name: 'Agachamento com Salto', image_url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400', body_parts: ['quadriceps', 'glutes'] },
-            { id: '39', name: 'Mountain Climbers', image_url: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=400', body_parts: ['abs'] },
-            { id: '40', name: 'Step Up no Banco', image_url: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400', body_parts: ['glutes'] },
-        ] as SavedExercise[],
+            getNativeExercise('3439', 'Corrida na Esteira'),
+            getNativeExercise('293', 'Burpee'),
+            getNativeExercise('18', 'Agachamento Livre'),
+            getNativeExercise('1916', 'Prancha Frontal'),
+        ],
     },
     {
         id: 'female-corpo-esculpido',
@@ -157,11 +179,11 @@ const FEMALE_PLANS = [
         subtitle: 'Curvas atléticas, postura elegante e firmeza',
         image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&auto=format&fit=crop&q=80',
         exercises: [
-            { id: '41', name: 'Stiff com Barra', image_url: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400', body_parts: ['isquiotibiais', 'glutes'] },
-            { id: '42', name: 'Elevação Pélvica', image_url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400', body_parts: ['glutes'] },
-            { id: '43', name: 'Puxador Frontal Aberto', image_url: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400', body_parts: ['back'] },
-            { id: '44', name: 'Elevação Lateral Halteres', image_url: 'https://images.unsplash.com/photo-1532029837206-abbe2b7620e3?w=400', body_parts: ['shoulders'] },
-        ] as SavedExercise[],
+            getNativeExercise('36', 'Stiff com Barra'),
+            getNativeExercise('235', 'Leg Press 45°'),
+            getNativeExercise('105', 'Remada Baixa Sentada'),
+            getNativeExercise('145', 'Elevação Lateral'),
+        ],
     },
     {
         id: 'female-gluteos-perfeitos',
@@ -169,11 +191,11 @@ const FEMALE_PLANS = [
         subtitle: 'Volume, contorno e projeção dos glúteos',
         image: 'https://images.unsplash.com/photo-1550345332-09e3ac987658?w=800&auto=format&fit=crop&q=80',
         exercises: [
-            { id: '45', name: 'Elevação Pélvica com Barra', image_url: 'https://images.unsplash.com/photo-1550345332-09e3ac987658?w=400', body_parts: ['glutes'] },
-            { id: '46', name: 'Agachamento Búlgaro', image_url: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400', body_parts: ['glutes', 'quadriceps'] },
-            { id: '47', name: 'Cadeira Abdutora Inclinada', image_url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400', body_parts: ['glutes'] },
-            { id: '48', name: 'Glúteo no Cabo 4 Apoios', image_url: 'https://images.unsplash.com/photo-1550345332-09e3ac987658?w=400', body_parts: ['glutes'] },
-        ] as SavedExercise[],
+            getNativeExercise('36', 'Stiff com Barra'),
+            getNativeExercise('235', 'Leg Press 45°'),
+            getNativeExercise('18', 'Agachamento Livre'),
+            getNativeExercise('222', 'Mesa Flexora'),
+        ],
     },
     {
         id: 'female-abdomen-sarado',
@@ -181,11 +203,11 @@ const FEMALE_PLANS = [
         subtitle: 'Cintura fina, abdômen reto e ativação de transverso',
         image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&auto=format&fit=crop&q=80',
         exercises: [
-            { id: '49', name: 'Prancha Frontal com Vacuum', image_url: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400', body_parts: ['abs'] },
-            { id: '50', name: 'Abdominal Bicicleta', image_url: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=400', body_parts: ['abs'] },
-            { id: '51', name: 'Elevação de Pernas Deitada', image_url: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400', body_parts: ['abs'] },
-            { id: '52', name: 'Prancha Lateral Estática', image_url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400', body_parts: ['abs'] },
-        ] as SavedExercise[],
+            getNativeExercise('1916', 'Prancha Frontal'),
+            getNativeExercise('1725', 'Abdominal no Solo'),
+            getNativeExercise('2138', 'Russian Twist'),
+            getNativeExercise('3144', 'Abdominal na Máquina'),
+        ],
     },
     {
         id: 'female-musculacao-geral',
@@ -193,11 +215,11 @@ const FEMALE_PLANS = [
         subtitle: 'Fortalecimento harmonioso de todo o corpo',
         image: 'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?w=800&auto=format&fit=crop&q=80',
         exercises: [
-            { id: '53', name: 'Leg Press 45° com pés médios', image_url: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400', body_parts: ['quadriceps', 'glutes'] },
-            { id: '54', name: 'Remada Baixa Triângulo', image_url: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400', body_parts: ['back'] },
-            { id: '55', name: 'Supino Reto com Halteres', image_url: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400', body_parts: ['chest', 'triceps'] },
-            { id: '56', name: 'Cadeira Extensora', image_url: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400', body_parts: ['quadriceps'] },
-        ] as SavedExercise[],
+            getNativeExercise('235', 'Leg Press 45°'),
+            getNativeExercise('105', 'Remada Baixa Sentada'),
+            getNativeExercise('136', 'Supino Inclinado com Halteres'),
+            getNativeExercise('212', 'Cadeira Extensora'),
+        ],
     },
 ];
 

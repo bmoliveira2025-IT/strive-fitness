@@ -3951,6 +3951,36 @@ export default function WorkoutScreen() {
                             <TouchableOpacity
                                 onPress={() => {
                                     setShowMoreOptionsModal(false);
+                                    const executeDiscard = () => {
+                                        setExercises([]);
+                                        setActivePlanId(null);
+                                        setDuration(0);
+                                        setIsResting(false);
+                                        setRestingExerciseId(null);
+                                        setRestEndTime(null);
+                                        if (Platform.OS !== 'web') {
+                                            Notifications.cancelAllScheduledNotificationsAsync().catch(() => {});
+                                        }
+                                        clearWorkout();
+                                        useWorkoutStore.getState().clearWorkout();
+                                        if (Platform.OS === 'web' && typeof window !== 'undefined') {
+                                            try {
+                                                localStorage.removeItem('@active_workout_session');
+                                            } catch {}
+                                        }
+                                        router.navigate('/(tabs)');
+                                    };
+
+                                    if (Platform.OS === 'web') {
+                                        const confirmed = typeof window !== 'undefined'
+                                            ? window.confirm('Tem certeza que deseja descartar este treino? Todo o seu progresso nesta sessão será perdido.')
+                                            : true;
+                                        if (confirmed) {
+                                            executeDiscard();
+                                        }
+                                        return;
+                                    }
+
                                     Alert.alert(
                                         "Descartar Treino",
                                         "Tem certeza que deseja descartar este treino? Todo o seu progresso nesta sessão será perdido.",
@@ -3959,19 +3989,7 @@ export default function WorkoutScreen() {
                                             {
                                                 text: "Descartar",
                                                 style: "destructive",
-                                                onPress: () => {
-                                                    setExercises([]);
-                                                    setActivePlanId(null);
-                                                    setDuration(0);
-                                                    setIsResting(false);
-                                                    setRestingExerciseId(null);
-                                                    setRestEndTime(null);
-                                                    if (Platform.OS !== 'web') {
-                                                        Notifications.cancelAllScheduledNotificationsAsync().catch(() => {});
-                                                    }
-                                                    clearWorkout();
-                                                    router.navigate('/(tabs)');
-                                                }
+                                                onPress: executeDiscard
                                             }
                                         ]
                                     );

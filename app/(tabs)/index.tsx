@@ -29,13 +29,47 @@ import { useWorkoutHistory } from '../../context/WorkoutHistoryContext';
 import { useStreak } from '../../hooks/useStreak';
 import { useWeeklyStats } from '../../hooks/useWeeklyStats';
 
+const exercisesData = require('../../assets/exercises.json');
+
+function getDefaultPlanForGoal(goal?: string): { name: string; exercises: any[]; category: string } {
+    const getEx = (id: string) => {
+        const found = exercisesData.find((e: any) => e.id.toString() === id);
+        if (!found) return null;
+        return {
+            id: found.id.toString(),
+            name: found.name,
+            image_url: found.image_url,
+            video_url: found.video_url,
+            body_parts: found.body_parts || [],
+            equipment: found.equipment || [],
+        };
+    };
+
+    let title = 'Plano Inicial - Hipertrofia';
+    let ids = ['2', '136', '105', '18', '145', '107', '6'];
+
+    if (goal === 'fat_loss') {
+        title = 'Plano Inicial - Queima de Gordura';
+        ids = ['18', '2', '105', '145', '107', '1725'];
+    } else if (goal === 'strength') {
+        title = 'Plano Inicial - Força & Potência';
+        ids = ['2', '18', '105', '136', '107'];
+    } else if (goal === 'conditioning') {
+        title = 'Plano Inicial - Condicionamento Físico';
+        ids = ['18', '2', '105', '145', '6', '1916'];
+    }
+
+    const exercises = ids.map(getEx).filter(Boolean);
+    return { name: title, exercises, category: 'Inicial' };
+}
+
 export default function Home() {
     const { theme } = useTheme();
     const insets = useSafeAreaInsets();
     const { session } = useAuth();
-    const { savedWorkouts, deleteWorkout, toggleWorkoutFavorite } = useSavedWorkouts();
+    const { savedWorkouts, deleteWorkout, toggleWorkoutFavorite, saveWorkout } = useSavedWorkouts();
     const { history } = useWorkoutHistory();
-    const { userName, profile, syncFromAuthUser, setUserName, updateProfile, addWeeklyMonitoring, addPeriodicAssessment } = useUserStore();
+    const { userName, profile, syncFromAuthUser, setUserName, updateProfile, addPeriodicAssessment } = useUserStore();
     const router = useRouter();
     const params = useLocalSearchParams<{ previewWorkoutId?: string }>();
 
@@ -65,8 +99,8 @@ export default function Home() {
         }
     }, [params.previewWorkoutId, savedWorkouts, router]);
 
-    // Survey States
-    const [surveyType, setSurveyType] = useState<'onboarding' | 'weekly' | 'periodic' | null>(null);
+    // Survey States - Only onboarding and 3-month periodic evolution
+    const [surveyType, setSurveyType] = useState<'onboarding' | 'periodic' | null>(null);
     const [showSurvey, setShowSurvey] = useState(false);
 
     useEffect(() => {
@@ -84,27 +118,19 @@ export default function Home() {
 
         const now = new Date();
 
-        // 2. Check Weekly (every 7 days)
-        const lastWeekly = profile.trackingStats?.lastWeeklyMonitoring ? new Date(profile.trackingStats.lastWeeklyMonitoring) : null;
-        if (!lastWeekly || (now.getTime() - lastWeekly.getTime() > 7 * 24 * 60 * 60 * 1000)) {
-            setSurveyType('weekly');
-            setShowSurvey(true);
-            return;
-        }
-
-        // 3. Check Periodic (every 30 days)
+        // Check Periodic Evolution (every 90 days / 3 months)
         const lastPeriodic = profile.trackingStats?.lastPeriodicAssessment ? new Date(profile.trackingStats.lastPeriodicAssessment) : null;
         const creationDate = new Date(profile.createdAt);
         const daysSinceCreation = (now.getTime() - creationDate.getTime()) / (24 * 60 * 60 * 1000);
 
         if (lastPeriodic) {
-            if (now.getTime() - lastPeriodic.getTime() > 30 * 24 * 60 * 60 * 1000) {
+            if (now.getTime() - lastPeriodic.getTime() > 90 * 24 * 60 * 60 * 1000) {
                 setSurveyType('periodic');
                 setShowSurvey(true);
                 return;
             }
-        } else if (daysSinceCreation >= 30) {
-            // First periodic assessment only after 30 days of usage
+        } else if (daysSinceCreation >= 90) {
+            // First periodic evolution assessment only after 90 days (3 months)
             setSurveyType('periodic');
             setShowSurvey(true);
             return;
@@ -125,25 +151,25 @@ export default function Home() {
                 weight: parseFloat(answers.weight) || profile?.weight,
                 height: parseFloat(answers.height) || profile?.height,
                 objective: answers.goal,
-                // Initialize weekly monitoring so it doesn't trigger immediately
                 trackingStats: {
                     ...profile!.trackingStats,
-                    lastWeeklyMonitoring: new Date().toISOString()
+                    lastPeriodicAssessment: new Date().toISOString()
                 }
             });
             if (!isNaN(ageNum)) {
                 AsyncStorage.setItem('@strive_user_age', String(ageNum)).catch(() => {});
             }
             AsyncStorage.setItem('@strive_has_onboarded', 'true').catch(() => {});
-        } else if (surveyType === 'weekly') {
-            addWeeklyMonitoring({
-                date: new Date().toISOString(),
-                weight: parseFloat(answers.currentWeight),
-                sleepQuality: answers.sleep,
-                stressLevel: answers.stress,
-                recoveryLevel: answers.recovery,
-                energyLevel: answers.energy
-            });
+
+            // Auto-create initial workout plan from native app exercises with real images if none exists
+            if (savedWorkouts.length === 0) {
+                try {
+                    const defaultPlan = getDefaultPlanForGoal(answers.goal);
+                    saveWorkout(defaultPlan.name, defaultPlan.exercises, defaultPlan.category, true);
+                } catch (e) {
+                    console.warn('Failed to auto-create onboarding workout:', e);
+                }
+            }
         } else if (surveyType === 'periodic') {
             addPeriodicAssessment({
                 date: new Date().toISOString(),
@@ -198,22 +224,10 @@ export default function Home() {
                         }
                     ]
                 };
-            case 'weekly':
-                return {
-                    title: "Acompanhamento Semanal",
-                    description: "Hora de ver como foi sua semana e ajustar o rumo se necessário.",
-                    questions: [
-                        { id: 'currentWeight', type: 'text', text: 'Peso atual (kg):', placeholder: 'Ex: 76.2' },
-                        { id: 'sleep', type: 'scale', text: 'Qualidade do sono (1-5):', min: 1, max: 5 },
-                        { id: 'energy', type: 'scale', text: 'Nível de energia (1-5):', min: 1, max: 5 },
-                        { id: 'stress', type: 'scale', text: 'Nível de estresse (1-5):', min: 1, max: 5 },
-                        { id: 'recovery', type: 'scale', text: 'Recuperação muscular (1-5):', min: 1, max: 5 }
-                    ]
-                };
             case 'periodic':
                 return {
-                    title: "Avaliação Mensal",
-                    description: "Vamos registrar seu progresso físico e satisfação geral.",
+                    title: "Acompanhamento Trimestral (3 Meses)",
+                    description: "Acompanhe a evolução do seu corpo e suas medidas a cada 3 meses.",
                     questions: [
                         { id: 'overallSatisfaction', type: 'scale', text: 'Satisfação com os resultados (1-5):', min: 1, max: 5 },
                         { id: 'motivation', type: 'scale', text: 'Nível de motivação (1-5):', min: 1, max: 5 },

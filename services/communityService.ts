@@ -24,6 +24,7 @@ export interface CommunityPost {
         durationMinutes?: number;
         calories?: number;
         exercisesCount?: number;
+        volumeKg?: number;
     };
     imageUrl?: string;
     likesCount: number;

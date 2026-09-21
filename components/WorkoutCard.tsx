@@ -111,7 +111,7 @@ export function WorkoutCard({
                             )}
                             {workout.isFavorite && (
                                 <View style={{ marginLeft: 'auto' }}>
-                                    <Ionicons name="heart" size={16} color="#EF4444" />
+                                    <Ionicons name="heart" size={16} color={theme.colors.error} />
                                 </View>
                             )}
                         </View>
@@ -196,7 +196,7 @@ export function WorkoutCard({
                                 {workout.exercises.length} exercícios
                             </Text>
                         </View>
-                        {workout.isFavorite && <Ionicons name="heart" size={13} color="#EF4444" />}
+                        {workout.isFavorite && <Ionicons name="heart" size={13} color={theme.colors.error} />}
                         <View style={{ marginLeft: 'auto', width: 26, height: 26, borderRadius: Radius.sm, alignItems: 'center', justifyContent: 'center', backgroundColor: theme.colors.backgroundTertiary }}>
                             <Ionicons name="chevron-forward" size={14} color={theme.colors.textSecondary} />
                         </View>

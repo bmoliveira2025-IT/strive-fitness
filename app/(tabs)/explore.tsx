@@ -122,7 +122,7 @@ export default function ExploreScreen() {
                         ) : <View />}
 
                         <View style={{ backgroundColor: 'rgba(13,15,18,0.6)', padding: 6, borderRadius: Radius.sm }}>
-                            <Ionicons name={item.isBookmarked ? "bookmark" : "bookmark-outline"} size={14} color="#FFFFFF" />
+                            <Ionicons name={item.isBookmarked ? "bookmark" : "bookmark-outline"} size={14} color={theme.colors.onImage} />
                         </View>
                     </View>
 
@@ -156,7 +156,7 @@ export default function ExploreScreen() {
                                     <Ionicons
                                         name={star <= (currentRating || parseFloat(item.rating)) ? "star" : "star-outline"}
                                         size={12}
-                                        color={star <= currentRating ? "#F59E0B" : theme.colors.textMuted}
+                                        color={star <= currentRating ? theme.colors.warning : theme.colors.textMuted}
                                         style={{ marginRight: 2 }}
                                     />
                                 </TouchableOpacity>
@@ -390,8 +390,8 @@ export default function ExploreScreen() {
                                             </View>
                                             <View
                                                 style={{
-                                                    backgroundColor: theme.mode === 'dark' ? '#F59E0B18' : '#FFF7E6',
-                                                    borderColor: theme.mode === 'dark' ? '#F59E0B35' : '#F59E0B30',
+                                                    backgroundColor: theme.mode === 'dark' ? theme.colors.warning + '18' : '#FFF7E6',
+                                                    borderColor: theme.mode === 'dark' ? theme.colors.warning + '35' : theme.colors.warning + '30',
                                                     borderWidth: 1,
                                                     flexDirection: 'row',
                                                     alignItems: 'center',
@@ -400,8 +400,8 @@ export default function ExploreScreen() {
                                                     borderRadius: Radius.sm,
                                                 }}
                                             >
-                                                <Ionicons name="star" size={11} color="#F59E0B" />
-                                                <Text style={{ color: theme.mode === 'dark' ? '#FBBF24' : '#7C4A03', fontSize: 10, fontFamily: FontFamily.sansBold, marginLeft: 2 }}>{coach.rating}</Text>
+                                                <Ionicons name="star" size={11} color={theme.colors.warning} />
+                                                <Text style={{ color: theme.mode === 'dark' ? theme.colors.warning : '#7C4A03', fontSize: 10, fontFamily: FontFamily.sansBold, marginLeft: 2 }}>{coach.rating}</Text>
                                             </View>
                                         </View>
                                         <Text style={{ color: theme.colors.textSecondary, fontSize: 11, fontFamily: FontFamily.sans, marginTop: 2, fontStyle: 'italic' }}>"{coach.specialty}"</Text>
@@ -464,7 +464,7 @@ export default function ExploreScreen() {
                                     </TouchableOpacity>
 
                                     <View style={{ position: 'absolute', bottom: 16, left: 20, right: 20 }}>
-                                        <Text style={{ color: '#FFFFFF', fontSize: 22, fontFamily: FontFamily.display }}>{selectedCoach.name}</Text>
+                                        <Text style={{ color: theme.colors.onImage, fontSize: 22, fontFamily: FontFamily.display }}>{selectedCoach.name}</Text>
                                         <Text style={{ color: theme.colors.primary, fontFamily: FontFamily.sansBold, textTransform: 'uppercase', letterSpacing: 0.5, fontSize: 11 }}>{selectedCoach.role}</Text>
                                     </View>
                                 </View>

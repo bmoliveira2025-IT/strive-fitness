@@ -1,3 +1,4 @@
+import Palette from '../../constants/palette.json';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
@@ -202,10 +203,10 @@ export function SmartCoach() {
                     style={{
                         borderRadius: 32,
                         overflow: 'hidden',
-                        shadowColor: "#000",
+                        shadowColor: Palette.ink,
                         shadowOffset: { width: 0, height: 20 },
-                        shadowOpacity: 0.25,
-                        shadowRadius: 30,
+                        shadowOpacity: 0.1,
+                        shadowRadius: 8,
                         elevation: 10,
                         minHeight: 200
                     }}
@@ -239,7 +240,7 @@ export function SmartCoach() {
                                         <Ionicons name="sparkles" size={20} color={theme.colors.primary} />
                                     </View>
                                     <View className="flex-1">
-                                        <Text style={{ color: '#FFF', textShadowColor: 'rgba(0,0,0,0.8)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 3 }} className="text-sm font-black italic uppercase tracking-tighter" numberOfLines={1}>Strive Analytics</Text>
+                                        <Text style={{ color: theme.colors.onImage, textShadowColor: 'rgba(0,0,0,0.8)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 3 }} className="text-sm font-bold italic uppercase tracking-tighter" numberOfLines={1}>Strive Analytics</Text>
                                         <Text style={{ color: 'rgba(255,255,255,0.7)', textShadowColor: 'rgba(0,0,0,0.8)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 2 }} className="text-[9px] font-bold uppercase tracking-[1.5px] mt-0.5">ANALÍTICO V2.5</Text>
                                     </View>
                                 </View>
@@ -248,17 +249,17 @@ export function SmartCoach() {
                                     className="flex-row items-center bg-green-500/20 px-2.5 py-1 rounded-full border border-green-500/40"
                                     style={{ flexShrink: 0, minWidth: 60, justifyContent: 'center' }}
                                 >
-                                    <View className="w-1.5 h-1.5 rounded-full bg-green-500 mr-2 shadow-sm" style={{ shadowColor: '#22C55E', shadowRadius: 4, shadowOpacity: 1 }} />
-                                    <Text className="text-green-500 text-[9px] font-black uppercase tracking-wider">ATIVO</Text>
+                                    <View className="w-1.5 h-1.5 rounded-full bg-green-500 mr-2 shadow-sm" style={{ shadowColor: theme.colors.success, shadowRadius: 4, shadowOpacity: 0.1 }} />
+                                    <Text className="text-green-500 text-[9px] font-bold uppercase tracking-wider">ATIVO</Text>
                                 </View>
                             </View>
 
                             <Animated.Text
                                 entering={FadeInDown.delay(200).duration(600)}
                                 style={{
-                                    color: '#FFF',
+                                    color: theme.colors.onImage,
                                     fontSize: 19,
-                                    fontWeight: '900',
+                                    fontFamily: 'Inter_700Bold', fontWeight: '700',
                                     letterSpacing: -0.5,
                                     lineHeight: 26,
                                     marginBottom: 16,
@@ -275,11 +276,11 @@ export function SmartCoach() {
                                 <View className="flex-row gap-2">
                                     {coachInsight?.focusMuscles.map((m, i) => (
                                         <View key={i} style={{ backgroundColor: theme.colors.primary, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 }}>
-                                            <Text style={{ color: '#000' }} className="text-[9px] font-black uppercase">{m}</Text>
+                                            <Text style={{ color: theme.colors.onPrimary }} className="text-[9px] font-bold uppercase">{m}</Text>
                                         </View>
                                     ))}
                                 </View>
-                                <Text style={{ color: 'rgba(255,255,255,0.5)', textShadowColor: 'rgba(0,0,0,0.8)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 2 }} className="text-[9px] font-black uppercase tracking-widest">MODEL: STRIVE-CORE</Text>
+                                <Text style={{ color: 'rgba(255,255,255,0.5)', textShadowColor: 'rgba(0,0,0,0.8)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 2 }} className="text-[9px] font-bold uppercase tracking-widest">MODEL: STRIVE-CORE</Text>
                             </View>
                         </View>
                     </ImageBackground>
@@ -300,7 +301,7 @@ export function SmartCoach() {
                             }}
                             activeOpacity={0.95}
                             style={{
-                                backgroundColor: theme.mode === 'dark' ? '#111827' : '#FFFFFF',
+                                backgroundColor: theme.mode === 'dark' ? theme.colors.backgroundSecondary : theme.colors.card,
                                 borderBottomLeftRadius: 24,
                                 borderBottomRightRadius: 24,
                                 padding: 16,
@@ -310,8 +311,8 @@ export function SmartCoach() {
                                 justifyContent: 'space-between',
                                 shadowColor: theme.colors.shadow,
                                 shadowOffset: { width: 0, height: 4 },
-                                shadowOpacity: theme.mode === 'light' ? 0.05 : 0.2,
-                                shadowRadius: 10,
+                                shadowOpacity: theme.mode === 'light' ? 0.05 : 0.1,
+                                shadowRadius: 8,
                                 elevation: 0,
                                 borderWidth: 1,
                                 borderColor: theme.colors.cardBorder
@@ -324,12 +325,12 @@ export function SmartCoach() {
                                     <Ionicons name="barbell" size={18} color={theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.primary} />
                                 </View>
                                 <View className="flex-1">
-                                    <Text style={{ color: theme.colors.textMuted, fontSize: 10, fontWeight: '900', textTransform: 'uppercase', letterSpacing: 0.5 }}>Sugestão de Hoje</Text>
-                                    <Text style={{ color: theme.colors.text, fontSize: 14, fontWeight: '700' }} className="mt-0.5">{workoutRecommendation.workout.name}</Text>
+                                    <Text style={{ color: theme.colors.textMuted, fontSize: 10, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5 }}>Sugestão de Hoje</Text>
+                                    <Text style={{ color: theme.colors.text, fontSize: 14, fontFamily: 'Inter_700Bold', fontWeight: '700' }} className="mt-0.5">{workoutRecommendation.workout.name}</Text>
                                 </View>
                             </View>
-                            <View style={{ backgroundColor: theme.colors.primary, width: 36, height: 36, borderRadius: 10, alignItems: 'center', justifyContent: 'center', flexShrink: 0, shadowColor: theme.colors.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }}>
-                                <Ionicons name="play" size={20} color="#000000" />
+                            <View style={{ backgroundColor: theme.colors.primary, width: 36, height: 36, borderRadius: 10, alignItems: 'center', justifyContent: 'center', flexShrink: 0, shadowColor: theme.colors.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 4 }}>
+                                <Ionicons name="play" size={20} color={theme.colors.onPrimary} />
                             </View>
                         </TouchableOpacity>
                     ) : (
@@ -338,7 +339,7 @@ export function SmartCoach() {
                             disabled={isGeneratingAI}
                             activeOpacity={0.95}
                             style={{
-                                backgroundColor: theme.mode === 'dark' ? '#111827' : '#FFFFFF',
+                                backgroundColor: theme.mode === 'dark' ? theme.colors.backgroundSecondary : theme.colors.card,
                                 borderBottomLeftRadius: 24,
                                 borderBottomRightRadius: 24,
                                 padding: 16,
@@ -348,8 +349,8 @@ export function SmartCoach() {
                                 justifyContent: 'space-between',
                                 shadowColor: theme.colors.shadow,
                                 shadowOffset: { width: 0, height: 4 },
-                                shadowOpacity: theme.mode === 'light' ? 0.05 : 0.2,
-                                shadowRadius: 10,
+                                shadowOpacity: theme.mode === 'light' ? 0.05 : 0.1,
+                                shadowRadius: 8,
                                 elevation: 0,
                                 borderWidth: 1,
                                 borderColor: theme.colors.cardBorder
@@ -362,12 +363,12 @@ export function SmartCoach() {
                                     <Ionicons name="sparkles" size={18} color={theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.primary} />
                                 </View>
                                 <View className="flex-1">
-                                    <Text style={{ color: theme.colors.textMuted, fontSize: 10, fontWeight: '900', textTransform: 'uppercase', letterSpacing: 0.5 }}>Gerar Treino IA</Text>
-                                    <Text style={{ color: theme.colors.text, fontSize: 14, fontWeight: '700' }} className="mt-0.5">{dailyFocus.names}</Text>
+                                    <Text style={{ color: theme.colors.textMuted, fontSize: 10, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5 }}>Gerar Treino IA</Text>
+                                    <Text style={{ color: theme.colors.text, fontSize: 14, fontFamily: 'Inter_700Bold', fontWeight: '700' }} className="mt-0.5">{dailyFocus.names}</Text>
                                 </View>
                             </View>
-                            <View style={{ backgroundColor: theme.colors.primary, width: 36, height: 36, borderRadius: 10, alignItems: 'center', justifyContent: 'center', flexShrink: 0, shadowColor: theme.colors.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }}>
-                                {isGeneratingAI ? <ActivityIndicator size="small" color="#000" /> : <Ionicons name="sparkles" size={20} color="#000000" />}
+                            <View style={{ backgroundColor: theme.colors.primary, width: 36, height: 36, borderRadius: 10, alignItems: 'center', justifyContent: 'center', flexShrink: 0, shadowColor: theme.colors.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 4 }}>
+                                {isGeneratingAI ? <ActivityIndicator size="small" color={theme.colors.onPrimary} /> : <Ionicons name="sparkles" size={20} color={theme.colors.onPrimary} />}
                             </View>
                         </TouchableOpacity>
                     )}
@@ -400,7 +401,7 @@ export function SmartCoach() {
                     >
                         {/* Muscle Name & Status */}
                         <View style={{ flex: 1 }}>
-                            <Text style={{ color: theme.colors.text }} className="text-sm font-black italic uppercase tracking-tighter mb-1" numberOfLines={1}>{muscle.name}</Text>
+                            <Text style={{ color: theme.colors.text }} className="text-sm font-bold italic uppercase tracking-tighter mb-1" numberOfLines={1}>{muscle.name}</Text>
                             <StatusBadge status={muscle.status} />
                         </View>
 
@@ -420,8 +421,8 @@ export function SmartCoach() {
 
                         {/* Score Badge */}
                         <View className="items-center justify-center pl-4 border-l" style={{ borderLeftColor: theme.colors.cardBorder, minWidth: 45 }}>
-                            <Text style={{ color: getScoreColor(muscle.score) }} className="text-base font-black leading-none">{muscle.score}</Text>
-                            <Text style={{ color: theme.colors.textMuted }} className="text-[7px] font-black uppercase">SCORE</Text>
+                            <Text style={{ color: getScoreColor(muscle.score) }} className="text-base font-bold leading-none">{muscle.score}</Text>
+                            <Text style={{ color: theme.colors.textMuted }} className="text-[7px] font-bold uppercase">SCORE</Text>
                         </View>
                     </View>
                 ))}
@@ -442,7 +443,7 @@ export function SmartCoach() {
                         }}
                     >
                         <View className="flex-row items-center justify-center">
-                            <Text style={{ color: theme.mode === 'light' ? '#000000' : theme.colors.primary }} className="text-[11px] font-black uppercase tracking-wider italic">Análise Completa & Detalhes</Text>
+                            <Text style={{ color: theme.mode === 'light' ? '#000000' : theme.colors.primary }} className="text-[11px] font-bold uppercase tracking-wider italic">Análise Completa & Detalhes</Text>
                             <Ionicons name="chevron-forward" size={14} color={theme.mode === 'light' ? '#000000' : theme.colors.primary} style={{ marginLeft: 6 }} />
                         </View>
                     </TouchableOpacity>

@@ -66,7 +66,7 @@ export default function MuscleCoachDetails() {
 
         return (
             <View className={`px-2 py-0.5 rounded-md ${bg} self-start`}>
-                <Text style={{ color }} className="text-[9px] font-black uppercase tracking-wider">{text}</Text>
+                <Text style={{ color }} className="text-[9px] font-bold uppercase tracking-wider">{text}</Text>
             </View>
         );
     };
@@ -81,7 +81,7 @@ export default function MuscleCoachDetails() {
                     <Ionicons name="arrow-back" size={24} color={theme.colors.text} />
                 </TouchableOpacity>
                 <View className="ml-4">
-                    <Text style={{ color: theme.colors.text }} className="text-xl font-black italic uppercase italic">Strive Coach</Text>
+                    <Text style={{ color: theme.colors.text }} className="text-xl font-bold italic uppercase italic">Strive Coach</Text>
                     <Text style={{ color: theme.colors.textMuted }} className="text-[10px] font-bold uppercase tracking-widest">Análise Completa de Grupos</Text>
                 </View>
             </View>
@@ -113,11 +113,11 @@ export default function MuscleCoachDetails() {
                     >
                         <View className="flex-row justify-between items-start mb-4">
                             <View className="flex-1">
-                                <Text style={{ color: theme.colors.text }} className="text-xl font-black italic uppercase mb-1">{muscle.name}</Text>
+                                <Text style={{ color: theme.colors.text }} className="text-xl font-bold italic uppercase mb-1">{muscle.name}</Text>
                                 <StatusBadge status={muscle.status} />
                             </View>
                             <View className="items-center">
-                                <Text style={{ color: getScoreColor(muscle.score) }} className="text-3xl font-black">{muscle.score}</Text>
+                                <Text style={{ color: getScoreColor(muscle.score) }} className="text-3xl font-bold">{muscle.score}</Text>
                                 <Text style={{ color: theme.colors.textMuted }} className="text-[10px] font-bold uppercase">Score</Text>
                             </View>
                         </View>
@@ -143,10 +143,10 @@ export default function MuscleCoachDetails() {
                             </View>
                         </View>
 
-                        <View style={{ backgroundColor: theme.mode === 'light' ? '#F4F4F5' : '#18181B' }} className="p-4 rounded-2xl">
+                        <View style={{ backgroundColor: theme.mode === 'light' ? theme.colors.backgroundSecondary : theme.colors.backgroundSecondary }} className="p-4 rounded-2xl">
                             <View className="flex-row items-center mb-2">
                                 <Ionicons name="bulb" size={14} color={theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.primary} />
-                                <Text style={{ color: theme.mode === 'light' ? theme.colors.text : theme.colors.textMuted }} className="text-[11px] font-black uppercase ml-1.5 tracking-wider">Análise do Coach</Text>
+                                <Text style={{ color: theme.mode === 'light' ? theme.colors.text : theme.colors.textMuted }} className="text-[11px] font-bold uppercase ml-1.5 tracking-wider">Análise do Coach</Text>
                             </View>
                             <Text style={{ color: theme.colors.text }} className="text-[13px] leading-5 font-medium italic">
                                 “{muscle.recommendation}”

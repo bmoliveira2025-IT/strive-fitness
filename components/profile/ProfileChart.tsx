@@ -85,8 +85,8 @@ export function ProfileChart({ history }: ProfileChartProps) {
     return (
         <View className="px-5 mb-8">
             <View className="mb-4">
-                <Text style={{ color: theme.mode === 'dark' ? '#94a3b8' : theme.colors.textMuted }} className="font-bold text-sm uppercase tracking-wider">Esta semana</Text>
-                <Text style={{ color: theme.colors.text }} className="text-3xl font-black">{formatTotal()}</Text>
+                <Text style={{ color: theme.mode === 'dark' ? theme.colors.textMuted : theme.colors.textMuted }} className="font-bold text-sm uppercase tracking-wider">Esta semana</Text>
+                <Text style={{ color: theme.colors.text }} className="text-3xl font-bold">{formatTotal()}</Text>
             </View>
 
             {/* Chart */}

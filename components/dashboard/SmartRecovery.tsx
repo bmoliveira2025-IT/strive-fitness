@@ -1,3 +1,4 @@
+import Palette from '../../constants/palette.json';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useMemo } from 'react';
@@ -59,14 +60,14 @@ export function SmartRecovery() {
                 className="flex-row items-center justify-between mb-5"
             >
                 <View style={{ flex: 1, marginRight: 8 }}>
-                    <Text numberOfLines={1} style={{ color: theme.colors.text }} className="text-xl font-black italic uppercase tracking-tighter">Smart Recovery</Text>
+                    <Text numberOfLines={1} style={{ color: theme.colors.text }} className="text-xl font-bold italic uppercase tracking-tighter">Smart Recovery</Text>
                     <Text numberOfLines={1} style={{ color: theme.colors.textMuted }} className="text-[10px] font-bold uppercase tracking-widest mt-0.5">Otimização AI</Text>
                 </View>
                 <View
                     style={{ backgroundColor: theme.colors.backgroundTertiary, borderWidth: 1, borderColor: theme.colors.primary + '30' }}
                     className="px-3 py-1 rounded-xl"
                 >
-                    <Text style={{ color: theme.colors.primary, fontSize: 10, fontWeight: '900' }}>PREMIUM</Text>
+                    <Text style={{ color: theme.colors.primary, fontSize: 10, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>PREMIUM</Text>
                 </View>
             </Animated.View>
 
@@ -76,10 +77,10 @@ export function SmartRecovery() {
                     backgroundColor: '#000',
                     borderRadius: 32,
                     overflow: 'hidden',
-                    shadowColor: "#000",
+                    shadowColor: Palette.ink,
                     shadowOffset: { width: 0, height: 12 },
-                    shadowOpacity: 0.35,
-                    shadowRadius: 24,
+                    shadowOpacity: 0.1,
+                    shadowRadius: 8,
                     elevation: 8,
                 }}
             >
@@ -105,10 +106,10 @@ export function SmartRecovery() {
                                 <Ionicons name="medical" size={22} color={theme.colors.error} />
                             </View>
                             <View>
-                                <Text style={{ color: '#FFF', textShadowColor: 'rgba(0,0,0,0.9)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 6 }} className="font-black text-lg tracking-tight uppercase italic">
+                                <Text style={{ color: theme.colors.onImage, textShadowColor: 'rgba(0,0,0,0.9)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 6 }} className="font-bold text-lg tracking-tight uppercase italic">
                                     FOCO: {recoveryTip.muscle.toUpperCase()}
                                 </Text>
-                                <Text style={{ color: 'rgba(255,255,255,0.7)', fontSize: 11, fontWeight: '700', textShadowColor: 'rgba(0,0,0,0.5)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 2 }}>RECUPERAÇÃO INTELIGENTE</Text>
+                                <Text style={{ color: 'rgba(255,255,255,0.7)', fontSize: 11, fontFamily: 'Inter_700Bold', fontWeight: '700', textShadowColor: 'rgba(0,0,0,0.5)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 2 }}>RECUPERAÇÃO INTELIGENTE</Text>
                             </View>
                         </View>
 
@@ -121,9 +122,9 @@ export function SmartRecovery() {
                             <View className="flex-1 bg-black/40 border border-white/10 p-4 rounded-3xl">
                                 <View className="flex-row items-center mb-3">
                                     <View style={{ backgroundColor: 'rgba(59, 130, 246, 0.25)', width: 32, height: 32, borderRadius: 10, alignItems: 'center', justifyContent: 'center', marginRight: 10 }}>
-                                        <Ionicons name="body" size={16} color="#60A5FA" />
+                                        <Ionicons name="body" size={16} color={theme.colors.info} />
                                     </View>
-                                    <Text style={{ color: '#FFF', fontSize: 13, fontWeight: '900' }}>Mobilidade</Text>
+                                    <Text style={{ color: theme.colors.onImage, fontSize: 13, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>Mobilidade</Text>
                                 </View>
                                 <Text style={{ color: 'rgba(255,255,255,0.9)', fontSize: 11, lineHeight: 18 }}>
                                     {recoveryTip.mobility}
@@ -136,7 +137,7 @@ export function SmartRecovery() {
                                     <View style={{ backgroundColor: theme.colors.primary + '25', width: 32, height: 32, borderRadius: 10, alignItems: 'center', justifyContent: 'center', marginRight: 10 }}>
                                         <Ionicons name="nutrition" size={16} color={theme.colors.primary} />
                                     </View>
-                                    <Text style={{ color: '#FFF', fontSize: 13, fontWeight: '900' }}>Nutrição</Text>
+                                    <Text style={{ color: theme.colors.onImage, fontSize: 13, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>Nutrição</Text>
                                 </View>
                                 <Text style={{ color: 'rgba(255,255,255,0.9)', fontSize: 11, lineHeight: 18 }}>
                                     {recoveryTip.nutrition}

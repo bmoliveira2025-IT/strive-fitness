@@ -18,7 +18,7 @@ interface HomeHeaderProps {
 
 export function HomeHeader({ userName, streak, unreadCount, onNotificationPress }: HomeHeaderProps) {
     const insets = useSafeAreaInsets();
-    const { theme } = useTheme();
+    const { theme, toggleTheme } = useTheme();
     const { profile } = useUserStore();
     const router = useRouter();
 
@@ -102,7 +102,7 @@ export function HomeHeader({ userName, streak, unreadCount, onNotificationPress 
                                     color: theme.colors.primary,
                                     fontSize: 18,
                                     fontFamily: FontFamily.display,
-                                    fontWeight: '800',
+                                    fontWeight: '700',
                                 }}>
                                     {initials}
                                 </Text>
@@ -167,7 +167,7 @@ export function HomeHeader({ userName, streak, unreadCount, onNotificationPress 
                                         fontSize: 18,
                                         fontFamily: FontFamily.display,
                                         letterSpacing: -0.3,
-                                        fontWeight: '800',
+                                        fontWeight: '700',
                                     }}
                                 >
                                     Strive
@@ -187,8 +187,31 @@ export function HomeHeader({ userName, streak, unreadCount, onNotificationPress 
                     </View>
                 </TouchableOpacity>
 
-                {/* Right: Streak badge + Notifications */}
+                {/* Right: Theme Toggle + Streak badge + Notifications */}
                 <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
+                    {/* Theme Mode Toggle & Identification */}
+                    <TouchableOpacity
+                        onPress={toggleTheme}
+                        activeOpacity={0.75}
+                        accessibilityLabel={`Tema atual: ${theme.mode === 'light' ? 'Claro' : 'Escuro'}. Toque para alternar.`}
+                        style={{
+                            width: 38,
+                            height: 38,
+                            borderRadius: 19,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            borderWidth: 1,
+                            borderColor: theme.mode === 'light' ? '#F59E0B40' : theme.colors.primary + '40',
+                            backgroundColor: theme.mode === 'light' ? '#F59E0B10' : theme.colors.card,
+                        }}
+                    >
+                        <Ionicons
+                            name={theme.mode === 'light' ? 'sunny' : 'moon'}
+                            size={18}
+                            color={theme.mode === 'light' ? '#D97706' : theme.colors.primary}
+                        />
+                    </TouchableOpacity>
+
                     <TouchableOpacity
                         onPress={() => router.push('/streak')}
                         activeOpacity={0.75}
@@ -206,7 +229,7 @@ export function HomeHeader({ userName, streak, unreadCount, onNotificationPress 
                         <Ionicons
                             name="flame"
                             size={16}
-                            color="#F59E0B"
+                            color={theme.colors.warning}
                         />
                         <Text style={{
                             color: theme.colors.text,

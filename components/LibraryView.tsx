@@ -1,3 +1,4 @@
+import Palette from '../constants/palette.json';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Image } from 'expo-image';
@@ -74,22 +75,22 @@ const GridItem = memo(({ item, isSelected, toggleFavorite, isItemFavorite, onSel
             activeOpacity={0.8}
             style={{
                 flex: 1,
-                backgroundColor: isSelected ? (theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.05)' : '#F8FAFC') : theme.colors.card,
+                backgroundColor: isSelected ? theme.colors.surfaceActive : theme.colors.card,
                 borderColor: isSelected ? theme.colors.primary : theme.colors.border,
-                borderWidth: isSelected ? 2 : 1,
-                borderRadius: 20,
+                borderWidth: 1,
+                borderRadius: 16,
                 marginBottom: 16,
                 marginHorizontal: 4,
                 overflow: 'hidden',
-                shadowColor: '#000',
+                shadowColor: Palette.ink,
                 shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: isSelected ? 0.2 : 0.08,
-                shadowRadius: 12,
+                shadowOpacity: isSelected ? 0.1 : 0.08,
+                shadowRadius: 8,
                 elevation: isSelected ? 4 : 2,
                 height: 256,
             }}
         >
-            <View style={{ height: 160, position: 'relative', alignItems: 'center', justifyContent: 'center', backgroundColor: theme.mode === 'dark' ? '#27272a' : '#F8FAFC' }}>
+            <View style={{ height: 160, position: 'relative', alignItems: 'center', justifyContent: 'center', backgroundColor: theme.mode === 'dark' ? theme.colors.backgroundTertiary : theme.colors.background }}>
                 <TouchableOpacity
                     onPress={(e) => {
                         e.stopPropagation();
@@ -112,14 +113,14 @@ const GridItem = memo(({ item, isSelected, toggleFavorite, isItemFavorite, onSel
                             e.stopPropagation();
                             toggleFavorite(item.id?.toString());
                         }}
-                        style={{ backgroundColor: theme.colors.card, borderRadius: 12, padding: 6, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 4, elevation: 1, borderWidth: 1, borderColor: theme.colors.border }}
+                        style={{ backgroundColor: theme.colors.card, borderRadius: 12, padding: 6, shadowColor: Palette.ink, shadowOpacity: 0.05, shadowRadius: 4, elevation: 1, borderWidth: 1, borderColor: theme.colors.border }}
                     >
-                        <Ionicons name={isItemFavorite ? "heart" : "heart-outline"} size={18} color={isItemFavorite ? "#EF4444" : theme.colors.textMuted} />
+                        <Ionicons name={isItemFavorite ? "heart" : "heart-outline"} size={18} color={isItemFavorite ? theme.colors.error : theme.colors.textMuted} />
                     </TouchableOpacity>
 
                     <TouchableOpacity
                         onPress={onInfo}
-                        style={{ backgroundColor: theme.colors.card, borderRadius: 12, padding: 6, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 4, elevation: 1, borderWidth: 1, borderColor: theme.colors.border }}
+                        style={{ backgroundColor: theme.colors.card, borderRadius: 12, padding: 6, shadowColor: Palette.ink, shadowOpacity: 0.05, shadowRadius: 4, elevation: 1, borderWidth: 1, borderColor: theme.colors.border }}
                     >
                         <Ionicons name="information-circle" size={18} color={theme.colors.textMuted} />
                     </TouchableOpacity>
@@ -127,12 +128,12 @@ const GridItem = memo(({ item, isSelected, toggleFavorite, isItemFavorite, onSel
             </View>
 
             <View style={{ padding: 16, flex: 1, justifyContent: 'center' }}>
-                <Text style={{ color: theme.colors.text, fontWeight: '700', fontSize: 15, marginBottom: 4 }} numberOfLines={2}>
+                <Text style={{ color: theme.colors.text, fontFamily: 'Inter_700Bold', fontWeight: '700', fontSize: 15, marginBottom: 4 }} numberOfLines={2}>
                     {item.name}
                 </Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: theme.colors.primary, marginRight: 6 }} />
-                    <Text style={{ color: theme.colors.textSecondary, fontSize: 13, fontWeight: '500' }}>
+                    <Text style={{ color: theme.colors.textSecondary, fontSize: 13, fontFamily: 'Inter_500Medium', fontWeight: '500' }}>
                         {item.body_parts?.[0] ? (BODY_PART_TRANSLATION[item.body_parts[0].toLowerCase()] || item.body_parts[0]) : 'Geral'}
                     </Text>
                 </View>
@@ -148,18 +149,18 @@ const ExerciseCardItem = memo(({ item, isSelected, isItemFavorite, onSelect, onI
             onPress={onSelect}
             activeOpacity={0.8}
             style={{
-                backgroundColor: isSelected ? (theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.05)' : '#F0F9FF') : theme.colors.card,
+                backgroundColor: isSelected ? theme.colors.surfaceActive : theme.colors.card,
                 borderColor: isSelected ? theme.colors.primary : theme.colors.border,
-                borderWidth: isSelected ? 2 : 1,
-                borderRadius: 20,
+                borderWidth: 1,
+                borderRadius: 16,
                 marginBottom: 12,
                 overflow: 'hidden',
                 flexDirection: 'row',
                 alignItems: 'center',
                 padding: 12,
-                shadowColor: '#000',
+                shadowColor: Palette.ink,
                 shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: isSelected ? 0.15 : 0.06,
+                shadowOpacity: isSelected ? 0.1 : 0.06,
                 shadowRadius: 8,
                 elevation: isSelected ? 2 : 1,
                 minHeight: 88,
@@ -176,7 +177,7 @@ const ExerciseCardItem = memo(({ item, isSelected, isItemFavorite, onSelect, onI
                     width: 64,
                     height: 64,
                     borderRadius: 16,
-                    backgroundColor: theme.mode === 'dark' ? '#27272a' : '#F8FAFC',
+                    backgroundColor: theme.mode === 'dark' ? theme.colors.backgroundTertiary : theme.colors.background,
                     alignItems: 'center',
                     justifyContent: 'center',
                     marginRight: 16,
@@ -195,7 +196,7 @@ const ExerciseCardItem = memo(({ item, isSelected, isItemFavorite, onSelect, onI
             {/* Content */}
             <View style={{ flex: 1, marginRight: 8 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
-                    <Text style={{ color: theme.colors.text, fontWeight: '700', fontSize: 16, flex: 1, marginRight: 8 }} numberOfLines={1}>
+                    <Text style={{ color: theme.colors.text, fontFamily: 'Inter_700Bold', fontWeight: '700', fontSize: 16, flex: 1, marginRight: 8 }} numberOfLines={1}>
                         {item.name}
                     </Text>
                     {/* Info Icon inline if needed, or handle separately */}
@@ -204,12 +205,12 @@ const ExerciseCardItem = memo(({ item, isSelected, isItemFavorite, onSelect, onI
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
                     {item.body_parts?.slice(0, 2).map((part: string, idx: number) => (
                         <View key={idx} style={{
-                            backgroundColor: theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : '#F1F5F9',
+                            backgroundColor: theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : theme.colors.backgroundSecondary,
                             paddingHorizontal: 10,
                             paddingVertical: 4,
                             borderRadius: 8,
                         }}>
-                            <Text style={{ color: theme.colors.textSecondary, fontSize: 11, fontWeight: '600' }}>
+                            <Text style={{ color: theme.colors.textSecondary, fontSize: 11, fontFamily: 'Inter_600SemiBold', fontWeight: '600' }}>
                                 {BODY_PART_TRANSLATION[part.toLowerCase()] || part}
                             </Text>
                         </View>
@@ -403,7 +404,7 @@ export function LibraryView({
                     borderWidth: 1.5,
                     shadowColor: isSelected ? theme.colors.primary : 'transparent',
                     shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: isSelected ? 0.3 : 0,
+                    shadowOpacity: isSelected ? 0.1 : 0,
                     shadowRadius: 4,
                 }}
                 className={`mr-2 flex-row items-center px-5 h-11 rounded-full transition-smooth`}
@@ -531,15 +532,15 @@ export function LibraryView({
                             justifyContent: 'center',
                             shadowColor: theme.colors.primary,
                             shadowOffset: { width: 0, height: 4 },
-                            shadowOpacity: 0.3,
-                            shadowRadius: 10,
+                            shadowOpacity: 0.1,
+                            shadowRadius: 8,
                             elevation: 6
                         }}
                     >
-                        <Text style={{ color: '#000000', fontSize: 18, fontWeight: 'bold', marginRight: 8 }}>
+                        <Text style={{ color: theme.colors.onPrimary, fontSize: 18, fontFamily: 'Inter_700Bold', fontWeight: 'bold', marginRight: 8 }}>
                             Adicionar ({selectedIds.size})
                         </Text>
-                        <Ionicons name="arrow-forward" size={24} color="#000000" />
+                        <Ionicons name="arrow-forward" size={24} color={theme.colors.onPrimary} />
                     </TouchableOpacity>
                 </View>
             )}

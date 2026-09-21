@@ -1,3 +1,4 @@
+import Palette from '../constants/palette.json';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useEffect, useState } from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
@@ -83,7 +84,7 @@ export function AIPlansGrid({ onPlanStart }: AIPlansGridProps) {
                     <Ionicons
                         name="refresh"
                         size={18}
-                        color={refreshing ? "#64748B" : "#4F8FF7"}
+                        color={refreshing ? Palette.dark.textMuted : Palette.dark.info}
                     />
                     <Text className="text-primary text-sm ml-1">
                         {refreshing ? 'Atualizando...' : 'Atualizar'}
@@ -120,7 +121,7 @@ export function AIPlansGrid({ onPlanStart }: AIPlansGridProps) {
                                 />
                             ) : (
                                 <View className="w-full h-20 rounded-lg mb-2 bg-surfaceHighlight items-center justify-center">
-                                    <Ionicons name="barbell" size={32} color="#64748B" />
+                                    <Ionicons name="barbell" size={32} color={Palette.dark.textMuted} />
                                 </View>
                             )}
 
@@ -131,11 +132,11 @@ export function AIPlansGrid({ onPlanStart }: AIPlansGridProps) {
 
                             <View className="flex-row items-center justify-between mt-1">
                                 <View className="flex-row items-center">
-                                    <Ionicons name="time-outline" size={12} color="#64748B" />
+                                    <Ionicons name="time-outline" size={12} color={Palette.dark.textMuted} />
                                     <Text className="text-text-muted text-xs ml-1">{plan.duration}</Text>
                                 </View>
                                 <View className="flex-row items-center">
-                                    <Ionicons name="fitness" size={12} color="#64748B" />
+                                    <Ionicons name="fitness" size={12} color={Palette.dark.textMuted} />
                                     <Text className="text-text-muted text-xs ml-1">
                                         {plan.exercises.length} ex
                                     </Text>

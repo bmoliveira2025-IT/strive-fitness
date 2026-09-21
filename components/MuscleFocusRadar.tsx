@@ -175,7 +175,7 @@ export function MuscleFocusRadar() {
                                 y={y + dy}
                                 fill={theme.colors.text}
                                 fontSize="10"
-                                fontWeight="800"
+                                fontWeight='700'
                                 textAnchor={textAnchor}
                                 alignmentBaseline="middle"
                                 opacity={0.6}

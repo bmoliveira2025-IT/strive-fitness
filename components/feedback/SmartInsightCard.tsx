@@ -34,37 +34,37 @@ export const SmartInsightCard: React.FC<SmartInsightCardProps> = ({
             case 'pr':
                 return {
                     icon: 'trophy' as const,
-                    iconColor: '#EAB308',
+                    iconColor: theme.colors.warning,
                     accentBg: isDark ? '#2B230B' : '#FEFCE8',
-                    border: isDark ? '#EAB30840' : '#FDE047',
+                    border: isDark ? theme.colors.warning + '40' : '#FDE047',
                 };
             case 'goal':
                 return {
                     icon: 'flag' as const,
-                    iconColor: '#3B82F6',
+                    iconColor: theme.colors.info,
                     accentBg: isDark ? '#0F2442' : '#EFF6FF',
-                    border: isDark ? '#3B82F640' : '#BFDBFE',
+                    border: isDark ? theme.colors.info + '40' : '#BFDBFE',
                 };
             case 'recovery':
                 return {
                     icon: 'fitness' as const,
-                    iconColor: '#10B981',
+                    iconColor: theme.colors.success,
                     accentBg: isDark ? '#0C281E' : '#ECFDF5',
-                    border: isDark ? '#10B98140' : '#A7F3D0',
+                    border: isDark ? theme.colors.success + '40' : '#A7F3D0',
                 };
             case 'tip':
                 return {
                     icon: 'bulb' as const,
-                    iconColor: '#8B5CF6',
+                    iconColor: theme.colors.primary,
                     accentBg: isDark ? '#1F1B2E' : '#F5F3FF',
-                    border: isDark ? '#8B5CF640' : '#DDD6FE',
+                    border: isDark ? theme.colors.primary + '40' : '#DDD6FE',
                 };
             default: // streak
                 return {
                     icon: 'flame' as const,
-                    iconColor: '#F97316',
+                    iconColor: theme.colors.warning,
                     accentBg: isDark ? '#2E190E' : '#FFF7ED',
-                    border: isDark ? '#F9731640' : '#FFEDD5',
+                    border: isDark ? theme.colors.warning + '40' : '#FFEDD5',
                 };
         }
     };
@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     title: {
-        fontFamily: 'Sora_700Bold',
+        fontFamily: "Inter_700Bold",
         fontSize: 14,
         letterSpacing: -0.2,
     },
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
     },
     badgeText: {
-        fontFamily: 'Sora_600SemiBold',
+        fontFamily: "Inter_600SemiBold",
         fontSize: 11,
     },
     description: {
@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
     actionLabel: {
-        fontFamily: 'Sora_600SemiBold',
+        fontFamily: "Inter_600SemiBold",
         fontSize: 12.5,
     },
 });

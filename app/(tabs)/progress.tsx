@@ -1,3 +1,4 @@
+import Palette from '../../constants/palette.json';
 // Force refresh
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -158,8 +159,8 @@ export default function ProgressScreen() {
                             <Ionicons name="chevron-back" size={24} color={theme.colors.text} />
                         </TouchableOpacity>
                         <View className="ml-4 flex-1">
-                            <Text style={{ color: theme.colors.text, fontSize: 24, fontWeight: '800', letterSpacing: -0.5 }} numberOfLines={1}>Progresso</Text>
-                            <Text style={{ color: theme.colors.textSecondary, fontSize: 12, fontWeight: '600', marginTop: 1 }}>Acompanhe sua evolução</Text>
+                            <Text style={{ color: theme.colors.text, fontSize: 24, fontFamily: 'Inter_700Bold', fontWeight: '700', letterSpacing: -0.5 }} numberOfLines={1}>Progresso</Text>
+                            <Text style={{ color: theme.colors.textSecondary, fontSize: 12, fontFamily: 'Inter_600SemiBold', fontWeight: '600', marginTop: 1 }}>Acompanhe sua evolução</Text>
                         </View>
                     </View>
 
@@ -213,8 +214,8 @@ export default function ProgressScreen() {
                             const isActive = selectedTab === tab.id;
                             return (
                                 <Animated.View key={tab.id} entering={FadeInDown.delay(index * 35).duration(220)} style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                                    <View style={{ backgroundColor: theme.colors.card, borderColor: theme.colors.cardBorder, borderWidth: 1, borderRadius: 12, paddingHorizontal: 11, paddingVertical: 7, shadowColor: '#000', shadowOpacity: 0.14, shadowRadius: 8 }}>
-                                        <Text style={{ color: isActive ? (theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.primary) : theme.colors.text, fontSize: 11, fontWeight: '800' }}>{tab.label}</Text>
+                                    <View style={{ backgroundColor: theme.colors.card, borderColor: theme.colors.cardBorder, borderWidth: 1, borderRadius: 12, paddingHorizontal: 11, paddingVertical: 7, shadowColor: Palette.ink, shadowOpacity: 0.1, shadowRadius: 8 }}>
+                                        <Text style={{ color: isActive ? (theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.primary) : theme.colors.text, fontSize: 11, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>{tab.label}</Text>
                                     </View>
                                     <TouchableOpacity
                                         onPress={() => {
@@ -231,10 +232,10 @@ export default function ProgressScreen() {
                                             backgroundColor: isActive ? theme.colors.primary : theme.colors.card,
                                             borderColor: isActive ? theme.colors.primaryDark : theme.colors.cardBorder,
                                             borderWidth: 1,
-                                            shadowColor: '#000',
+                                            shadowColor: Palette.ink,
                                             shadowOffset: { width: 0, height: 6 },
-                                            shadowOpacity: 0.2,
-                                            shadowRadius: 10,
+                                            shadowOpacity: 0.1,
+                                            shadowRadius: 8,
                                             elevation: 7,
                                         }}
                                     >
@@ -256,13 +257,13 @@ export default function ProgressScreen() {
                         borderRadius: 18,
                         alignItems: 'center',
                         justifyContent: 'center',
-                        backgroundColor: theme.mode === 'light' ? '#1D251A' : theme.colors.primary,
+                        backgroundColor: theme.mode === 'light' ? theme.colors.accentMuted : theme.colors.primary,
                         borderColor: theme.mode === 'light' ? '#34402F' : theme.colors.primaryDark,
                         borderWidth: 1,
-                        shadowColor: '#000',
+                        shadowColor: Palette.ink,
                         shadowOffset: { width: 0, height: 8 },
-                        shadowOpacity: 0.28,
-                        shadowRadius: 12,
+                        shadowOpacity: 0.1,
+                        shadowRadius: 8,
                         elevation: 10,
                     }}
                 >
@@ -284,12 +285,12 @@ export default function ProgressScreen() {
                 <View className="flex-1 bg-black/80 justify-center items-center px-6">
                     <Animated.View
                         entering={FadeInDown.springify()}
-                        style={{ backgroundColor: theme.colors.card, borderColor: theme.colors.cardBorder, borderWidth: 1.5, borderRadius: 36, padding: 32, width: '100%', shadowColor: '#000', shadowOffset: { width: 0, height: 20 }, shadowOpacity: 0.3, shadowRadius: 30 }}
+                        style={{ backgroundColor: theme.colors.card, borderColor: theme.colors.cardBorder, borderWidth: 1.5, borderRadius: 36, padding: 32, width: '100%', shadowColor: Palette.ink, shadowOffset: { width: 0, height: 20 }, shadowOpacity: 0.1, shadowRadius: 8 }}
                     >
-                        <Text style={{ color: theme.colors.text, paddingRight: 8 }} className="text-2xl font-black italic uppercase tracking-tighter mb-6">Atualizar Peso</Text>
+                        <Text style={{ color: theme.colors.text, paddingRight: 8 }} className="text-2xl font-bold italic uppercase tracking-tighter mb-6">Atualizar Peso</Text>
 
                         <View style={{ backgroundColor: theme.colors.backgroundTertiary, borderRadius: 28, padding: 24, borderWidth: 1, borderColor: theme.colors.cardBorder }} className="mb-8">
-                            <Text style={{ color: theme.colors.textSecondary }} className="text-[10px] font-black uppercase tracking-widest mb-4">PESO ATUAL (KG)</Text>
+                            <Text style={{ color: theme.colors.textSecondary }} className="text-[10px] font-bold uppercase tracking-widest mb-4">PESO ATUAL (KG)</Text>
                             <View className="flex-row items-center">
                                 <View style={{ backgroundColor: theme.colors.primary + '20', width: 56, height: 56, borderRadius: 20, alignItems: 'center', justifyContent: 'center', marginRight: 20 }}>
                                     <Ionicons name="scale" size={28} color={theme.colors.primary} />
@@ -299,7 +300,7 @@ export default function ProgressScreen() {
                                         style={{
                                             color: theme.colors.text,
                                             fontSize: 32,
-                                            fontWeight: '900',
+                                            fontFamily: 'Inter_700Bold', fontWeight: '700',
                                         }}
                                         value={newWeight}
                                         onChangeText={setNewWeight}
@@ -309,7 +310,7 @@ export default function ProgressScreen() {
                                         autoFocus
                                     />
                                 </View>
-                                <Text style={{ color: theme.colors.textSecondary }} className="text-xl font-black italic uppercase">KG</Text>
+                                <Text style={{ color: theme.colors.textSecondary }} className="text-xl font-bold italic uppercase">KG</Text>
                             </View>
                         </View>
 
@@ -325,7 +326,7 @@ export default function ProgressScreen() {
                                 }}
                                 className="flex-1 py-5 items-center"
                             >
-                                <Text style={{ color: theme.colors.text }} className="font-black uppercase tracking-widest text-[12px]">Cancelar</Text>
+                                <Text style={{ color: theme.colors.text }} className="font-bold uppercase tracking-widest text-[12px]">Cancelar</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
                                 onPress={handleUpdateWeight}
@@ -336,7 +337,7 @@ export default function ProgressScreen() {
                                 }}
                                 className="flex-1 py-5 items-center shadow-lg"
                             >
-                                <Text className="text-black font-black uppercase tracking-widest text-[12px]">Salvar</Text>
+                                <Text className="text-onPrimary font-bold uppercase tracking-widest text-[12px]">Salvar</Text>
                             </TouchableOpacity>
                         </View>
                     </Animated.View>

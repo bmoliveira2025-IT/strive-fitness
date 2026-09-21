@@ -73,7 +73,7 @@ export function TopExercises() {
                                 />
                             ) : (
                                 <View className="w-12 h-12 rounded bg-surfaceHighlight items-center justify-center">
-                                    <Ionicons name="barbell" size={20} color="#64748B" />
+                                    <Ionicons name="barbell" size={20} color={theme.colors.textMuted} />
                                 </View>
                             )}
                         </View>

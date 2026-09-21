@@ -443,18 +443,18 @@ export default function SettingsScreen() {
 
                 {/* ── Aparência ── */}
                 <View>
-                    <SectionLabel title="Aparência" theme={theme} />
-                    <View style={{ flexDirection: 'row', gap: 10, marginBottom: 24 }}>
+                    <SectionLabel title={`Aparência — Tema ${theme.mode === 'light' ? 'Claro' : 'Escuro'}`} theme={theme} />
+                    <View style={{ flexDirection: 'row', gap: 10, marginBottom: 8 }}>
                         {/* Light mode */}
                         <TouchableOpacity
                             onPress={() => setTheme('light')}
                             activeOpacity={0.8}
                             style={{
                                 flex: 1,
-                                backgroundColor: theme.mode === 'light' ? settingsAccent + '10' : theme.colors.card,
+                                backgroundColor: theme.mode === 'light' ? settingsAccent + '15' : theme.colors.card,
                                 borderRadius: 16,
-                                borderWidth: 1,
-                                borderColor: theme.mode === 'light' ? settingsAccent + '55' : theme.colors.cardBorder,
+                                borderWidth: 1.5,
+                                borderColor: theme.mode === 'light' ? settingsAccent : theme.colors.cardBorder,
                                 padding: 12,
                                 minHeight: 58,
                                 flexDirection: 'row',
@@ -464,19 +464,24 @@ export default function SettingsScreen() {
                             }}
                         >
                             <View style={{
-                                backgroundColor: theme.mode === 'light' ? settingsAccent + '14' : theme.colors.backgroundTertiary,
+                                backgroundColor: theme.mode === 'light' ? settingsAccent + '20' : theme.colors.backgroundTertiary,
                                 width: 34, height: 34, borderRadius: 11,
                                 alignItems: 'center', justifyContent: 'center',
                             }}>
                                 <Ionicons name="sunny" size={19} color={theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.textMuted} />
                             </View>
-                            <Text style={{
-                                color: theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.text,
-                                fontSize: 13,
-                                fontFamily: 'Inter_700Bold', fontWeight: '700',
-                            }}>
-                                Claro
-                            </Text>
+                            <View>
+                                <Text style={{
+                                    color: theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.text,
+                                    fontSize: 13,
+                                    fontFamily: 'Inter_700Bold', fontWeight: '700',
+                                }}>
+                                    Claro
+                                </Text>
+                                {theme.mode === 'light' && (
+                                    <Text style={{ color: theme.colors.primaryDark, fontSize: 10, fontFamily: 'Inter_600SemiBold' }}>Ativo</Text>
+                                )}
+                            </View>
                         </TouchableOpacity>
 
                         {/* Dark mode */}
@@ -485,10 +490,10 @@ export default function SettingsScreen() {
                             activeOpacity={0.8}
                             style={{
                                 flex: 1,
-                                backgroundColor: theme.mode === 'dark' ? theme.colors.primary + '15' : theme.colors.card,
+                                backgroundColor: theme.mode === 'dark' ? theme.colors.primary + '18' : theme.colors.card,
                                 borderRadius: 16,
-                                borderWidth: 1,
-                                borderColor: theme.mode === 'dark' ? theme.colors.primary + '50' : theme.colors.cardBorder,
+                                borderWidth: 1.5,
+                                borderColor: theme.mode === 'dark' ? theme.colors.primary : theme.colors.cardBorder,
                                 padding: 12,
                                 minHeight: 58,
                                 flexDirection: 'row',
@@ -498,21 +503,29 @@ export default function SettingsScreen() {
                             }}
                         >
                             <View style={{
-                                backgroundColor: theme.mode === 'dark' ? theme.colors.primary + '20' : theme.colors.backgroundTertiary,
+                                backgroundColor: theme.mode === 'dark' ? theme.colors.primary + '25' : theme.colors.backgroundTertiary,
                                 width: 34, height: 34, borderRadius: 11,
                                 alignItems: 'center', justifyContent: 'center',
                             }}>
                                 <Ionicons name="moon" size={18} color={theme.mode === 'dark' ? theme.colors.primaryLight : theme.colors.textMuted} />
                             </View>
-                            <Text style={{
-                                color: theme.mode === 'dark' ? theme.colors.primary : theme.colors.text,
-                                fontSize: 13,
-                                fontFamily: 'Inter_700Bold', fontWeight: '700',
-                            }}>
-                                Escuro
-                            </Text>
+                            <View>
+                                <Text style={{
+                                    color: theme.mode === 'dark' ? theme.colors.primary : theme.colors.text,
+                                    fontSize: 13,
+                                    fontFamily: 'Inter_700Bold', fontWeight: '700',
+                                }}>
+                                    Escuro
+                                </Text>
+                                {theme.mode === 'dark' && (
+                                    <Text style={{ color: theme.colors.primary, fontSize: 10, fontFamily: 'Inter_600SemiBold' }}>Ativo</Text>
+                                )}
+                            </View>
                         </TouchableOpacity>
                     </View>
+                    <Text style={{ color: theme.colors.textMuted, fontSize: 12, marginBottom: 24, paddingHorizontal: 4 }}>
+                        O topo e o menu do celular acompanham exatamente a cor de fundo do aplicativo.
+                    </Text>
                 </View>
 
                 {/* ── Zona de Risco ── */}

@@ -57,3 +57,4 @@ scripts/upload-apk.js
 
 .vercel
 .env*.local
+outputs/

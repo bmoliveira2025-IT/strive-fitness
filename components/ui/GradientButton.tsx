@@ -37,7 +37,7 @@ export const GradientButton: React.FC<GradientButtonProps> = ({
                 style={[
                     styles.base,
                     {
-                        backgroundColor: theme.colors.backgroundTertiary,
+                        backgroundColor: theme.colors.backgroundSecondary,
                         borderColor: theme.colors.border,
                         borderWidth: 1,
                         borderRadius: Radius.lg,
@@ -80,9 +80,7 @@ export const GradientButton: React.FC<GradientButtonProps> = ({
     }
 
     // Primary Athletic Button
-    const resolvedColors = colors ?? (theme.mode === 'light'
-        ? [theme.colors.primary, theme.colors.primaryDark]
-        : [theme.colors.primary, theme.colors.primaryDark]);
+    const resolvedColors = colors ?? [theme.colors.primary, theme.colors.primary];
 
     return (
         <TouchableOpacity 
@@ -93,10 +91,10 @@ export const GradientButton: React.FC<GradientButtonProps> = ({
                 {
                     borderRadius: Radius.lg,
                     opacity: disabled ? 0.5 : 1,
-                    shadowColor: theme.colors.primary,
+                    shadowColor: theme.colors.shadow,
                     shadowOffset: { width: 0, height: 4 },
-                    shadowOpacity: theme.mode === 'dark' ? 0.25 : 0.15,
-                    shadowRadius: 10,
+                    shadowOpacity: 0,
+                    shadowRadius: 8,
                     elevation: 4,
                 },
                 style

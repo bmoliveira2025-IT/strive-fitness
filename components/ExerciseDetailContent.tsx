@@ -170,7 +170,7 @@ export function ExerciseDetailContent({ exerciseId, onClose, isModal = false }: 
                 <View className="px-6">
                     {/* Header */}
                     <View className="items-center mb-4">
-                        <Text style={{ color: theme.colors.text }} className="text-3xl font-extrabold text-center leading-tight mb-4">
+                        <Text style={{ color: theme.colors.text }} className="text-3xl font-bold text-center leading-tight mb-4">
                             {exercise.name}
                         </Text>
 
@@ -206,12 +206,12 @@ export function ExerciseDetailContent({ exerciseId, onClose, isModal = false }: 
                             onPress={() => toggleFavorite(exerciseId)}
                             style={{
                                 backgroundColor: isExerciseFavorite ? 'rgba(239, 68, 68, 0.2)' : theme.colors.card,
-                                borderColor: isExerciseFavorite ? '#EF4444' : theme.colors.border
+                                borderColor: isExerciseFavorite ? theme.colors.error : theme.colors.border
                             }}
                             className={`flex-row items-center px-4 py-2 rounded-full border`}
                         >
-                            <Ionicons name={isExerciseFavorite ? "heart" : "heart-outline"} size={20} color={isExerciseFavorite ? "#EF4444" : theme.colors.textMuted} />
-                            <Text style={{ color: isExerciseFavorite ? '#F87171' : theme.colors.textSecondary }} className="ml-2 font-medium">
+                            <Ionicons name={isExerciseFavorite ? "heart" : "heart-outline"} size={20} color={isExerciseFavorite ? theme.colors.error : theme.colors.textMuted} />
+                            <Text style={{ color: isExerciseFavorite ? theme.colors.error : theme.colors.textSecondary }} className="ml-2 font-medium">
                                 Favoritos
                             </Text>
                         </TouchableOpacity>
@@ -289,7 +289,7 @@ export function ExerciseDetailContent({ exerciseId, onClose, isModal = false }: 
                     {exercise.tips && exercise.tips.length > 0 && (
                         <View className="mt-6 bg-yellow-500/10 p-5 rounded-2xl border border-yellow-500/20">
                             <View className="flex-row items-center mb-3">
-                                <Ionicons name="bulb" size={20} color="#F59E0B" />
+                                <Ionicons name="bulb" size={20} color={theme.colors.warning} />
                                 <Text className="text-yellow-600 font-bold text-sm uppercase tracking-wider ml-2">Dica Pro</Text>
                             </View>
                             {exercise.tips.map((tip: string, index: number) => (

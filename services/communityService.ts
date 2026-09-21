@@ -27,8 +27,12 @@ export interface CommunityPost {
     };
     imageUrl?: string;
     likesCount: number;
+    dislikesCount?: number;
     commentsCount: number;
     isLikedByMe?: boolean;
+    isDislikedByMe?: boolean;
+    isStarred?: boolean;
+    groupName?: string;
     isFictitious?: boolean;
     createdAt: string;
     comments?: CommunityComment[];

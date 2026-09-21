@@ -73,13 +73,13 @@ export function UpdateAvailableModal() {
                         maxWidth: 380,
                         borderRadius: 24,
                         overflow: 'hidden',
-                        backgroundColor: theme.mode === 'dark' ? '#14161E' : '#FFFFFF',
+                        backgroundColor: theme.mode === 'dark' ? '#14161E' : theme.colors.card,
                         borderWidth: 1.5,
                         borderColor: theme.colors.primary,
                         shadowColor: theme.colors.primary,
                         shadowOffset: { width: 0, height: 8 },
-                        shadowOpacity: 0.25,
-                        shadowRadius: 16,
+                        shadowOpacity: 0.1,
+                        shadowRadius: 8,
                         elevation: 8,
                     }}
                 >
@@ -114,7 +114,7 @@ export function UpdateAvailableModal() {
                                     color: theme.colors.text,
                                     fontSize: 20,
                                     fontFamily: FontFamily.display,
-                                    fontWeight: '800',
+                                    fontWeight: '700',
                                     textAlign: 'center',
                                 }}
                             >
@@ -141,7 +141,7 @@ export function UpdateAvailableModal() {
                                         borderRadius: 6,
                                     }}
                                 >
-                                    <Text style={{ color: '#000000', fontSize: 12, fontFamily: FontFamily.sansBold }}>
+                                    <Text style={{ color: theme.colors.onPrimary, fontSize: 12, fontFamily: FontFamily.sansBold }}>
                                         v{updateInfo.latestVersion}
                                     </Text>
                                 </View>
@@ -151,7 +151,7 @@ export function UpdateAvailableModal() {
                         {/* Release notes */}
                         <View
                             style={{
-                                backgroundColor: theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.05)' : '#F1F5F9',
+                                backgroundColor: theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.05)' : theme.colors.backgroundSecondary,
                                 borderRadius: Radius.md,
                                 padding: 14,
                                 marginBottom: 20,
@@ -204,13 +204,13 @@ export function UpdateAvailableModal() {
                                     gap: 8,
                                     shadowColor: theme.colors.primary,
                                     shadowOffset: { width: 0, height: 4 },
-                                    shadowOpacity: 0.3,
+                                    shadowOpacity: 0.1,
                                     shadowRadius: 8,
                                     elevation: 4,
                                 }}
                             >
-                                <Ionicons name="download-outline" size={20} color="#000000" />
-                                <Text style={{ color: '#000000', fontSize: 15, fontFamily: FontFamily.sansBold }}>
+                                <Ionicons name="download-outline" size={20} color={theme.colors.onPrimary} />
+                                <Text style={{ color: theme.colors.onPrimary, fontSize: 15, fontFamily: FontFamily.sansBold }}>
                                     Atualizar APK Agora
                                 </Text>
                             </TouchableOpacity>

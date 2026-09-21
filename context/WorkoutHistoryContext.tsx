@@ -42,6 +42,7 @@ export interface WorkoutHistoryRecord {
 type WorkoutHistoryContextType = {
     history: WorkoutHistoryRecord[];
     addHistoryRecord: (record: Omit<WorkoutHistoryRecord, 'id' | 'date'>, transactionId?: string) => Promise<void>;
+    deleteHistoryRecord: (id: string) => Promise<void>;
     clearHistory: () => void;
 };
 
@@ -94,12 +95,18 @@ export function WorkoutHistoryProvider({ children }: { children: ReactNode }) {
         setHistory(nextHistory);
     };
 
+    const deleteHistoryRecord = async (id: string) => {
+        const nextHistory = history.filter(item => item.id !== id);
+        await AsyncStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(nextHistory));
+        setHistory(nextHistory);
+    };
+
     const clearHistory = () => {
         setHistory([]);
     };
 
     return (
-        <WorkoutHistoryContext.Provider value={{ history, addHistoryRecord, clearHistory }}>
+        <WorkoutHistoryContext.Provider value={{ history, addHistoryRecord, deleteHistoryRecord, clearHistory }}>
             {children}
         </WorkoutHistoryContext.Provider>
     );

@@ -117,19 +117,19 @@ export function TimePickerModal({ visible, initialValue = "00:00", onClose, onCo
                                         <Text style={{ color: theme.colors.textMuted, fontSize: 16 }}>Cancelar</Text>
                                     </View>
                                 </TouchableWithoutFeedback>
-                                <Text style={{ color: theme.colors.text, fontSize: 18, fontWeight: 'bold' }}>{title}</Text>
+                                <Text style={{ color: theme.colors.text, fontSize: 18, fontFamily: 'Inter_700Bold', fontWeight: 'bold' }}>{title}</Text>
                                 <TouchableWithoutFeedback onPress={handleConfirm}>
                                     <View>
-                                        <Text style={{ color: theme.colors.primary, fontSize: 16, fontWeight: 'bold' }}>Confirmar</Text>
+                                        <Text style={{ color: theme.colors.primary, fontSize: 16, fontFamily: 'Inter_700Bold', fontWeight: 'bold' }}>Confirmar</Text>
                                     </View>
                                 </TouchableWithoutFeedback>
                             </View>
 
                             {/* Column Headers */}
                             <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginBottom: 5 }}>
-                                <Text style={{ width: 100, textAlign: 'center', color: theme.colors.textMuted, fontSize: 12, fontWeight: 'bold' }}>min</Text>
+                                <Text style={{ width: 100, textAlign: 'center', color: theme.colors.textMuted, fontSize: 12, fontFamily: 'Inter_700Bold', fontWeight: 'bold' }}>min</Text>
                                 <View style={{ width: 20 }} />
-                                <Text style={{ width: 100, textAlign: 'center', color: theme.colors.textMuted, fontSize: 12, fontWeight: 'bold' }}>seg</Text>
+                                <Text style={{ width: 100, textAlign: 'center', color: theme.colors.textMuted, fontSize: 12, fontFamily: 'Inter_700Bold', fontWeight: 'bold' }}>seg</Text>
                             </View>
 
                             {/* Wheel Picker Container */}
@@ -167,7 +167,7 @@ export function TimePickerModal({ visible, initialValue = "00:00", onClose, onCo
                                         bounces={false}
                                     />
                                 </View>
-                                <Text style={{ color: theme.colors.text, fontSize: 20, fontWeight: 'bold', marginHorizontal: 2, width: 16, textAlign: 'center' }}>:</Text>
+                                <Text style={{ color: theme.colors.text, fontSize: 20, fontFamily: 'Inter_700Bold', fontWeight: 'bold', marginHorizontal: 2, width: 16, textAlign: 'center' }}>:</Text>
 
                                 {/* Seconds Wheel */}
                                 <View style={{ width: 100, height: WINDOW_HEIGHT }}>

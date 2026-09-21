@@ -74,10 +74,10 @@ const PlanExerciseItem = ({ ex, onRemove, onUpdate }: PlanExerciseItemProps) => 
                 <View className="flex-row items-center">
                     <TouchableOpacity
                         onPress={(e) => { e.stopPropagation(); onRemove(ex.id); }}
-                        style={{ backgroundColor: '#EF444415' }}
+                        style={{ backgroundColor: theme.colors.error + '15' }}
                         className="p-2 rounded-lg mr-2"
                     >
-                        <Ionicons name="trash-outline" size={18} color="#EF4444" />
+                        <Ionicons name="trash-outline" size={18} color={theme.colors.error} />
                     </TouchableOpacity>
                     <Ionicons
                         name={isExpanded ? "chevron-up" : "chevron-down"}
@@ -180,7 +180,7 @@ export function CreatePlanView({ onClose, onSave, initialName = '', initialExerc
                         paddingVertical: 8,
                     }}
                 >
-                    <Text className="text-white font-black uppercase text-[10px] tracking-widest">Salvar</Text>
+                    <Text className="text-onPrimary font-bold uppercase text-[10px] tracking-widest">Salvar</Text>
                 </GradientButton>
             </View>
 

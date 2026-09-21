@@ -1,3 +1,4 @@
+import Palette from '../../constants/palette.json';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { Text, View } from 'react-native';
@@ -30,10 +31,10 @@ export function AIInsightCard({ type, title, description, icon, color, index, ba
                 flexDirection: 'row',
                 alignItems: 'center',
                 gap: 14,
-                shadowColor: '#000',
+                shadowColor: Palette.ink,
                 shadowOffset: { width: 0, height: 4 },
                 shadowOpacity: theme.mode === 'light' ? 0.03 : 0.1,
-                shadowRadius: 10,
+                shadowRadius: 8,
                 elevation: 2
             }}
         >
@@ -42,10 +43,10 @@ export function AIInsightCard({ type, title, description, icon, color, index, ba
             </View>
             <View className="flex-1">
                 <View className="flex-row items-center justify-between">
-                    <Text style={{ color: theme.colors.text }} className="font-black text-[14px] uppercase italic tracking-tighter mb-0.5">{title}</Text>
+                    <Text style={{ color: theme.colors.text }} className="font-bold text-[14px] uppercase italic tracking-tighter mb-0.5">{title}</Text>
                     {badge && (
                         <View style={{ backgroundColor: color + '20', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 8, borderWidth: 1, borderColor: color + '40' }}>
-                            <Text style={{ color, fontSize: 10, fontWeight: '900' }}>{badge}</Text>
+                            <Text style={{ color, fontSize: 10, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>{badge}</Text>
                         </View>
                     )}
                 </View>
@@ -55,7 +56,7 @@ export function AIInsightCard({ type, title, description, icon, color, index, ba
             </View>
             {type === 'pr' && (
                 <View style={{ backgroundColor: theme.colors.primary, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8 }}>
-                    <Text style={{ color: '#000', fontSize: 10, fontWeight: '900' }}>NEW PR</Text>
+                    <Text style={{ color: theme.colors.onPrimary, fontSize: 10, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>NEW PR</Text>
                 </View>
             )}
         </Animated.View>

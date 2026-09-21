@@ -1,3 +1,4 @@
+import Palette from '../constants/palette.json';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useCallback, useMemo, useState } from 'react';
@@ -28,7 +29,7 @@ interface MeasurementGroup {
 const GROUPS: MeasurementGroup[] = [
     {
         label: 'Composição Corporal',
-        color: '#10B981',
+        color: Palette.dark.success,
         icon: 'scale-bathroom',
         items: [
             { id: 'weight', label: 'Peso Corporal', icon: 'scale-bathroom', iconSet: 'MaterialCommunityIcons', unit: 'kg' },
@@ -38,7 +39,7 @@ const GROUPS: MeasurementGroup[] = [
     },
     {
         label: 'Tronco Superior',
-        color: '#8B5CF6',
+        color: Palette.dark.primary,
         icon: 'human-male',
         items: [
             { id: 'neck', label: 'Pescoço', icon: 'human-male-height', iconSet: 'MaterialCommunityIcons', unit: 'cm' },
@@ -52,7 +53,7 @@ const GROUPS: MeasurementGroup[] = [
     },
     {
         label: 'Core & Cintura',
-        color: '#F59E0B',
+        color: Palette.dark.warning,
         icon: 'human-male-height-variant',
         items: [
             { id: 'abdomen', label: 'Abdômen', icon: 'human-male-height-variant', iconSet: 'MaterialCommunityIcons', unit: 'cm' },
@@ -62,7 +63,7 @@ const GROUPS: MeasurementGroup[] = [
     },
     {
         label: 'Membros Inferiores',
-        color: '#EF4444',
+        color: Palette.dark.error,
         icon: 'human',
         items: [
             { id: 'leftThigh', label: 'Coxa Esquerda', icon: 'human', iconSet: 'MaterialCommunityIcons', unit: 'cm' },
@@ -184,8 +185,8 @@ export function ProgressMeasuresView() {
                             <MaterialCommunityIcons name="tape-measure" size={22} color={theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.primary} />
                         </View>
                         <View style={{ flex: 1 }}>
-                            <Text style={{ color: theme.colors.text, fontSize: 20, fontWeight: '900', letterSpacing: -0.5 }}>Suas Medidas</Text>
-                            <Text style={{ color: theme.colors.textMuted, fontSize: 10, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1 }}>
+                            <Text style={{ color: theme.colors.text, fontSize: 20, fontFamily: 'Inter_700Bold', fontWeight: '700', letterSpacing: -0.5 }}>Suas Medidas</Text>
+                            <Text style={{ color: theme.colors.textMuted, fontSize: 10, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1 }}>
                                 {filledCount}/{totalCount} preenchidas
                             </Text>
                         </View>
@@ -231,8 +232,8 @@ export function ProgressMeasuresView() {
                                     <MaterialCommunityIcons name={group.icon as any} size={20} color={group.color} />
                                 </View>
                                 <View style={{ flex: 1 }}>
-                                    <Text style={{ color: theme.colors.text, fontSize: 14, fontWeight: '800' }}>{group.label}</Text>
-                                    <Text style={{ color: theme.colors.textMuted, fontSize: 10, fontWeight: '600' }}>
+                                    <Text style={{ color: theme.colors.text, fontSize: 14, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>{group.label}</Text>
+                                    <Text style={{ color: theme.colors.textMuted, fontSize: 10, fontFamily: 'Inter_600SemiBold', fontWeight: '600' }}>
                                         {groupFilled}/{group.items.length} preenchidas
                                     </Text>
                                 </View>
@@ -288,15 +289,15 @@ export function ProgressMeasuresView() {
 
                                                 {/* Label + delta */}
                                                 <View style={{ flex: 1 }}>
-                                                    <Text style={{ color: theme.colors.text, fontSize: 13, fontWeight: '700' }} numberOfLines={1}>{item.label}</Text>
+                                                    <Text style={{ color: theme.colors.text, fontSize: 13, fontFamily: 'Inter_700Bold', fontWeight: '700' }} numberOfLines={1}>{item.label}</Text>
                                                     {delta !== null && (
                                                         <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 2 }}>
                                                             <Ionicons
                                                                 name={delta > 0 ? 'trending-up' : 'trending-down'}
                                                                 size={10}
-                                                                color={delta > 0 ? '#22C55E' : '#EF4444'}
+                                                                color={delta > 0 ? theme.colors.success : theme.colors.error}
                                                             />
-                                                            <Text style={{ color: delta > 0 ? '#22C55E' : '#EF4444', fontSize: 10, fontWeight: '700', marginLeft: 3 }}>
+                                                            <Text style={{ color: delta > 0 ? theme.colors.success : theme.colors.error, fontSize: 10, fontFamily: 'Inter_700Bold', fontWeight: '700', marginLeft: 3 }}>
                                                                 {delta > 0 ? '+' : ''}{delta.toFixed(1)}{item.unit} vs anterior
                                                             </Text>
                                                         </View>
@@ -318,12 +319,12 @@ export function ProgressMeasuresView() {
                                                 }}>
                                                     <Text style={{
                                                         color: hasValue ? group.color : theme.colors.textMuted,
-                                                        fontSize: 14, fontWeight: '900',
+                                                        fontSize: 14, fontFamily: 'Inter_700Bold', fontWeight: '700',
                                                         opacity: hasValue ? 1 : 0.4,
                                                     }}>
                                                         {hasValue ? `${currentVal}` : '--'}
                                                     </Text>
-                                                    <Text style={{ color: theme.colors.textMuted, fontSize: 8, fontWeight: '700' }}>{item.unit}</Text>
+                                                    <Text style={{ color: theme.colors.textMuted, fontSize: 8, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>{item.unit}</Text>
                                                 </View>
 
                                                 <Ionicons name="chevron-forward" size={14} color={theme.colors.textMuted} style={{ marginLeft: 6 }} />
@@ -355,8 +356,8 @@ export function ProgressMeasuresView() {
                             <View style={{ backgroundColor: theme.colors.primary + '20', width: 60, height: 60, borderRadius: 18, alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
                                 {selectedItem && <RenderIcon item={selectedItem} color={theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.primary} size={28} />}
                             </View>
-                            <Text style={{ color: theme.colors.text, fontSize: 20, fontWeight: '900', letterSpacing: -0.4, textAlign: 'center' }}>{selectedItem?.label}</Text>
-                            <Text style={{ color: theme.colors.textMuted, fontSize: 10, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1, marginTop: 4 }}>
+                            <Text style={{ color: theme.colors.text, fontSize: 20, fontFamily: 'Inter_700Bold', fontWeight: '700', letterSpacing: -0.4, textAlign: 'center' }}>{selectedItem?.label}</Text>
+                            <Text style={{ color: theme.colors.textMuted, fontSize: 10, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1, marginTop: 4 }}>
                                 Em {selectedItem?.unit}
                             </Text>
                         </View>
@@ -364,7 +365,7 @@ export function ProgressMeasuresView() {
                         <View style={{ backgroundColor: theme.colors.backgroundTertiary, borderRadius: 18, padding: 20, borderWidth: 1, borderColor: theme.colors.cardBorder, marginBottom: 20 }}>
                             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
                                 <TextInput
-                                    style={{ color: theme.colors.text, fontSize: 44, fontWeight: '900', textAlign: 'center', minWidth: 100 }}
+                                    style={{ color: theme.colors.text, fontSize: 44, fontFamily: 'Inter_700Bold', fontWeight: '700', textAlign: 'center', minWidth: 100 }}
                                     value={newValue}
                                     onChangeText={setNewValue}
                                     placeholder="0"
@@ -372,7 +373,7 @@ export function ProgressMeasuresView() {
                                     placeholderTextColor={theme.colors.textMuted}
                                     autoFocus
                                 />
-                                <Text style={{ color: theme.colors.textMuted, fontSize: 18, fontWeight: '700', marginLeft: 8 }}>{selectedItem?.unit}</Text>
+                                <Text style={{ color: theme.colors.textMuted, fontSize: 18, fontFamily: 'Inter_700Bold', fontWeight: '700', marginLeft: 8 }}>{selectedItem?.unit}</Text>
                             </View>
                         </View>
 
@@ -382,7 +383,7 @@ export function ProgressMeasuresView() {
                                 activeOpacity={0.75}
                                 style={{ flex: 1, backgroundColor: theme.colors.backgroundTertiary, borderColor: theme.colors.cardBorder, borderWidth: 1, borderRadius: 16, paddingVertical: 16, alignItems: 'center' }}
                             >
-                                <Text style={{ color: theme.colors.text, fontWeight: '800', fontSize: 13 }}>Cancelar</Text>
+                                <Text style={{ color: theme.colors.text, fontFamily: 'Inter_700Bold', fontWeight: '700', fontSize: 13 }}>Cancelar</Text>
                             </TouchableOpacity>
                             <GradientButton
                                 onPress={handleSave}
@@ -390,7 +391,7 @@ export function ProgressMeasuresView() {
                                 style={{ flex: 1, borderRadius: 16 }}
                                 gradientStyle={{ paddingVertical: 16, alignItems: 'center' }}
                             >
-                                <Text style={{ color: '#FFFFFF', fontWeight: '900', fontSize: 13 }}>Salvar</Text>
+                                <Text style={{ color: theme.colors.onPrimary, fontFamily: 'Inter_700Bold', fontWeight: '700', fontSize: 13 }}>Salvar</Text>
                             </GradientButton>
                         </View>
                     </Animated.View>

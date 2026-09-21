@@ -1,3 +1,4 @@
+import Palette from '../constants/palette.json';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { Platform, Text, TouchableOpacity, View } from 'react-native';
@@ -25,7 +26,7 @@ export function FloatingActionButton({ onPress, icon = 'add', label }: FloatingA
             }}
         >
             <View className="flex-row items-center">
-                <Ionicons name={icon} size={24} color="#0D0F12" />
+                <Ionicons name={icon} size={24} color={Palette.dark.background} />
                 {label && (
                     <Text className="text-black font-bold text-sm ml-2">{label}</Text>
                 )}

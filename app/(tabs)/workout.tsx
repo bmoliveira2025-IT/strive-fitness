@@ -1,3 +1,4 @@
+import Palette from '../../constants/palette.json';
 import { Ionicons } from '@expo/vector-icons';
 import { Audio, InterruptionModeAndroid, InterruptionModeIOS, ResizeMode, Video } from 'expo-av';
 import * as Haptics from 'expo-haptics';
@@ -1515,13 +1516,13 @@ export default function WorkoutScreen() {
             <View style={{ opacity: isDragging ? 0.5 : 1, paddingHorizontal: 4, marginBottom: 10 }}>
                 <View style={{
                     backgroundColor: isCompleted
-                        ? (theme.mode === 'light' ? '#DCFCE7' : 'rgba(20, 83, 45, 0.2)')
+                        ? theme.colors.successMuted
                         : theme.colors.card,
                     borderColor: isCompleted
-                        ? (theme.mode === 'light' ? '#86EFAC' : 'rgba(34, 197, 94, 0.3)')
+                        ? theme.colors.success + '60'
                         : theme.colors.cardBorder,
-                    borderWidth: 1.5,
-                    borderRadius: 22,
+                    borderWidth: 1,
+                    borderRadius: 16,
                     overflow: 'hidden'
                 }}>
                     <View
@@ -1562,16 +1563,16 @@ export default function WorkoutScreen() {
                             activeOpacity={0.7}
                             style={{ flex: 1 }}
                         >
-                            <Text style={{ color: theme.colors.text, fontSize: 16, fontWeight: '800', letterSpacing: -0.3 }} numberOfLines={1}>
+                            <Text style={{ color: theme.colors.text, fontSize: 16, fontFamily: 'Inter_700Bold', fontWeight: '700', letterSpacing: -0.3 }} numberOfLines={1}>
                                 {exercise.name}
                             </Text>
                             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 4 }}>
-                                <Text style={{ color: theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.primary, fontSize: 12, fontWeight: '700' }}>
+                                <Text style={{ color: theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.primary, fontSize: 12, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>
                                     {exercise.sets.filter(s => s.completed).length}/{exercise.sets.length} séries
                                 </Text>
                                 {exercise.body_parts && exercise.body_parts.length > 0 && (
                                     <View style={{ backgroundColor: theme.colors.backgroundTertiary, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 8 }}>
-                                        <Text style={{ color: theme.colors.textSecondary, fontSize: 9, fontWeight: '700', textTransform: 'uppercase' }}>
+                                        <Text style={{ color: theme.colors.textSecondary, fontSize: 9, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase' }}>
                                             {exercise.body_parts[0]}
                                         </Text>
                                     </View>
@@ -1633,7 +1634,7 @@ export default function WorkoutScreen() {
                                     style={{ backgroundColor: theme.colors.backgroundTertiary, borderColor: theme.colors.cardBorder, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 10, borderWidth: 1 }}
                                 >
                                     <Ionicons name="time-outline" size={13} color={theme.colors.textSecondary} />
-                                    <Text style={{ color: theme.colors.text, marginLeft: 5, fontSize: 12, fontWeight: '700' }}>
+                                    <Text style={{ color: theme.colors.text, marginLeft: 5, fontSize: 12, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>
                                         {Math.floor(exercise.restTime / 60)}:{String(exercise.restTime % 60).padStart(2, '0')}
                                     </Text>
                                 </TouchableOpacity>
@@ -1643,30 +1644,30 @@ export default function WorkoutScreen() {
                                     onChangeText={(text) => updateExerciseNotes(exercise.id, text)}
                                     placeholder="Notas..."
                                     placeholderTextColor={theme.colors.textMuted}
-                                    style={{ color: theme.colors.text, fontSize: 12, textAlign: 'right', flex: 1, marginLeft: 16, fontWeight: '600' }}
+                                    style={{ color: theme.colors.text, fontSize: 12, textAlign: 'right', flex: 1, marginLeft: 16, fontFamily: 'Inter_600SemiBold', fontWeight: '600' }}
                                 />
                             </View>
 
                             {/* Sets Header */}
                             <View style={{ flexDirection: 'row', marginBottom: 6, paddingHorizontal: 4 }}>
-                                <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontWeight: '800', width: 40, textAlign: 'center', textTransform: 'uppercase' }}>Série</Text>
-                                <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontWeight: '800', flex: 1, textAlign: 'center', textTransform: 'uppercase' }}>Anterior</Text>
+                                <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontFamily: 'Inter_700Bold', fontWeight: '700', width: 40, textAlign: 'center', textTransform: 'uppercase' }}>Série</Text>
+                                <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontFamily: 'Inter_700Bold', fontWeight: '700', flex: 1, textAlign: 'center', textTransform: 'uppercase' }}>Anterior</Text>
 
                                 {exercise.body_parts?.some((p: string) => ['cardio'].includes(p.toLowerCase())) ? (
                                     <TouchableOpacity style={{ width: 64, alignItems: 'center' }}>
-                                        <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontWeight: '800', textTransform: 'uppercase' }}>Tempo</Text>
+                                        <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase' }}>Tempo</Text>
                                     </TouchableOpacity>
                                 ) : (
                                     <TouchableOpacity style={{ width: 56, alignItems: 'center' }}>
-                                        <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontWeight: '800', textTransform: 'uppercase' }}>{exercise.weightUnit || 'kg'}</Text>
+                                        <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase' }}>{exercise.weightUnit || 'kg'}</Text>
                                     </TouchableOpacity>
                                 )}
 
-                                <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontWeight: '800', width: 56, textAlign: 'center', textTransform: 'uppercase' }}>
+                                <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontFamily: 'Inter_700Bold', fontWeight: '700', width: 56, textAlign: 'center', textTransform: 'uppercase' }}>
                                     {exercise.body_parts?.some((p: string) => ['cardio'].includes(p.toLowerCase())) ? 'Km' : 'Reps'}
                                 </Text>
                                 {settings.rpeMode !== 'Off' && (
-                                    <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontWeight: '800', width: 40, textAlign: 'center', textTransform: 'uppercase' }}>{settings.rpeMode}</Text>
+                                    <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontFamily: 'Inter_700Bold', fontWeight: '700', width: 40, textAlign: 'center', textTransform: 'uppercase' }}>{settings.rpeMode}</Text>
                                 )}
                                 <View style={{ width: 36 }} />
                             </View>
@@ -1691,7 +1692,7 @@ export default function WorkoutScreen() {
                                 ) : (set.previous && set.previous !== '-' ? set.previous : '-');
 
                                 return (
-                                    <View key={set.id} style={{ backgroundColor: set.completed ? (theme.mode === 'light' ? '#DCFCE7' : 'rgba(20, 83, 45, 0.25)') : 'transparent', flexDirection: 'row', alignItems: 'center', paddingVertical: 6, marginBottom: 3, borderRadius: 12, paddingHorizontal: 4 }}>
+                                    <View key={set.id} style={{ backgroundColor: set.completed ? (theme.mode === 'light' ? theme.colors.successMuted : 'rgba(20, 83, 45, 0.25)') : 'transparent', flexDirection: 'row', alignItems: 'center', paddingVertical: 6, marginBottom: 3, borderRadius: 12, paddingHorizontal: 4 }}>
                                         <TouchableOpacity
                                             onPress={() => {
                                                 setSelectedSetForType({ exerciseId: exercise.id, setId: set.id });
@@ -1700,13 +1701,13 @@ export default function WorkoutScreen() {
                                             style={{ width: 40, height: 28, alignItems: 'center', justifyContent: 'center' }}
                                         >
                                             <View style={{ width: 26, height: 26, borderRadius: 9, backgroundColor: set.type && set.type !== 'N' ? (theme.colors.primary + '20') : theme.colors.backgroundTertiary, alignItems: 'center', justifyContent: 'center' }}>
-                                                <Text style={{ color: theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.primary, fontWeight: '900', fontSize: 12 }}>
+                                                <Text style={{ color: theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.primary, fontFamily: 'Inter_700Bold', fontWeight: '700', fontSize: 12 }}>
                                                     {set.type && set.type !== 'N' ? set.type.charAt(0) : index + 1}
                                                 </Text>
                                             </View>
                                         </TouchableOpacity>
 
-                                        <Text style={{ color: theme.colors.textSecondary, fontSize: 11, flex: 1, textAlign: 'center', fontWeight: '600' }}>
+                                        <Text style={{ color: theme.colors.textSecondary, fontSize: 11, flex: 1, textAlign: 'center', fontFamily: 'Inter_600SemiBold', fontWeight: '600' }}>
                                             {prevText}
                                         </Text>
 
@@ -1731,7 +1732,7 @@ export default function WorkoutScreen() {
                                                 <TextInput
                                                     value={set.kg}
                                                     onChangeText={(text) => updateSet(exercise.id, set.id, 'kg', text)}
-                                                    style={{ color: theme.colors.text, textAlign: 'center', fontWeight: '900', fontSize: 16, width: '100%', paddingVertical: 4 }}
+                                                    style={{ color: theme.colors.text, textAlign: 'center', fontFamily: 'Inter_700Bold', fontWeight: '700', fontSize: 16, width: '100%', paddingVertical: 4 }}
                                                     keyboardType={isTimeBased ? "default" : "numeric"}
                                                     placeholder={isTimeBased ? "00:00" : "-"}
                                                     placeholderTextColor={theme.colors.textMuted}
@@ -1761,7 +1762,7 @@ export default function WorkoutScreen() {
                                                 <TextInput
                                                     value={set.reps}
                                                     onChangeText={(text) => updateSet(exercise.id, set.id, 'reps', text)}
-                                                    style={{ color: theme.colors.text, textAlign: 'center', fontWeight: '900', fontSize: 16, width: '100%', paddingVertical: 4 }}
+                                                    style={{ color: theme.colors.text, textAlign: 'center', fontFamily: 'Inter_700Bold', fontWeight: '700', fontSize: 16, width: '100%', paddingVertical: 4 }}
                                                     keyboardType={isCardioExercise ? "default" : "numeric"}
                                                     placeholder={isCardioExercise ? "0.0" : "-"}
                                                     placeholderTextColor={theme.colors.textMuted}
@@ -1776,7 +1777,7 @@ export default function WorkoutScreen() {
                                                 <TextInput
                                                     value={set.rpe}
                                                     onChangeText={(text) => updateSet(exercise.id, set.id, 'rpe', text)}
-                                                    style={{ color: theme.colors.primary, textAlign: 'center', fontWeight: 'bold', fontSize: 20, width: '100%', paddingVertical: 4 }}
+                                                    style={{ color: theme.colors.primary, textAlign: 'center', fontFamily: 'Inter_700Bold', fontWeight: 'bold', fontSize: 20, width: '100%', paddingVertical: 4 }}
                                                     keyboardType="numeric"
                                                     placeholder="-"
                                                     placeholderTextColor={theme.colors.textMuted}
@@ -1800,7 +1801,7 @@ export default function WorkoutScreen() {
                                 style={{ marginTop: 12, marginHorizontal: 4, borderRadius: 14, paddingVertical: 10, alignItems: 'center', borderWidth: 1.5, borderColor: theme.colors.cardBorder, borderStyle: 'dashed', flexDirection: 'row', justifyContent: 'center', gap: 6 }}
                             >
                                 <Ionicons name="add" size={16} color={theme.colors.textSecondary} />
-                                <Text style={{ color: theme.colors.textSecondary, fontSize: 12, fontWeight: '700' }}>Adicionar Série</Text>
+                                <Text style={{ color: theme.colors.textSecondary, fontSize: 12, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>Adicionar Série</Text>
                             </TouchableOpacity>
 
                         </View>
@@ -1904,8 +1905,8 @@ export default function WorkoutScreen() {
                 <View style={{ backgroundColor: 'transparent', paddingTop: insets.top + 12, paddingHorizontal: 20 }}>
                     <View className="flex-row items-center justify-between mb-5">
                         <View>
-                            <Text style={{ color: theme.colors.text, fontSize: 30, fontWeight: '900', letterSpacing: -1.1 }}>Treino</Text>
-                            <Text style={{ color: theme.colors.textMuted, fontSize: 11, fontWeight: '700', letterSpacing: 0.9, marginTop: 2 }}>SUA CENTRAL DE PERFORMANCE</Text>
+                            <Text style={{ color: theme.colors.text, fontSize: 30, fontFamily: 'Inter_700Bold', fontWeight: '700', letterSpacing: -1.1 }}>Treino</Text>
+                            <Text style={{ color: theme.colors.textMuted, fontSize: 11, fontFamily: 'Inter_700Bold', fontWeight: '700', letterSpacing: 0.9, marginTop: 2 }}>SUA CENTRAL DE PERFORMANCE</Text>
                         </View>
                         <TouchableOpacity
                             onPress={() => router.push('/settings')}
@@ -1926,7 +1927,7 @@ export default function WorkoutScreen() {
                             }}
                         >
                             <Ionicons name="albums-outline" size={16} color={selectedTab === 'exercises' ? (theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.primary) : theme.colors.textMuted} />
-                            <Text style={{ color: selectedTab === 'exercises' ? theme.colors.text : theme.colors.textMuted, fontSize: 13, fontWeight: '800' }}>
+                            <Text style={{ color: selectedTab === 'exercises' ? theme.colors.text : theme.colors.textMuted, fontSize: 13, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>
                                 Programas
                             </Text>
                         </TouchableOpacity>
@@ -1940,7 +1941,7 @@ export default function WorkoutScreen() {
                             }}
                         >
                             <Ionicons name="library-outline" size={16} color={selectedTab === 'library' ? (theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.primary) : theme.colors.textMuted} />
-                            <Text style={{ color: selectedTab === 'library' ? theme.colors.text : theme.colors.textMuted, fontSize: 13, fontWeight: '800' }}>
+                            <Text style={{ color: selectedTab === 'library' ? theme.colors.text : theme.colors.textMuted, fontSize: 13, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>
                                 Biblioteca
                             </Text>
                         </TouchableOpacity>
@@ -1958,10 +1959,10 @@ export default function WorkoutScreen() {
                                     onPress={() => setIsCreatingPlan(true)}
                                     style={{
                                         borderRadius: 12,
-                                        shadowColor: theme.mode === 'light' ? '#16A34A' : '#000',
+                                        shadowColor: theme.mode === 'light' ? theme.colors.success : Palette.ink,
                                         shadowOffset: { width: 0, height: 4 },
-                                        shadowOpacity: theme.mode === 'light' ? 0.2 : 0.05,
-                                        shadowRadius: 10,
+                                        shadowOpacity: theme.mode === 'light' ? 0.1 : 0.05,
+                                        shadowRadius: 8,
                                         elevation: 2,
                                         marginBottom: 24
                                     }}
@@ -2060,8 +2061,8 @@ export default function WorkoutScreen() {
                                 className="absolute right-6 flex-row items-center py-3 px-6 rounded-full"
                                 activeOpacity={0.9}
                             >
-                                <Ionicons name="play" size={20} color={theme.mode === 'dark' ? theme.colors.primary : '#FFFFFF'} />
-                                <Text style={{ color: theme.mode === 'dark' ? theme.colors.primary : '#FFFFFF' }} className="font-bold text-base ml-2">Iniciar um Treino Vazio</Text>
+                                <Ionicons name="play" size={20} color={theme.mode === 'dark' ? theme.colors.primary : theme.colors.onImage} />
+                                <Text style={{ color: theme.mode === 'dark' ? theme.colors.primary : theme.colors.onImage }} className="font-bold text-base ml-2">Iniciar um Treino Vazio</Text>
                             </TouchableOpacity>
                         </View>
                     ) : (
@@ -2074,7 +2075,7 @@ export default function WorkoutScreen() {
                             {/* ─── Sugerido para Hoje ─── */}
                             {suggestedWorkout && (
                                 <View style={{ marginBottom: 16 }}>
-                                    <Text style={{ color: theme.colors.textMuted, fontSize: 10, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 1.4, marginBottom: 10 }}>
+                                    <Text style={{ color: theme.colors.textMuted, fontSize: 10, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1.4, marginBottom: 10 }}>
                                         Escolha inteligente
                                     </Text>
                                     <TouchableOpacity
@@ -2089,7 +2090,7 @@ export default function WorkoutScreen() {
                                             height: 148,
                                             shadowColor: theme.colors.primary,
                                             shadowOffset: { width: 0, height: 4 },
-                                            shadowOpacity: 0.2,
+                                            shadowOpacity: 0.1,
                                             shadowRadius: 8,
                                             elevation: 4,
                                         }}
@@ -2106,17 +2107,17 @@ export default function WorkoutScreen() {
                                                 colors={[theme.colors.primary, theme.colors.primaryDark]}
                                                 style={{ width: 48, height: 48, borderRadius: 16, alignItems: 'center', justifyContent: 'center', marginRight: 14 }}
                                             >
-                                                <Ionicons name="sparkles" size={22} color="#182000" />
+                                                <Ionicons name="sparkles" size={22} color={theme.colors.accentMuted} />
                                             </LinearGradient>
                                             <View style={{ flex: 1 }}>
-                                                <Text style={{ color: '#FFF', textShadowColor: 'rgba(0,0,0,0.8)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 4, fontSize: 18, fontWeight: '900', letterSpacing: -0.3 }} numberOfLines={1}>
+                                                <Text style={{ color: theme.colors.onImage, textShadowColor: 'rgba(0,0,0,0.8)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 4, fontSize: 18, fontFamily: 'Inter_700Bold', fontWeight: '700', letterSpacing: -0.3 }} numberOfLines={1}>
                                                     {suggestedWorkout.name}
                                                 </Text>
-                                                <Text style={{ color: theme.colors.primaryLight, fontSize: 12, fontWeight: '700', marginTop: 4 }} numberOfLines={1}>
+                                                <Text style={{ color: theme.colors.primaryLight, fontSize: 12, fontFamily: 'Inter_700Bold', fontWeight: '700', marginTop: 4 }} numberOfLines={1}>
                                                     {suggestionReason}
                                                 </Text>
                                             </View>
-                                            <View style={{ width: 42, height: 42, borderRadius: 14, backgroundColor: theme.colors.primary, alignItems: 'center', justifyContent: 'center', marginLeft: 10 }}><Ionicons name="play" size={20} color="#182000" style={{ marginLeft: 2 }} /></View>
+                                            <View style={{ width: 42, height: 42, borderRadius: 14, backgroundColor: theme.colors.primary, alignItems: 'center', justifyContent: 'center', marginLeft: 10 }}><Ionicons name="play" size={20} color={theme.colors.accentMuted} style={{ marginLeft: 2 }} /></View>
                                         </ImageBackground>
                                     </TouchableOpacity>
                                 </View>
@@ -2136,11 +2137,11 @@ export default function WorkoutScreen() {
                                 activeOpacity={0.85}
                             >
                                 <View style={{ backgroundColor: theme.colors.primary, width: 48, height: 48, borderRadius: 15, alignItems: 'center', justifyContent: 'center', marginRight: 14 }}>
-                                    <Ionicons name="add" size={25} color="#182000" />
+                                    <Ionicons name="add" size={25} color={theme.colors.accentMuted} />
                                 </View>
                                 <View style={{ flex: 1 }}>
-                                    <Text style={{ color: theme.colors.text, fontSize: 16, fontWeight: '800' }}>Treino livre</Text>
-                                    <Text style={{ color: theme.colors.textMuted, fontSize: 11, fontWeight: '600', marginTop: 3 }}>Comece vazio e monte durante a sessão</Text>
+                                    <Text style={{ color: theme.colors.text, fontSize: 16, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>Treino livre</Text>
+                                    <Text style={{ color: theme.colors.textMuted, fontSize: 11, fontFamily: 'Inter_600SemiBold', fontWeight: '600', marginTop: 3 }}>Comece vazio e monte durante a sessão</Text>
                                 </View>
                                 <Ionicons name="arrow-forward" size={20} color={theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.primary} />
                             </TouchableOpacity>
@@ -2151,8 +2152,8 @@ export default function WorkoutScreen() {
                                 <View className="mb-10">
                                     <View className="flex-row items-center justify-between mb-2">
                                         <View className="flex-1">
-                                            <Text style={{ color: theme.colors.text, fontSize: 21, fontWeight: '900', letterSpacing: -0.6 }} numberOfLines={1}>Meus planos</Text>
-                                            <Text style={{ color: theme.colors.textMuted, fontSize: 10, fontWeight: '700', letterSpacing: 0.8, marginTop: 2 }}>ROTINAS E FAVORITOS</Text>
+                                            <Text style={{ color: theme.colors.text, fontSize: 21, fontFamily: 'Inter_700Bold', fontWeight: '700', letterSpacing: -0.6 }} numberOfLines={1}>Meus planos</Text>
+                                            <Text style={{ color: theme.colors.textMuted, fontSize: 10, fontFamily: 'Inter_700Bold', fontWeight: '700', letterSpacing: 0.8, marginTop: 2 }}>ROTINAS E FAVORITOS</Text>
                                         </View>
 
                                         {/* View Toggle Mock */}
@@ -2203,7 +2204,7 @@ export default function WorkoutScreen() {
                                                 />
                                                 <Text
                                                     style={{ color: librarySubTab === filter.id ? '#000000' : theme.colors.textSecondary }}
-                                                    className="text-[10px] font-black ml-2 uppercase"
+                                                    className="text-[10px] font-bold ml-2 uppercase"
                                                 >
                                                     {filter.label}{filter.id === 'todos' && filter.count > 0 ? ` ${filter.count}` : ''}
                                                 </Text>
@@ -2273,8 +2274,8 @@ export default function WorkoutScreen() {
                                                 <Ionicons name="sparkles" size={24} color={theme.colors.primaryLight} />
                                             </LinearGradient>
                                             <View className="flex-1">
-                                                <Text style={{ color: '#FFF' }} className="font-black text-xl tracking-tight">Sugestão com IA</Text>
-                                                <Text style={{ color: theme.colors.primary }} className="text-xs font-bold mt-1">Personalizada para o seu objetivo</Text>
+                                                <Text style={{ color: theme.colors.onImage }} className="font-bold text-xl tracking-tight">Sugestão com IA</Text>
+                                                <Text style={{ color: theme.colors.onImage }} className="text-xs font-bold mt-1">Personalizada para o seu objetivo</Text>
                                             </View>
                                         </View>
 
@@ -2282,7 +2283,7 @@ export default function WorkoutScreen() {
                                     <View>
                                         <View className="flex-row gap-2 mb-4">
                                             <View className="flex-1">
-                                                <Text style={{ color: '#E2E8F0', fontFamily: 'Sora_700Bold', fontSize: 11, letterSpacing: 1 }} className="uppercase mb-2.5">Objetivo</Text>
+                                                <Text style={{ color: theme.colors.onImage, fontFamily: "Inter_700Bold", fontSize: 11, letterSpacing: 1 }} className="uppercase mb-2.5">Objetivo</Text>
                                                 <View className="gap-2.5">
                                                     {[
                                                         { id: 'hypertrophy', label: 'Hipertrofia' },
@@ -2295,8 +2296,8 @@ export default function WorkoutScreen() {
                                                                 key={obj.id}
                                                                 onPress={() => setAiObjective(obj.id)}
                                                                 style={{
-                                                                    backgroundColor: isSelected ? '#B7F52A' : 'rgba(255, 255, 255, 0.95)',
-                                                                    borderColor: isSelected ? '#B7F52A' : 'rgba(255, 255, 255, 0.3)',
+                                                                    backgroundColor: isSelected ? theme.colors.primary : theme.colors.surfaceElevated,
+                                                                    borderColor: isSelected ? theme.colors.primary : theme.colors.border,
                                                                     borderWidth: 1.5,
                                                                     paddingVertical: 12,
                                                                 }}
@@ -2304,8 +2305,8 @@ export default function WorkoutScreen() {
                                                             >
                                                                 <Text
                                                                     style={{
-                                                                        color: isSelected ? '#0D0F12' : '#0F172A',
-                                                                        fontFamily: isSelected ? 'Sora_700Bold' : 'Inter_600SemiBold',
+                                                                        color: isSelected ? theme.colors.onPrimary : theme.colors.text,
+                                                                        fontFamily: isSelected ? "Inter_700Bold" : 'Inter_600SemiBold',
                                                                         fontSize: 13.5,
                                                                     }}
                                                                 >
@@ -2318,7 +2319,7 @@ export default function WorkoutScreen() {
                                             </View>
 
                                             <View className="flex-1">
-                                                <Text style={{ color: '#E2E8F0', fontFamily: 'Sora_700Bold', fontSize: 11, letterSpacing: 1 }} className="uppercase mb-2.5">Foco</Text>
+                                                <Text style={{ color: theme.colors.onImage, fontFamily: "Inter_700Bold", fontSize: 11, letterSpacing: 1 }} className="uppercase mb-2.5">Foco</Text>
                                                 <View className="gap-2.5">
                                                     {[
                                                         { id: 'full_body', label: 'Corpo Todo' },
@@ -2332,8 +2333,8 @@ export default function WorkoutScreen() {
                                                                 key={f.id}
                                                                 onPress={() => setAiFocus(f.id)}
                                                                 style={{
-                                                                    backgroundColor: isSelected ? '#B7F52A' : 'rgba(255, 255, 255, 0.95)',
-                                                                    borderColor: isSelected ? '#B7F52A' : 'rgba(255, 255, 255, 0.3)',
+                                                                    backgroundColor: isSelected ? theme.colors.primary : theme.colors.surfaceElevated,
+                                                                    borderColor: isSelected ? theme.colors.primary : theme.colors.border,
                                                                     borderWidth: 1.5,
                                                                     paddingVertical: 12,
                                                                 }}
@@ -2341,8 +2342,8 @@ export default function WorkoutScreen() {
                                                             >
                                                                 <Text
                                                                     style={{
-                                                                        color: isSelected ? '#0D0F12' : '#0F172A',
-                                                                        fontFamily: isSelected ? 'Sora_700Bold' : 'Inter_600SemiBold',
+                                                                        color: isSelected ? theme.colors.onPrimary : theme.colors.text,
+                                                                        fontFamily: isSelected ? "Inter_700Bold" : 'Inter_600SemiBold',
                                                                         fontSize: 13.5,
                                                                     }}
                                                                 >
@@ -2358,13 +2359,13 @@ export default function WorkoutScreen() {
                                         <GradientButton
                                             onPress={generateAIWorkout}
                                             disabled={isGeneratingAI}
-                                            colors={['#B7F52A', '#9EE315']}
+                                            colors={[theme.colors.primary, theme.colors.primary]}
                                             style={{
                                                 borderRadius: 16,
-                                                shadowColor: '#B7F52A',
+                                                shadowColor: theme.colors.primary,
                                                 shadowOffset: { width: 0, height: 4 },
-                                                shadowOpacity: 0.25,
-                                                shadowRadius: 10,
+                                                shadowOpacity: 0.1,
+                                                shadowRadius: 8,
                                                 elevation: 4
                                             }}
                                             gradientStyle={{
@@ -2376,11 +2377,11 @@ export default function WorkoutScreen() {
                                             }}
                                         >
                                             {isGeneratingAI ? (
-                                                <ModernLoading size={20} color="#000" />
+                                                <ModernLoading size={20} color={theme.colors.onPrimary} />
                                             ) : (
                                                 <>
-                                                    <Ionicons name="sparkles" size={18} color="#0D0F12" />
-                                                    <Text style={{ color: '#0D0F12' }} className="font-bold text-lg ml-2">Gerar treino</Text>
+                                                    <Ionicons name="sparkles" size={18} color={theme.colors.onPrimary} />
+                                                    <Text style={{ color: theme.colors.onPrimary }} className="font-bold text-lg ml-2">Gerar treino</Text>
                                                 </>
                                             )}
                                         </GradientButton>
@@ -2388,7 +2389,7 @@ export default function WorkoutScreen() {
                                 ) : (
                                     <View>
                                         <View className="flex-row items-center justify-between mb-4">
-                                            <Text style={{ color: '#FFF' }} className="text-[10px] font-bold uppercase tracking-widest">Plano Gerado</Text>
+                                            <Text style={{ color: theme.colors.onImage }} className="text-[10px] font-bold uppercase tracking-widest">Plano Gerado</Text>
                                             <TouchableOpacity onPress={() => setAiGeneratedWorkout(null)}>
                                                 <Text style={{ color: theme.colors.primary }} className="text-xs font-bold">Ajustar Filtros</Text>
                                             </TouchableOpacity>
@@ -2443,10 +2444,10 @@ export default function WorkoutScreen() {
                                             }}
                                             style={{
                                                 borderRadius: 16,
-                                                shadowColor: '#000',
+                                                shadowColor: Palette.ink,
                                                 shadowOffset: { width: 0, height: 4 },
                                                 shadowOpacity: 0.1,
-                                                shadowRadius: 10,
+                                                shadowRadius: 8,
                                                 elevation: 4
                                             }}
                                             gradientStyle={{
@@ -2466,19 +2467,19 @@ export default function WorkoutScreen() {
                             </View>
 
                             {/* Secondary actions */}
-                            <Text style={{ color: theme.colors.text, fontSize: 18, fontWeight: '900', letterSpacing: -0.4, marginBottom: 12 }}>Outras opções</Text>
+                            <Text style={{ color: theme.colors.text, fontSize: 18, fontFamily: 'Inter_700Bold', fontWeight: '700', letterSpacing: -0.4, marginBottom: 12 }}>Outras opções</Text>
                             <View style={{ gap: 10, marginBottom: 20 }}>
                                 <TouchableOpacity
                                     onPress={() => router.push('/explore')}
                                     activeOpacity={0.82}
-                                    style={{ backgroundColor: theme.mode === 'light' ? '#1D251A' : theme.colors.card, borderColor: theme.mode === 'light' ? '#1D251A' : theme.colors.cardBorder, borderWidth: 1, borderRadius: 18, padding: 14, minHeight: 76, flexDirection: 'row', alignItems: 'center' }}
+                                    style={{ backgroundColor: theme.mode === 'light' ? theme.colors.accentMuted : theme.colors.card, borderColor: theme.mode === 'light' ? theme.colors.accentMuted : theme.colors.cardBorder, borderWidth: 1, borderRadius: 18, padding: 14, minHeight: 76, flexDirection: 'row', alignItems: 'center' }}
                                 >
                                     <View style={{ backgroundColor: theme.mode === 'light' ? 'rgba(215,255,114,0.14)' : theme.colors.backgroundTertiary, width: 46, height: 46, borderRadius: 14, alignItems: 'center', justifyContent: 'center', marginRight: 14 }}>
                                         <Ionicons name="compass-outline" size={22} color={theme.colors.primaryLight} />
                                     </View>
                                     <View style={{ flex: 1 }}>
-                                        <Text style={{ color: '#FFFFFF', fontSize: 15, fontWeight: '800' }}>Explorar treinos</Text>
-                                        <Text style={{ color: '#B8C1B4', fontSize: 11, fontWeight: '600', marginTop: 3 }}>Descubra exercícios e programas</Text>
+                                        <Text style={{ color: theme.colors.onImage, fontSize: 15, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>Explorar treinos</Text>
+                                        <Text style={{ color: '#B8C1B4', fontSize: 11, fontFamily: 'Inter_600SemiBold', fontWeight: '600', marginTop: 3 }}>Descubra exercícios e programas</Text>
                                     </View>
                                     <Ionicons name="arrow-forward" size={20} color={theme.colors.primaryLight} />
                                 </TouchableOpacity>
@@ -2492,8 +2493,8 @@ export default function WorkoutScreen() {
                                         <Ionicons name="add" size={22} color={theme.colors.textSecondary} />
                                     </View>
                                     <View style={{ flex: 1 }}>
-                                        <Text style={{ color: theme.colors.text, fontSize: 15, fontWeight: '800' }}>Criar plano</Text>
-                                        <Text style={{ color: theme.colors.textMuted, fontSize: 11, fontWeight: '600', marginTop: 3 }}>Monte uma rotina personalizada</Text>
+                                        <Text style={{ color: theme.colors.text, fontSize: 15, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>Criar plano</Text>
+                                        <Text style={{ color: theme.colors.textMuted, fontSize: 11, fontFamily: 'Inter_600SemiBold', fontWeight: '600', marginTop: 3 }}>Monte uma rotina personalizada</Text>
                                     </View>
                                     <Ionicons name="chevron-forward" size={19} color={theme.colors.textMuted} />
                                 </TouchableOpacity>
@@ -2551,6 +2552,7 @@ export default function WorkoutScreen() {
         workoutName?: string;
         notes?: string;
         exercisesToUpdate?: ExerciseWithSets[];
+        saveAsRoutine?: boolean;
         media?: string[];
         postWorkoutSurvey?: any;
     }) => {
@@ -2633,6 +2635,23 @@ export default function WorkoutScreen() {
 
         if (activePlanId) {
             await commitWorkoutCompletion(activePlanId, routineExercises);
+        } else if (options?.saveAsRoutine !== false && exercises.length > 0) {
+            const routineToSave = exercises.map(ex => ({
+                id: ex.id.toString(),
+                name: ex.name,
+                image_url: ex.image_url,
+                video_url: ex.video_url,
+                body_parts: ex.body_parts,
+                equipment: ex.equipment ? [ex.equipment] : undefined,
+                sets: ex.sets.map(s => ({
+                    reps: s.reps || '10',
+                    kg: s.kg || '0',
+                    type: s.type || 'N'
+                })),
+                notes: ex.notes,
+                restTime: ex.restTime
+            }));
+            saveWorkout(workoutName, routineToSave, 'Treino Livre');
         }
 
         // Notifications are a post-commit side effect. Their failure must not
@@ -2696,6 +2715,7 @@ export default function WorkoutScreen() {
         date: Date;
         duration: number;
         updateRoutineValues: boolean;
+        saveAsRoutine?: boolean;
         shareToStrava: boolean;
         media: string[];
         postWorkoutSurvey: any;
@@ -2712,6 +2732,7 @@ export default function WorkoutScreen() {
                 workoutName: data.workoutName,
                 notes: data.notes,
                 exercisesToUpdate: updateRoutine ? exercises : undefined,
+                saveAsRoutine: data.saveAsRoutine,
                 media: data.media,
                 postWorkoutSurvey: data.postWorkoutSurvey
             });
@@ -2754,36 +2775,70 @@ export default function WorkoutScreen() {
 
                 {/* Top Row: Minimize | Workout Name | Finish */}
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                    <TouchableOpacity
-                        onPress={() => router.push('/')}
-                        style={{ backgroundColor: theme.colors.card, width: 40, height: 40, borderRadius: 14, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: theme.colors.cardBorder }}
-                    >
-                        <Ionicons name="chevron-down" size={22} color={theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.primary} />
-                    </TouchableOpacity>
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <TouchableOpacity
+                            onPress={() => router.push('/')}
+                            style={{ backgroundColor: theme.colors.card, width: 40, height: 40, borderRadius: 14, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: theme.colors.cardBorder }}
+                        >
+                            <Ionicons name="chevron-down" size={22} color={theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.primary} />
+                        </TouchableOpacity>
+
+                        {!activePlanId && (
+                            <TouchableOpacity
+                                onPress={() => {
+                                    if (exercises.length === 0) {
+                                        Alert.alert('Treino Vazio', 'Adicione exercícios para salvar como rotina.');
+                                        return;
+                                    }
+                                    const routineName = `Treino Livre ${new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}`;
+                                    const routineToSave = exercises.map(ex => ({
+                                        id: ex.id.toString(),
+                                        name: ex.name,
+                                        image_url: ex.image_url,
+                                        video_url: ex.video_url,
+                                        body_parts: ex.body_parts,
+                                        equipment: ex.equipment ? [ex.equipment] : undefined,
+                                        sets: ex.sets.map(s => ({
+                                            reps: s.reps || '10',
+                                            kg: s.kg || '0',
+                                            type: s.type || 'N'
+                                        })),
+                                        notes: ex.notes,
+                                        restTime: ex.restTime
+                                    }));
+                                    saveWorkout(routineName, routineToSave, 'Treino Livre');
+                                    toast.success(`"${routineName}" salvo em Meus Planos!`);
+                                }}
+                                style={{ backgroundColor: theme.colors.card, width: 40, height: 40, borderRadius: 14, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: theme.colors.cardBorder, marginLeft: 8 }}
+                            >
+                                <Ionicons name="bookmark-outline" size={19} color={theme.colors.primary} />
+                            </TouchableOpacity>
+                        )}
+                    </View>
 
                     <View style={{ flex: 1, alignItems: 'center', paddingHorizontal: 12 }}>
-                        <Text style={{ color: theme.colors.text, fontSize: 16, fontWeight: '900', textTransform: 'uppercase', letterSpacing: -0.5 }} numberOfLines={1}>
+                        <Text style={{ color: theme.colors.text, fontSize: 16, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase', letterSpacing: -0.5 }} numberOfLines={1}>
                             {activePlanId ? (savedWorkouts.find(w => w.id === activePlanId)?.name || 'Treino') : 'Treino Livre'}
                         </Text>
-                        <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontWeight: '700', letterSpacing: 1, textTransform: 'uppercase', marginTop: 2 }}>
+                        <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontFamily: 'Inter_700Bold', fontWeight: '700', letterSpacing: 1, textTransform: 'uppercase', marginTop: 2 }}>
                             {exercises.length} exercícios
                         </Text>
                     </View>
 
                     <GradientButton
                         onPress={handleFinishWorkout}
-                        colors={theme.mode === 'dark' ? ['#2A4315', '#1B2D0D'] : [theme.colors.primaryDark, '#345900']}
+                        colors={theme.mode === 'dark' ? [theme.colors.accentMuted, theme.colors.accentMuted] : [theme.colors.primaryDark, theme.colors.primaryDark]}
                         style={{
                             borderRadius: 14, borderWidth: 1, borderColor: theme.mode === 'dark' ? theme.colors.primary + '35' : theme.colors.primaryDark + '35',
-                            shadowColor: '#000', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.14, shadowRadius: 6, elevation: 2
+                            shadowColor: Palette.ink, shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.1, shadowRadius: 6, elevation: 2
                         }}
                         gradientStyle={{
                             paddingHorizontal: 20, paddingVertical: 10,
                             flexDirection: 'row', alignItems: 'center', gap: 6,
                         }}
                     >
-                        <Ionicons name="checkmark-done" size={18} color={theme.mode === 'dark' ? theme.colors.primary : '#FFFFFF'} />
-                        <Text style={{ color: theme.mode === 'dark' ? theme.colors.primary : '#FFFFFF', fontWeight: '900', fontSize: 13, textTransform: 'uppercase', letterSpacing: 0.5 }}>Finalizar</Text>
+                        <Ionicons name="checkmark-done" size={18} color={theme.mode === 'dark' ? theme.colors.primary : theme.colors.onImage} />
+                        <Text style={{ color: theme.mode === 'dark' ? theme.colors.primary : theme.colors.onImage, fontFamily: 'Inter_700Bold', fontWeight: '700', fontSize: 13, textTransform: 'uppercase', letterSpacing: 0.5 }}>Finalizar</Text>
                     </GradientButton>
                 </View>
 
@@ -2801,7 +2856,7 @@ export default function WorkoutScreen() {
 
                     <View style={{ backgroundColor: theme.colors.card, borderColor: theme.colors.cardBorder, borderWidth: 1, borderRadius: 14, paddingHorizontal: 16, paddingVertical: 8, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                         <Ionicons name="time-outline" size={16} color={theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.primary} />
-                        <Text style={{ color: theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.primary, fontFamily: 'monospace', fontWeight: '900', fontSize: 20, letterSpacing: 1 }}>
+                        <Text style={{ color: theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.primary, fontFamily: 'monospace', fontWeight: '700', fontSize: 20, letterSpacing: 1 }}>
                             {formatTime(duration)}
                         </Text>
                     </View>
@@ -2812,8 +2867,8 @@ export default function WorkoutScreen() {
                 {exercises.length > 0 && (
                     <View style={{ marginBottom: 12 }}>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                            <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 1 }}>Progresso</Text>
-                            <Text style={{ color: theme.colors.text, fontSize: 11, fontWeight: '900' }}>
+                            <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1 }}>Progresso</Text>
+                            <Text style={{ color: theme.colors.text, fontSize: 11, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>
                                 {totalSeries}/{exercises.reduce((acc, ex) => acc + ex.sets.length, 0)} séries
                             </Text>
                         </View>
@@ -2832,28 +2887,28 @@ export default function WorkoutScreen() {
                     <View style={{ flex: 1, backgroundColor: theme.colors.card, borderColor: theme.colors.cardBorder, borderWidth: 1, borderRadius: 16, paddingVertical: 12, paddingHorizontal: 14, alignItems: 'center' }}>
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 4 }}>
                             <Ionicons name="barbell-outline" size={12} color={theme.colors.textSecondary} />
-                            <Text style={{ color: theme.colors.textSecondary, fontSize: 9, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 0.5 }}>Volume</Text>
+                            <Text style={{ color: theme.colors.textSecondary, fontSize: 9, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5 }}>Volume</Text>
                         </View>
                         <View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
-                            <Text style={{ color: theme.colors.text, fontSize: 20, fontWeight: '900', letterSpacing: -0.5 }}>{totalVolume > 1000 ? `${(totalVolume / 1000).toFixed(1)}` : totalVolume}</Text>
-                            <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontWeight: '700', marginLeft: 2 }}>{totalVolume > 1000 ? 'ton' : 'kg'}</Text>
+                            <Text style={{ color: theme.colors.text, fontSize: 20, fontFamily: 'Inter_700Bold', fontWeight: '700', letterSpacing: -0.5 }}>{totalVolume > 1000 ? `${(totalVolume / 1000).toFixed(1)}` : totalVolume}</Text>
+                            <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontFamily: 'Inter_700Bold', fontWeight: '700', marginLeft: 2 }}>{totalVolume > 1000 ? 'ton' : 'kg'}</Text>
                         </View>
                     </View>
 
                     <View style={{ flex: 1, backgroundColor: theme.colors.card, borderColor: theme.colors.cardBorder, borderWidth: 1, borderRadius: 16, paddingVertical: 12, paddingHorizontal: 14, alignItems: 'center' }}>
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 4 }}>
                             <Ionicons name="layers-outline" size={12} color={theme.colors.textSecondary} />
-                            <Text style={{ color: theme.colors.textSecondary, fontSize: 9, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 0.5 }}>Séries</Text>
+                            <Text style={{ color: theme.colors.textSecondary, fontSize: 9, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5 }}>Séries</Text>
                         </View>
-                        <Text style={{ color: theme.colors.text, fontSize: 20, fontWeight: '900', letterSpacing: -0.5 }}>{totalSeries}</Text>
+                        <Text style={{ color: theme.colors.text, fontSize: 20, fontFamily: 'Inter_700Bold', fontWeight: '700', letterSpacing: -0.5 }}>{totalSeries}</Text>
                     </View>
 
                     <View style={{ flex: 1, backgroundColor: theme.colors.card, borderColor: theme.colors.cardBorder, borderWidth: 1, borderRadius: 16, paddingVertical: 12, paddingHorizontal: 14, alignItems: 'center' }}>
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 4 }}>
                             <Ionicons name="fitness-outline" size={12} color={theme.colors.textSecondary} />
-                            <Text style={{ color: theme.colors.textSecondary, fontSize: 9, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 0.5 }}>Exercícios</Text>
+                            <Text style={{ color: theme.colors.textSecondary, fontSize: 9, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5 }}>Exercícios</Text>
                         </View>
-                        <Text style={{ color: theme.colors.text, fontSize: 20, fontWeight: '900', letterSpacing: -0.5 }}>{exercises.filter(ex => ex.sets.some(s => s.completed)).length}/{exercises.length}</Text>
+                        <Text style={{ color: theme.colors.text, fontSize: 20, fontFamily: 'Inter_700Bold', fontWeight: '700', letterSpacing: -0.5 }}>{exercises.filter(ex => ex.sets.some(s => s.completed)).length}/{exercises.length}</Text>
                     </View>
                 </View>
 
@@ -2869,11 +2924,11 @@ export default function WorkoutScreen() {
                         {/* Content row */}
                         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 10 }}>
                             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-                                <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#F59E0B' }} />
-                                <Text style={{ color: '#F59E0B', fontFamily: 'monospace', fontWeight: '900', fontSize: 18, letterSpacing: 1 }}>
+                                <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: theme.colors.warning }} />
+                                <Text style={{ color: theme.colors.warning, fontFamily: 'monospace', fontWeight: '700', fontSize: 18, letterSpacing: 1 }}>
                                     {formatRestTime(restTimeRemaining)}
                                 </Text>
-                                <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                                <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5 }}>
                                     descanso
                                 </Text>
                             </View>
@@ -2881,7 +2936,7 @@ export default function WorkoutScreen() {
                                 onPress={skipRest}
                                 style={{ paddingHorizontal: 12, paddingVertical: 5, borderRadius: 8, backgroundColor: 'rgba(245,158,11,0.15)', borderWidth: 1, borderColor: 'rgba(245,158,11,0.3)' }}
                             >
-                                <Text style={{ color: '#F59E0B', fontSize: 11, fontWeight: '900', textTransform: 'uppercase', letterSpacing: 0.5 }}>Pular</Text>
+                                <Text style={{ color: theme.colors.warning, fontSize: 11, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5 }}>Pular</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -2928,18 +2983,18 @@ export default function WorkoutScreen() {
                                     <View style={{ backgroundColor: theme.colors.primary + '15', width: 80, height: 80, borderRadius: 28, alignItems: 'center', justifyContent: 'center', marginBottom: 20 }}>
                                         <Text style={{ fontSize: 36 }}>🏋️</Text>
                                     </View>
-                                    <Text style={{ color: theme.colors.text, fontSize: 20, fontWeight: '900', marginBottom: 6, textTransform: 'uppercase', letterSpacing: -0.5 }}>Treino Vazio</Text>
-                                    <Text style={{ color: theme.colors.textSecondary, fontSize: 13, fontWeight: '600', textAlign: 'center', marginBottom: 24, lineHeight: 18 }}>
+                                    <Text style={{ color: theme.colors.text, fontSize: 20, fontFamily: 'Inter_700Bold', fontWeight: '700', marginBottom: 6, textTransform: 'uppercase', letterSpacing: -0.5 }}>Treino Vazio</Text>
+                                    <Text style={{ color: theme.colors.textSecondary, fontSize: 13, fontFamily: 'Inter_600SemiBold', fontWeight: '600', textAlign: 'center', marginBottom: 24, lineHeight: 18 }}>
                                         Adicione exercícios para começar seu treino
                                     </Text>
                                     <GradientButton
                                         onPress={() => setShowAddExerciseModal(true)}
-                                        colors={theme.mode === 'dark' ? ['#2A4315', '#1B2D0D'] : [theme.colors.primaryDark, '#345900']}
-                                        style={{ borderRadius: 16, borderWidth: 1, borderColor: theme.mode === 'dark' ? theme.colors.primary + '35' : theme.colors.primaryDark + '35', shadowColor: '#000', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.14, shadowRadius: 6, elevation: 2 }}
+                                        colors={theme.mode === 'dark' ? [theme.colors.accentMuted, theme.colors.accentMuted] : [theme.colors.primaryDark, theme.colors.primaryDark]}
+                                        style={{ borderRadius: 16, borderWidth: 1, borderColor: theme.mode === 'dark' ? theme.colors.primary + '35' : theme.colors.primaryDark + '35', shadowColor: Palette.ink, shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.1, shadowRadius: 6, elevation: 2 }}
                                         gradientStyle={{ paddingHorizontal: 28, paddingVertical: 14, flexDirection: 'row', alignItems: 'center', gap: 8 }}
                                     >
-                                        <Ionicons name="add-circle" size={20} color={theme.mode === 'dark' ? theme.colors.primary : '#FFFFFF'} />
-                                        <Text style={{ color: theme.mode === 'dark' ? theme.colors.primary : '#FFFFFF', fontWeight: '900', fontSize: 14, textTransform: 'uppercase', letterSpacing: 0.5 }}>Adicionar Exercício</Text>
+                                        <Ionicons name="add-circle" size={20} color={theme.mode === 'dark' ? theme.colors.primary : theme.colors.onImage} />
+                                        <Text style={{ color: theme.mode === 'dark' ? theme.colors.primary : theme.colors.onImage, fontFamily: 'Inter_700Bold', fontWeight: '700', fontSize: 14, textTransform: 'uppercase', letterSpacing: 0.5 }}>Adicionar Exercício</Text>
                                     </GradientButton>
                                 </View>
                             </View>
@@ -2951,10 +3006,10 @@ export default function WorkoutScreen() {
                         <View style={{ marginTop: 24, paddingHorizontal: 8, paddingBottom: insets.bottom + 80 }}>
                             <GradientButton
                                         onPress={() => setShowAddExerciseModal(true)}
-                                        colors={theme.mode === 'dark' ? ['#2A4315', '#1B2D0D'] : [theme.colors.primaryDark, '#345900']}
+                                        colors={theme.mode === 'dark' ? [theme.colors.accentMuted, theme.colors.accentMuted] : [theme.colors.primaryDark, theme.colors.primaryDark]}
                                         style={{
                                             borderRadius: 18, marginBottom: 10,
-                                            shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 10, elevation: 4
+                                            shadowColor: Palette.ink, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 4
                                         }}
                                         gradientStyle={{
                                             height: 54,
@@ -2962,8 +3017,8 @@ export default function WorkoutScreen() {
                                             flexDirection: 'row', gap: 8,
                                         }}
                                     >
-                                        <Ionicons name="add-circle" size={20} color={theme.mode === 'dark' ? theme.colors.primary : '#FFFFFF'} />
-                                        <Text style={{ color: theme.mode === 'dark' ? theme.colors.primary : '#FFFFFF', fontWeight: '900', fontSize: 14, textTransform: 'uppercase', letterSpacing: 0.5 }}>Adicionar Exercícios</Text>
+                                        <Ionicons name="add-circle" size={20} color={theme.mode === 'dark' ? theme.colors.primary : theme.colors.onImage} />
+                                        <Text style={{ color: theme.mode === 'dark' ? theme.colors.primary : theme.colors.onImage, fontFamily: 'Inter_700Bold', fontWeight: '700', fontSize: 14, textTransform: 'uppercase', letterSpacing: 0.5 }}>Adicionar Exercícios</Text>
                                     </GradientButton>
 
                             <TouchableOpacity
@@ -2975,7 +3030,7 @@ export default function WorkoutScreen() {
                                 }}
                             >
                                 <Ionicons name="ellipsis-horizontal" size={18} color={theme.colors.textSecondary} />
-                                <Text style={{ color: theme.colors.textSecondary, fontWeight: '800', fontSize: 13, textTransform: 'uppercase', letterSpacing: 0.5 }}>Mais Opções</Text>
+                                <Text style={{ color: theme.colors.textSecondary, fontFamily: 'Inter_700Bold', fontWeight: '700', fontSize: 13, textTransform: 'uppercase', letterSpacing: 0.5 }}>Mais Opções</Text>
                             </TouchableOpacity>
                         </View>
                     ) : null
@@ -2994,10 +3049,10 @@ export default function WorkoutScreen() {
                         width: 52,
                         height: 52,
                         borderRadius: 18,
-                        shadowColor: '#000',
+                        shadowColor: Palette.ink,
                         shadowOffset: { width: 0, height: 4 },
-                        shadowOpacity: 0.2,
-                        shadowRadius: 12,
+                        shadowOpacity: 0.1,
+                        shadowRadius: 8,
                         elevation: 8,
                         zIndex: 100,
                     }}
@@ -3009,7 +3064,7 @@ export default function WorkoutScreen() {
                     }}
                     activeOpacity={0.85}
                 >
-                    <Ionicons name="add" size={28} color="#FFFFFF" />
+                    <Ionicons name="add" size={28} color={theme.colors.onPrimary} />
                 </GradientButton>
             )}
 
@@ -3063,20 +3118,20 @@ export default function WorkoutScreen() {
                                 style={{ backgroundColor: theme.colors.primary }}
                                 className="px-5 py-2.5 rounded-full"
                             >
-                                <Text className="text-black font-bold">Concluir</Text>
+                                <Text className="text-onPrimary font-bold">Concluir</Text>
                             </TouchableOpacity>
                         </View>
 
                         {/* Display Value */}
                         <View
                             style={{
-                                backgroundColor: theme.mode === 'dark' ? '#10141E' : '#F8FAFC',
+                                backgroundColor: theme.mode === 'dark' ? '#10141E' : theme.colors.background,
                                 borderWidth: 1,
-                                borderColor: theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.08)' : '#E2E8F0',
+                                borderColor: theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.08)' : theme.colors.backgroundTertiary,
                             }}
                             className="items-center justify-center py-5 mx-4 my-2 rounded-2xl shadow-inner"
                         >
-                            <Text style={{ color: theme.colors.text }} className="text-6xl font-black tracking-tighter">
+                            <Text style={{ color: theme.colors.text }} className="text-6xl font-bold tracking-tighter">
                                 {smartInputMode === 'time' ? formatTimeInput(smartInputValue) : (smartInputValue || '0')}
                             </Text>
                             <View
@@ -3089,7 +3144,7 @@ export default function WorkoutScreen() {
                             >
                                 <Text
                                     style={{ color: theme.colors.primary }}
-                                    className="text-xs font-black uppercase tracking-widest"
+                                    className="text-xs font-bold uppercase tracking-widest"
                                 >
                                     {smartInputMode === 'weight' ? 'KG' :
                                         smartInputMode === 'reps' ? 'REPS' :
@@ -3241,7 +3296,7 @@ export default function WorkoutScreen() {
                                         className="flex-1 h-16 rounded-2xl items-center justify-center border shadow-sm"
                                         activeOpacity={0.7}
                                     >
-                                        <Text style={{ color: theme.colors.text }} className="text-3xl font-black">{num}</Text>
+                                        <Text style={{ color: theme.colors.text }} className="text-3xl font-bold">{num}</Text>
                                     </TouchableOpacity>
                                 ))}
                             </View>
@@ -3254,7 +3309,7 @@ export default function WorkoutScreen() {
                                         className="flex-1 h-16 rounded-2xl items-center justify-center border shadow-sm"
                                         activeOpacity={0.7}
                                     >
-                                        <Text style={{ color: theme.colors.text }} className="text-3xl font-black">{num}</Text>
+                                        <Text style={{ color: theme.colors.text }} className="text-3xl font-bold">{num}</Text>
                                     </TouchableOpacity>
                                 ))}
                             </View>
@@ -3267,7 +3322,7 @@ export default function WorkoutScreen() {
                                         className="flex-1 h-16 rounded-2xl items-center justify-center border shadow-sm"
                                         activeOpacity={0.7}
                                     >
-                                        <Text style={{ color: theme.colors.text }} className="text-3xl font-black">{num}</Text>
+                                        <Text style={{ color: theme.colors.text }} className="text-3xl font-bold">{num}</Text>
                                     </TouchableOpacity>
                                 ))}
                             </View>
@@ -3283,7 +3338,7 @@ export default function WorkoutScreen() {
                                     className="flex-1 h-16 rounded-2xl items-center justify-center border shadow-sm"
                                     activeOpacity={0.7}
                                 >
-                                    <Text style={{ color: theme.colors.text }} className="text-3xl font-black">.</Text>
+                                    <Text style={{ color: theme.colors.text }} className="text-3xl font-bold">.</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     onPress={() => setSmartInputValue(prev => (prev === '0' ? '0' : prev + '0'))}
@@ -3291,7 +3346,7 @@ export default function WorkoutScreen() {
                                     className="flex-1 h-16 rounded-2xl items-center justify-center border shadow-sm"
                                     activeOpacity={0.7}
                                 >
-                                    <Text style={{ color: theme.colors.text }} className="text-3xl font-black">0</Text>
+                                    <Text style={{ color: theme.colors.text }} className="text-3xl font-bold">0</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     onPress={() => setSmartInputValue(prev => {
@@ -3420,7 +3475,7 @@ export default function WorkoutScreen() {
 
                         <TouchableOpacity
                             onPress={() => setShowAddExerciseModal(true)}
-                            className="flex-row items-center justify-center p-4 rounded-2xl border-2 border-dashed border-zinc-700 mb-24"
+                            className="flex-row items-center justify-center p-4 rounded-2xl border-2 border-dashed border-borderSubtle mb-24"
                         >    <Text style={{ color: theme.colors.text }} className="font-bold text-base">Continuar treino</Text>
                         </TouchableOpacity>
                     </View>
@@ -3536,7 +3591,7 @@ export default function WorkoutScreen() {
                             }}
                             className="flex-row items-center py-4 mt-2"
                         >
-                            <Ionicons name="trash-outline" size={24} color="#EF4444" />
+                            <Ionicons name="trash-outline" size={24} color={theme.colors.error} />
                             <Text className="text-red-500 text-base font-semibold ml-4">Remover exercício</Text>
                         </TouchableOpacity>
                     </View>
@@ -3880,7 +3935,7 @@ export default function WorkoutScreen() {
                                 <Text className="text-white text-base ml-4">Adicionar notas</Text>
                             </TouchableOpacity>
 
-                            <View className="h-[1px] bg-zinc-800 my-2 mx-4" />
+                            <View className="h-[1px] bg-backgroundTertiary my-2 mx-4" />
 
                             <TouchableOpacity
                                 onPress={() => {
@@ -3923,7 +3978,7 @@ export default function WorkoutScreen() {
                                 }}
                                 className="flex-row items-center p-4"
                             >
-                                <Ionicons name="trash-outline" size={24} color="#EF4444" />
+                                <Ionicons name="trash-outline" size={24} color={theme.colors.error} />
                                 <Text className="text-red-500 text-base ml-4">Descartar Treino</Text>
                             </TouchableOpacity>
                         </View>
@@ -4006,7 +4061,7 @@ export default function WorkoutScreen() {
                                     {activeExerciseInfo.equipment && (
                                         <>
                                             <Text className="text-zinc-600 mx-2">•</Text>
-                                            <Text className="text-zinc-400 text-sm">{activeExerciseInfo.equipment}</Text>
+                                            <Text className="text-text-secondary text-sm">{activeExerciseInfo.equipment}</Text>
                                         </>
                                     )}
                                 </View>
@@ -4037,8 +4092,8 @@ export default function WorkoutScreen() {
                             />
                         ) : (
                             <View className="items-center justify-center">
-                                <Ionicons name="videocam-off-outline" size={64} color="#333" />
-                                <Text className="text-zinc-500 mt-4">Vídeo não disponível</Text>
+                                <Ionicons name="videocam-off-outline" size={64} color={theme.colors.backgroundTertiary} />
+                                <Text className="text-text-muted mt-4">Vídeo não disponível</Text>
                             </View>
                         )}
                     </View>
@@ -4159,6 +4214,7 @@ export default function WorkoutScreen() {
                 onSave={handleSaveFromModal}
                 defaultWorkoutName={activePlanId ? (savedWorkouts.find(w => w.id === activePlanId)?.name || 'Treino Livre') : 'Treino Livre'}
                 duration={duration}
+                isFreeWorkout={!activePlanId}
             />
 
             <PRExplosionAnimation

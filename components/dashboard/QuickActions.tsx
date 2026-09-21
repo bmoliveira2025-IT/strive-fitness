@@ -1,3 +1,4 @@
+import Palette from '../../constants/palette.json';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
@@ -70,9 +71,9 @@ export function QuickActions() {
                             flexDirection: 'row',
                             alignItems: 'center',
                             gap: 10,
-                            shadowColor: '#000',
+                            shadowColor: Palette.ink,
                             shadowOffset: { width: 0, height: 2 },
-                            shadowOpacity: theme.mode === 'dark' ? 0.2 : 0.04,
+                            shadowOpacity: theme.mode === 'dark' ? 0.1 : 0.04,
                             shadowRadius: 4,
                             elevation: 1,
                         }}

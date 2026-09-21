@@ -1,3 +1,4 @@
+import Palette from '../../constants/palette.json';
 import React from 'react';
 import { View, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -18,9 +19,9 @@ export function StatsRow() {
     const streak = Math.min(totalWorkouts, 7);
 
     const stats = [
-        { icon: 'barbell', value: totalWorkouts.toString(), label: 'Treinos', color: '#4F8FF7' },
-        { icon: 'calendar', value: thisWeek.toString(), label: 'Semana', color: '#10B981' },
-        { icon: 'flame', value: streak.toString(), label: 'Dias', color: '#F59E0B' },
+        { icon: 'barbell', value: totalWorkouts.toString(), label: 'Treinos', color: Palette.dark.info },
+        { icon: 'calendar', value: thisWeek.toString(), label: 'Semana', color: Palette.dark.success },
+        { icon: 'flame', value: streak.toString(), label: 'Dias', color: Palette.dark.warning },
     ];
 
     return (

@@ -1,3 +1,4 @@
+import Palette from '../constants/palette.json';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect } from 'react';
 import { Platform, StyleSheet, Text, useColorScheme, View } from 'react-native';
@@ -105,7 +106,7 @@ export const AnimatedSplashScreen: React.FC<Props> = ({ onFinish }) => {
             <View style={styles.contentContainer}>
                 {/* Text Reveal */}
                 <Animated.View style={[styles.textWrapper, textStyle]}>
-                    <Text style={[styles.brandText, { color: isDark ? '#FFFFFF' : '#000000' }]}>
+                    <Text style={[styles.brandText, { color: isDark ? Palette.light.onImage : '#000000' }]}>
                         STRIVE
                     </Text>
                     {/* Pop Dot */}
@@ -142,7 +143,7 @@ const styles = StyleSheet.create({
     },
     brandText: {
         fontSize: 56,
-        fontWeight: '900',
+        fontFamily: 'Inter_700Bold', fontWeight: '700',
         fontStyle: 'italic',
         letterSpacing: -2,
     },
@@ -166,7 +167,7 @@ const styles = StyleSheet.create({
     },
     subtitle: {
         fontSize: 12,
-        fontWeight: 'bold',
+        fontFamily: 'Inter_700Bold', fontWeight: 'bold',
         letterSpacing: 6,
         paddingLeft: 6, // Optical centering for letter spacing
     }

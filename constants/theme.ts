@@ -1,47 +1,8 @@
+import palette from './palette.json';
 import { Platform, TextStyle } from 'react-native';
 
-// Strive Premium Athletic Minimalism — Neutral Athletic Fallbacks
-const primaryLight = '#4D7C0F';
-const primaryDark = '#B7F52A';
-
-export const Colors = {
-  light: {
-    text: '#0F172A',
-    textSecondary: '#475569',
-    textMuted: '#94A3B8',
-    background: '#F8FAFC',
-    backgroundSecondary: '#F1F5F9',
-    backgroundTertiary: '#E2E8F0',
-    card: '#FFFFFF',
-    cardBorder: 'rgba(15, 23, 42, 0.08)',
-    tint: primaryLight,
-    icon: '#64748B',
-    tabIconDefault: '#64748B',
-    tabIconSelected: primaryLight,
-    border: 'rgba(15, 23, 42, 0.08)',
-    error: '#EF4444',
-    warning: '#F59E0B',
-    success: '#10B981',
-  },
-  dark: {
-    text: '#F8FAFC',
-    textSecondary: '#94A3B8',
-    textMuted: '#64748B',
-    background: '#0D0F12',
-    backgroundSecondary: '#13161B',
-    backgroundTertiary: '#1A1E24',
-    card: '#161A20',
-    cardBorder: 'rgba(255, 255, 255, 0.07)',
-    tint: primaryDark,
-    icon: '#94A3B8',
-    tabIconDefault: '#64748B',
-    tabIconSelected: primaryDark,
-    border: 'rgba(255, 255, 255, 0.07)',
-    error: '#EF4444',
-    warning: '#F59E0B',
-    success: '#10B981',
-  },
-};
+// Same source of truth as ThemeContext and NativeWind.
+export const Colors = { light: { ...palette.light, tint: palette.light.primary, icon: palette.light.textSecondary, tabIconDefault: palette.light.tabBarInactive, tabIconSelected: palette.light.primary }, dark: { ...palette.dark, tint: palette.dark.primary, icon: palette.dark.textSecondary, tabIconDefault: palette.dark.tabBarInactive, tabIconSelected: palette.dark.primary } };
 
 // Spacing System (4, 8, 12, 16, 20, 24, 32, 40, 48)
 export const Spacing = {
@@ -67,11 +28,11 @@ export const Radius = {
 
 // Typography Font Family mapping with fallback
 export const FontFamily = {
-  // Sora for Display, Headings, Numbers, Metrics, Timers, PRs
-  display: 'Sora_700Bold',
-  displaySemiBold: 'Sora_600SemiBold',
-  displayRegular: 'Sora_400Regular',
-  displayExtraBold: 'Sora_800ExtraBold',
+  // Inter: a single, legible family for headings and tabular metrics
+  display: 'Inter_700Bold',
+  displaySemiBold: 'Inter_600SemiBold',
+  displayRegular: 'Inter_400Regular',
+  displayExtraBold: 'Inter_700Bold',
 
   // Inter for Body, Labels, Descriptions, Menus, Buttons, Secondary Info
   sans: 'Inter_400Regular',
@@ -180,7 +141,7 @@ export const Fonts = Platform.select({
   },
   web: {
     sans: "'Inter', system-ui, -apple-system, sans-serif",
-    display: "'Sora', system-ui, sans-serif",
+    display: "'Inter', system-ui, sans-serif",
     mono: "SFMono-Regular, Menlo, Monaco, Consolas, monospace",
   },
 });

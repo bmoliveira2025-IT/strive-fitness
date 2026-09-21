@@ -97,7 +97,7 @@ export default function StreakScreen() {
                     <Ionicons name="chevron-back" size={22} color={theme.colors.text} />
                 </TouchableOpacity>
                 <View style={{ flex: 1, marginLeft: 14 }}>
-                    <Text style={{ color: theme.colors.text, fontSize: 22, fontWeight: '800' }}>Sequência</Text>
+                    <Text style={{ color: theme.colors.text, fontSize: 22, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>Sequência</Text>
                     <Text style={{ color: theme.colors.textSecondary, fontSize: 12, marginTop: 1 }}>Sua consistência ao longo do tempo</Text>
                 </View>
                 <TouchableOpacity onPress={handleShare} style={{ width: 44, height: 44, borderRadius: 14, backgroundColor: theme.colors.card, borderWidth: 1, borderColor: theme.colors.cardBorder, alignItems: 'center', justifyContent: 'center' }}>
@@ -112,15 +112,15 @@ export default function StreakScreen() {
                             <Ionicons name="flame" size={29} color={theme.colors.primaryDark} />
                         </View>
                         <View style={{ flex: 1 }}>
-                            <Text style={{ color: theme.colors.textSecondary, fontSize: 12, fontWeight: '700' }}>Sequência atual</Text>
+                            <Text style={{ color: theme.colors.textSecondary, fontSize: 12, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>Sequência atual</Text>
                             <View style={{ flexDirection: 'row', alignItems: 'baseline', marginTop: 2 }}>
-                                <Text style={{ color: theme.colors.text, fontSize: 38, fontWeight: '800', letterSpacing: -1 }}>{streakData.current}</Text>
-                                <Text style={{ color: theme.colors.textSecondary, fontSize: 14, fontWeight: '600', marginLeft: 7 }}>{streakData.current === 1 ? 'semana' : 'semanas'}</Text>
+                                <Text style={{ color: theme.colors.text, fontSize: 38, fontFamily: 'Inter_700Bold', fontWeight: '700', letterSpacing: -1 }}>{streakData.current}</Text>
+                                <Text style={{ color: theme.colors.textSecondary, fontSize: 14, fontFamily: 'Inter_600SemiBold', fontWeight: '600', marginLeft: 7 }}>{streakData.current === 1 ? 'semana' : 'semanas'}</Text>
                             </View>
                         </View>
                         <View style={{ alignItems: 'flex-end' }}>
                             <Text style={{ color: theme.colors.textMuted, fontSize: 11 }}>Melhor marca</Text>
-                            <Text style={{ color: theme.colors.primaryDark, fontSize: 19, fontWeight: '800', marginTop: 2 }}>{streakData.best}</Text>
+                            <Text style={{ color: theme.colors.primaryDark, fontSize: 19, fontFamily: 'Inter_700Bold', fontWeight: '700', marginTop: 2 }}>{streakData.best}</Text>
                         </View>
                     </View>
                     <View style={{ height: 1, backgroundColor: theme.colors.divider, marginVertical: 16 }} />
@@ -130,34 +130,34 @@ export default function StreakScreen() {
                 <View style={{ flexDirection: 'row', gap: 12, marginBottom: 24 }}>
                     <View style={{ flex: 1, backgroundColor: theme.colors.card, borderWidth: 1, borderColor: theme.colors.cardBorder, borderRadius: 16, padding: 14 }}>
                         <Text style={{ color: theme.colors.textMuted, fontSize: 11 }}>Treinos no mês</Text>
-                        <Text style={{ color: theme.colors.text, fontSize: 23, fontWeight: '800', marginTop: 4 }}>{streakData.workoutsThisMonth}</Text>
+                        <Text style={{ color: theme.colors.text, fontSize: 23, fontFamily: 'Inter_700Bold', fontWeight: '700', marginTop: 4 }}>{streakData.workoutsThisMonth}</Text>
                     </View>
                     <View style={{ flex: 1, backgroundColor: theme.colors.card, borderWidth: 1, borderColor: theme.colors.cardBorder, borderRadius: 16, padding: 14 }}>
                         <Text style={{ color: theme.colors.textMuted, fontSize: 11 }}>Dias registrados</Text>
-                        <Text style={{ color: theme.colors.text, fontSize: 23, fontWeight: '800', marginTop: 4 }}>{streakData.activeDays.size}</Text>
+                        <Text style={{ color: theme.colors.text, fontSize: 23, fontFamily: 'Inter_700Bold', fontWeight: '700', marginTop: 4 }}>{streakData.activeDays.size}</Text>
                     </View>
                 </View>
 
-                <Text style={{ color: theme.colors.text, fontSize: 18, fontWeight: '800', marginBottom: 12 }}>Calendário de treinos</Text>
+                <Text style={{ color: theme.colors.text, fontSize: 18, fontFamily: 'Inter_700Bold', fontWeight: '700', marginBottom: 12 }}>Calendário de treinos</Text>
                 <View style={{ backgroundColor: theme.colors.card, borderColor: theme.colors.cardBorder, borderWidth: 1, borderRadius: 22, padding: 16 }}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
                         <TouchableOpacity onPress={() => changeMonth(-1)} style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: theme.colors.backgroundTertiary, alignItems: 'center', justifyContent: 'center' }}>
                             <Ionicons name="chevron-back" size={19} color={theme.colors.text} />
                         </TouchableOpacity>
-                        <Text style={{ color: theme.colors.text, fontSize: 15, fontWeight: '800' }}>{calendar.title}</Text>
+                        <Text style={{ color: theme.colors.text, fontSize: 15, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>{calendar.title}</Text>
                         <TouchableOpacity onPress={() => changeMonth(1)} style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: theme.colors.backgroundTertiary, alignItems: 'center', justifyContent: 'center' }}>
                             <Ionicons name="chevron-forward" size={19} color={theme.colors.text} />
                         </TouchableOpacity>
                     </View>
                     <View style={{ flexDirection: 'row', marginBottom: 8 }}>
-                        {DAY_LABELS.map((label, index) => <Text key={`${label}-${index}`} style={{ width: cellWidth, color: theme.colors.textMuted, fontSize: 10, fontWeight: '700', textAlign: 'center' }}>{label}</Text>)}
+                        {DAY_LABELS.map((label, index) => <Text key={`${label}-${index}`} style={{ width: cellWidth, color: theme.colors.textMuted, fontSize: 10, fontFamily: 'Inter_700Bold', fontWeight: '700', textAlign: 'center' }}>{label}</Text>)}
                     </View>
                     <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
                         {calendar.days.map((item, index) => (
                             <View key={index} style={{ width: cellWidth, height: 43, alignItems: 'center', justifyContent: 'center' }}>
                                 {item.day !== null && (
                                     <View style={{ width: 34, height: 34, borderRadius: 11, backgroundColor: item.trained ? theme.colors.primary : 'transparent', borderWidth: item.today && !item.trained ? 1 : 0, borderColor: theme.colors.primaryDark, alignItems: 'center', justifyContent: 'center' }}>
-                                        <Text style={{ color: item.trained ? '#052E16' : theme.colors.textSecondary, fontSize: 12, fontWeight: item.trained || item.today ? '800' : '600' }}>{item.day}</Text>
+                                        <Text style={{ color: item.trained ? theme.colors.successMuted : theme.colors.textSecondary, fontSize: 12, fontWeight: item.trained || item.today ? '700' : '600' }}>{item.day}</Text>
                                     </View>
                                 )}
                             </View>

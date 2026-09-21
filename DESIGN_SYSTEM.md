@@ -1,102 +1,40 @@
-# Strive Premium Design System 2026 🏆
+# Sistema visual Strive
 
-Este documento define os padrões visuais do **Strive Top-Tier 2026**, focado em um visual maduro, suave, profissional e extremamente legível, suportando tanto o Modo Claro quanto o Modo Escuro.
+A identidade usa grafite, superfícies discretas e verde performance. A modernização preserva textos, componentes, rotas, dados e regras existentes.
 
----
+## Tokens
+A fonte de verdade é constants/palette.json. ThemeContext fornece as cores aos estilos nativos; constants/theme-variables.ts e tailwind.config.js compartilham os mesmos valores com NativeWind.
 
-## 🎨 1. Core Principles (Princípios de Design)
+| Papel | Escuro | Claro |
+|---|---|---|
+| Fundo | #121619 | #F3F5F4 |
+| Card | #1B2126 | #FCFDFC |
+| Modal elevado | #242D33 | #FCFDFC |
+| Borda discreta | #303A41 | #DCE4DF |
+| Texto principal | #F2F5F4 | #172A20 |
+| Texto secundário | #BAC5CA | #465B50 |
+| Texto discreto | #98A6AE | #5F7068 |
+| Destaque | #69C7A5 | #22694F |
+| Texto sobre destaque | #10251E | #FFFFFF |
 
-1.  **Dual Theme (Claro & Escuro)**: Suporte completo para temas claro e escuro, respeitando a preferência do usuário ou o sistema.
-2.  **Soft Contrast & Legibility**: Substituir o contraste extremo por um contraste mais suave e agradável aos olhos. No modo escuro, usar fundos cinza-escuro (`#0F172A`) em vez de preto puro (`#000000`). No modo claro, usar fundos quase brancos com cartões limpos.
-3.  **Softer Accents**: Uso de cores primárias suaves e tons pastéis elegantes (ex: Azul Suave, Indigo Suave) em vez de neons vibrantes.
-4.  **Modern Typography**: Hierarquia moderna. Títulos expansivos e expressivos, focados na clareza instantânea de números e métricas, mas com pesos equilibrados.
-5.  **Perfect Touch**: Área de toque mínima garantida de `44x44px`. Safe Areas estritamente respeitados em modais e headers.
-6.  **8pt Grid System**: Espaçamento metódico múltiplo de 8 (8, 16, 24, 32, 48).
+Sucesso, aviso, erro e informação possuem cores e superfícies próprias em ambos os temas. Em estilos novos, usar tokens semânticos em vez de novos hexadecimais.
 
----
+## Tipografia
+Inter, já presente no projeto, substitui visualmente Sora nos títulos. Regular 400 para leitura, Medium 500 para apoio, Semibold 600 para hierarquia e Bold 700 para títulos e métricas. A estrutura, os textos e as escalas de tamanho existentes foram preservados. Campos numéricos na web usam algarismos tabulares.
 
-## 🛠️ 2. Design Tokens (Valores Padrão)
+## Componentes
+Cards usam superfícies neutras e bordas finas; cards de exercício e seleção usam radius 16. Outras geometrias existentes, incluindo botões em pílula, permanecem onde fazem parte da apresentação atual. Sombras foram suavizadas sem alterar elevação responsável pela ordem de sobreposição nativa.
 
-### Espaçamento (8pt Grid)
-- **XS**: `8px` (Gap entre ícones e texto)
-- **S**: `16px` (Padding padrão de containers pequenos)
-- **M**: `24px` (Padding padrão de telas e modais)
-- **L**: `32px` (Separação entre seções)
+O botão principal usa destaque sólido; texto e ícones usam onPrimary. Secondary usa superfície discreta e borda; Ghost preserva transparência; ações destrutivas usam error. Pressed e disabled mantêm os mecanismos existentes de opacidade. Na web, focus-visible usa contorno verde e hover possui ajuste discreto de brilho. Não foram adicionados handlers de foco nem animações nativas.
 
-### Superfícies e Bordas
-| Elemento | Especificação |
-| :--- | :--- |
-| **Border Radius Core** | `16px` (Sólido, amigável mas sério) |
-| **Border Radius Pill** | `999px` (Para tags e botões full) |
-| **Border Width** | `1px` (Hairline sharp) |
-| **Border Color** | Definida pelo tema atual. |
+Modais usam superfície elevada; notificações mantêm ícones e comportamento e recebem cores semânticas. Gráficos mantêm biblioteca e dados. Navegação mantém estrutura e rotas com cores de seleção da paleta.
 
-### Sombras
-Sombras suaves no modo claro (`shadow-sm`) e dependência maior de bordas finas e cores de superfície no modo escuro.
+## Verificação desta entrega
+- TypeScript: aprovado.
+- Exportação Expo web e Android/Hermes: aprovada.
+- Comparação AST ignorando apresentação: 87 arquivos, nenhuma diferença identificada no código restante.
+- Revisão no navegador com viewport móvel e alternância de temas; capturas em outputs/visual-refresh.
+- Contraste calculado dos tokens: texto discreto/card 6,50:1 escuro e 5,14:1 claro; texto/botão principal 7,90:1 escuro e 6,56:1 claro. Isso não representa auditoria de acessibilidade de todas as combinações.
+- ESLint possui erros anteriores de textos não escapados e display-name; não se alteraram textos ou componentes para corrigir itens fora do escopo.
 
----
-
-## 📦 3. Component Templates (Modelos de Código)
-
-### A. O Cartão Padrão
-O novo container padrão utiliza as cores do `ThemeContext`.
-
-```tsx
-const { theme } = useTheme();
-
-<View style={{
-    backgroundColor: theme.colors.card,
-    borderColor: theme.colors.cardBorder,
-    borderWidth: 1,
-    borderRadius: 16,
-    padding: 24,
-}}>
-    {/* Conteúdo limpo... */}
-</View>
-```
-
-### B. Cabeçalhos de Seção (Headers)
-Visual afiado para seções do app, usando as cores do tema.
-
-```tsx
-const { theme } = useTheme();
-
-<View className="px-6 mb-4 flex-row justify-between items-end">
-    <Text style={{ color: theme.colors.text }} className="text-2xl font-black tracking-tight">
-        MEU TREINO
-    </Text>
-    <Text style={{ color: theme.colors.primary }} className="font-bold text-sm">Ver todos</Text>
-</View>
-```
-
-### C. Botões Principais (Call to Actions)
-Visuais claros e acionáveis, com a cor primária suave.
-
-```tsx
-const { theme } = useTheme();
-
-<TouchableOpacity 
-    style={{ backgroundColor: theme.colors.primary }}
-    className="items-center justify-center rounded-2xl min-h-[56px] px-6"
-    activeOpacity={0.8}
->
-    <Text className="text-white font-bold text-lg">Começar Treino</Text>
-</TouchableOpacity>
-```
-
----
-
-## 📱 4. Regras Mobile-First e Safe Area
-
-1. **Safe Area Compliance**: Nenhum conteúdo interativo ficará sob a Status Bar (topo) ou a Navigation Bar (fundo).
-2. **Bottom Sheets / Modals**: Devem arredondar apenas o topo (`rounded-t-3xl`) e ter padding inferior que inclui o `insets.bottom` para não colidir com a Home Indicator do iOS.
-3. **One-Handed Usability**: Controles primários (Next, Start, Finish) devem sempre repousar na metade inferior da tela.
-
----
-
-## 🌙 5. Temas (Claro e Escuro)
-
-O aplicativo utiliza o `ThemeContext` para gerenciar as cores. Sempre confie no `theme.colors` ao invés de classes hardcoded do Tailwind para cores (`bg-black`, `text-white`), garantindo que a troca de temas funcione perfeitamente.
-
-> [!TIP]
-> Use a cor `textMuted` ou `textSecondary` para informações de menor hierarquia visual, mantendo a leitura leve e profissional.
+A exportação Android não equivale à validação em aparelho ou geração de APK assinado. FPS em aparelho, instalação PWA, comportamento offline e iPhone não foram medidos nesta etapa visual. Não há alegação de ganho de FPS.

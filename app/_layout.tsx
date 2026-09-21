@@ -17,7 +17,9 @@ import {
 } from '@expo-google-fonts/inter';
 import { Stack, usePathname, useRouter, useSegments } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { InteractionManager, LogBox, Platform, View } from 'react-native';
+import { InteractionManager, LogBox, Platform, StatusBar as RNStatusBar, View } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+import * as SystemUI from 'expo-system-ui';
 import * as SplashScreen from 'expo-splash-screen';
 import { AnimatedSplashScreen } from '../components/AnimatedSplashScreen';
 import { ExerciseHistoryProvider } from '../context/ExerciseHistoryContext';
@@ -140,9 +142,49 @@ function StackContent() {
 function RootLayoutContent() {
   const { theme } = useTheme();
 
+  useEffect(() => {
+    // 1. Android System UI & Status/Navigation Bar
+    if (Platform.OS === 'android') {
+      SystemUI.setBackgroundColorAsync(theme.colors.background).catch(() => {});
+      try {
+        RNStatusBar.setBackgroundColor(theme.colors.background, true);
+        RNStatusBar.setBarStyle(theme.mode === 'light' ? 'dark-content' : 'light-content', true);
+      } catch {}
+    }
+
+    // 2. Web / PWA / iPhone Safari / Android Chrome Dynamic Theme Identification
+    if (Platform.OS === 'web' && typeof document !== 'undefined') {
+      document.documentElement.setAttribute('data-theme', theme.mode);
+      document.documentElement.style.backgroundColor = theme.colors.background;
+      (document.documentElement.style as any).colorScheme = theme.mode;
+      document.body.style.backgroundColor = theme.colors.background;
+      (document.body.style as any).colorScheme = theme.mode;
+
+      // Update meta theme-color for browser address bar & notch
+      let metaThemeColor = document.querySelector('meta[name="theme-color"]:not([media])');
+      if (!metaThemeColor) {
+        metaThemeColor = document.createElement('meta');
+        metaThemeColor.setAttribute('name', 'theme-color');
+        document.head.appendChild(metaThemeColor);
+      }
+      metaThemeColor.setAttribute('content', theme.colors.background);
+
+      // Update meta apple-mobile-web-app-status-bar-style
+      let metaApple = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
+      if (metaApple) {
+        metaApple.setAttribute('content', theme.mode === 'light' ? 'default' : 'black-translucent');
+      }
+    }
+  }, [theme.mode, theme.colors.background]);
+
   return (
     <SafeAreaProvider>
-      <GestureHandlerRootView style={[themeVariables(theme.colors), { flex: 1, backgroundColor: Platform.OS === 'web' ? theme.colors.background : 'transparent' }]}>
+      <StatusBar
+        style={theme.mode === 'light' ? 'dark' : 'light'}
+        backgroundColor={theme.colors.background}
+        translucent={Platform.OS === 'android'}
+      />
+      <GestureHandlerRootView style={[themeVariables(theme.colors), { flex: 1, backgroundColor: theme.colors.background }]}>
         <View
           style={{
             flex: 1,
@@ -159,10 +201,6 @@ function RootLayoutContent() {
             } : {})
           }}
         >
-          <LinearGradient
-            colors={theme.mode === 'dark' ? [theme.colors.backgroundSecondary, theme.colors.background, theme.colors.background] : [theme.colors.onImage, theme.colors.background, theme.colors.backgroundSecondary]}
-            style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
-          />
           <StackContent />
         </View>
       </GestureHandlerRootView>

@@ -118,8 +118,8 @@ export function ProgressPhotosView() {
                 height: 52,
             }}
         >
-            <Ionicons name="camera" size={20} color="#FFFFFF" style={{ marginRight: 9 }} />
-            <Text style={{ color: '#FFFFFF', fontSize: 12, fontWeight: '900', letterSpacing: 0.8 }}>
+            <Ionicons name="camera" size={20} color={theme.colors.onPrimary} style={{ marginRight: 9 }} />
+            <Text style={{ color: theme.colors.onPrimary, fontSize: 12, fontFamily: 'Inter_700Bold', fontWeight: '700', letterSpacing: 0.8 }}>
                 ADICIONAR FOTO
             </Text>
         </GradientButton>
@@ -179,7 +179,7 @@ export function ProgressPhotosView() {
                                 cachePolicy="memory-disk"
                             />
                             <View className="absolute bottom-10 w-full flex-row justify-center gap-6">
-                                <View className="bg-zinc-900/80 px-4 py-2 rounded-lg">
+                                <View className="bg-surface/80 px-4 py-2 rounded-lg">
                                     <Text className="text-white">
                                         {new Date(selectedPhoto.date).toLocaleDateString()}
                                     </Text>

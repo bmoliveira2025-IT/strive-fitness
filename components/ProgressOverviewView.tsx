@@ -257,7 +257,7 @@ export function ProgressOverviewView({
             title: 'Treinos Concluídos',
             value: `${total}/${nextMilestone}`,
             icon: 'trophy',
-            color: '#8B5CF6',
+            color: theme.colors.primary,
             unlocked: total >= 10
         });
 
@@ -266,7 +266,7 @@ export function ProgressOverviewView({
             title: 'Consistência Mensal',
             value: `${consistency.percentage}%`,
             icon: 'calendar',
-            color: '#10B981',
+            color: theme.colors.success,
             unlocked: consistency.percentage >= 50
         });
 
@@ -285,7 +285,7 @@ export function ProgressOverviewView({
                     title: 'Força em Ascensão! 🚀',
                     message: `Você aumentou a carga em ${increaseCount} exercícios recentemente.`,
                     icon: 'barbell',
-                    color: '#8B5CF6'
+                    color: theme.colors.primary
                 });
             }
         }
@@ -295,7 +295,7 @@ export function ProgressOverviewView({
                 title: 'Consistência de Ferro 🔥',
                 message: `Você completou ${summaryStats.count} treinos esta semana. Mantenha o foco!`,
                 icon: 'flame',
-                color: '#F59E0B'
+                color: theme.colors.warning
             });
         }
 
@@ -304,7 +304,7 @@ export function ProgressOverviewView({
                 title: 'Continue Focado 🎯',
                 message: 'Cada treino conta. A consistência é a chave para o resultado.',
                 icon: 'paper-plane',
-                color: '#10B981'
+                color: theme.colors.success
             });
         }
 
@@ -363,9 +363,9 @@ export function ProgressOverviewView({
     // ─── Summary card data ───
     const summaryCards = [
         { label: 'Treinos', value: String(summaryStats.count), sub: 'Concluídos', icon: 'flash', color: '#4F46E5' },
-        { label: 'Tempo', value: summaryStats.duration, sub: 'Dedicados', icon: 'stopwatch', color: '#8B5CF6' },
-        { label: 'Volume', value: `${(summaryStats.volume / 1000).toFixed(1)}T`, sub: 'Levantados', icon: 'barbell', color: '#10B981' },
-        { label: 'Consistência', value: `${consistency.currentMonthCount}`, sub: `/${new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate()} dias`, icon: 'flame', color: '#F59E0B' },
+        { label: 'Tempo', value: summaryStats.duration, sub: 'Dedicados', icon: 'stopwatch', color: theme.colors.primary },
+        { label: 'Volume', value: `${(summaryStats.volume / 1000).toFixed(1)}T`, sub: 'Levantados', icon: 'barbell', color: theme.colors.success },
+        { label: 'Consistência', value: `${consistency.currentMonthCount}`, sub: `/${new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate()} dias`, icon: 'flame', color: theme.colors.warning },
     ];
 
     // ─── Day names for heatmap ───
@@ -385,26 +385,26 @@ export function ProgressOverviewView({
                     backgroundColor: theme.colors.card,
                     borderRadius: 20,
                     borderWidth: 1,
-                    borderColor: todayStatus.trainedToday ? '#22C55E40' : theme.colors.cardBorder,
+                    borderColor: todayStatus.trainedToday ? theme.colors.success + '40' : theme.colors.cardBorder,
                     padding: 18,
                 }}>
                         <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 14 }}>
                             <View style={{ flex: 1 }}>
-                                <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 1.2 }}>
+                                <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1.2 }}>
                                     Hoje
                                 </Text>
-                                <Text style={{ color: theme.colors.text, fontSize: 17, fontWeight: '800', marginTop: 2 }}>
+                                <Text style={{ color: theme.colors.text, fontSize: 17, fontFamily: 'Inter_700Bold', fontWeight: '700', marginTop: 2 }}>
                                     {todayStatus.dateLabel}
                                 </Text>
                             </View>
 
                             <View style={{
-                                    backgroundColor: todayStatus.trainedToday ? '#22C55E18' : theme.colors.primary + '18',
+                                    backgroundColor: todayStatus.trainedToday ? theme.colors.success + '18' : theme.colors.primary + '18',
                                     borderRadius: 12,
                                     paddingHorizontal: 12,
                                     paddingVertical: 7,
                                 borderWidth: 1,
-                                borderColor: todayStatus.trainedToday ? '#22C55E40' : theme.colors.primary + '40',
+                                borderColor: todayStatus.trainedToday ? theme.colors.success + '40' : theme.colors.primary + '40',
                                 flexDirection: 'row',
                                 alignItems: 'center',
                                 gap: 6,
@@ -417,7 +417,7 @@ export function ProgressOverviewView({
                                 <Text style={{
                                     color: todayStatus.trainedToday ? '#168044' : (theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.primary),
                                     fontSize: 12,
-                                    fontWeight: '900',
+                                    fontFamily: 'Inter_700Bold', fontWeight: '700',
                                 }}>
                                     {todayStatus.trainedToday ? 'Treino feito!' : 'Treinar hoje'}
                                 </Text>
@@ -427,13 +427,13 @@ export function ProgressOverviewView({
                         {/* Weekly goal progress */}
                         <View style={{ marginBottom: 10 }}>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                                <Text style={{ color: theme.colors.textSecondary, fontSize: 11, fontWeight: '700' }}>
+                                <Text style={{ color: theme.colors.textSecondary, fontSize: 11, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>
                                     Meta semanal
                                 </Text>
                                 <Text style={{
-                                    color: todayStatus.goalMet ? '#22C55E' : theme.colors.text,
+                                    color: todayStatus.goalMet ? theme.colors.success : theme.colors.text,
                                     fontSize: 13,
-                                    fontWeight: '900',
+                                    fontFamily: 'Inter_700Bold', fontWeight: '700',
                                 }}>
                                     {todayStatus.workoutsThisWeek}/{todayStatus.targetDays} treinos
                                     {todayStatus.goalMet ? ' ✓' : ''}
@@ -443,14 +443,14 @@ export function ProgressOverviewView({
                                 <View style={{
                                     height: '100%',
                                     width: `${Math.min(100, (todayStatus.workoutsThisWeek / todayStatus.targetDays) * 100)}%`,
-                                    backgroundColor: todayStatus.goalMet ? '#22C55E' : theme.colors.primary,
+                                    backgroundColor: todayStatus.goalMet ? theme.colors.success : theme.colors.primary,
                                     borderRadius: 3,
                                 }} />
                             </View>
                         </View>
 
                         {/* Status message */}
-                        <Text style={{ color: theme.colors.textSecondary, fontSize: 12, fontWeight: '500', lineHeight: 18 }}>
+                        <Text style={{ color: theme.colors.textSecondary, fontSize: 12, fontFamily: 'Inter_500Medium', fontWeight: '500', lineHeight: 18 }}>
                             {todayStatus.trainedToday
                                 ? 'Excelente! Você já garantiu o treino de hoje. Continue assim!'
                                 : todayStatus.daysSinceLast === 0
@@ -487,7 +487,7 @@ export function ProgressOverviewView({
                             <Text
                                 style={{
                                     color: selectedRange === r ? theme.colors.onPrimary : theme.colors.textSecondary,
-                                    fontWeight: selectedRange === r ? '800' : '600'
+                                    fontWeight: selectedRange === r ? '700' : '600'
                                 }}
                                 className="text-[10px] uppercase tracking-widest"
                             >
@@ -521,9 +521,9 @@ export function ProgressOverviewView({
                             }}>
                                 <Ionicons name={card.icon as any} size={19} color={card.color} />
                             </View>
-                            <Text style={{ color: theme.colors.textSecondary, fontSize: 11, fontWeight: '700' }}>{card.label}</Text>
-                            <Text style={{ color: theme.colors.text, fontSize: 25, fontWeight: '800', letterSpacing: -0.7, marginTop: 3 }}>{card.value}</Text>
-                            <Text style={{ color: theme.colors.textMuted, fontSize: 11, fontWeight: '500', marginTop: 2 }}>{card.sub}</Text>
+                            <Text style={{ color: theme.colors.textSecondary, fontSize: 11, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>{card.label}</Text>
+                            <Text style={{ color: theme.colors.text, fontSize: 25, fontFamily: 'Inter_700Bold', fontWeight: '700', letterSpacing: -0.7, marginTop: 3 }}>{card.value}</Text>
+                            <Text style={{ color: theme.colors.textMuted, fontSize: 11, fontFamily: 'Inter_500Medium', fontWeight: '500', marginTop: 2 }}>{card.sub}</Text>
                         </View>
                     ))}
                 </View>
@@ -532,8 +532,8 @@ export function ProgressOverviewView({
             {/* ─── AI Coach Insights ─── */}
             <View style={{ paddingHorizontal: 20, marginBottom: 32 }}>
                 <View style={{ marginBottom: 16 }}>
-                    <Text style={{ color: theme.colors.text, fontSize: 20, fontWeight: '800', letterSpacing: -0.4 }}>Insights do treinador</Text>
-                    <Text style={{ color: theme.colors.textSecondary, fontSize: 12, fontWeight: '500', marginTop: 2 }}>Análises objetivas da sua performance</Text>
+                    <Text style={{ color: theme.colors.text, fontSize: 20, fontFamily: 'Inter_700Bold', fontWeight: '700', letterSpacing: -0.4 }}>Insights do treinador</Text>
+                    <Text style={{ color: theme.colors.textSecondary, fontSize: 12, fontFamily: 'Inter_500Medium', fontWeight: '500', marginTop: 2 }}>Análises objetivas da sua performance</Text>
                 </View>
                 {strengthInsights.map((insight, idx) => (
                     <AIInsightCard
@@ -552,7 +552,7 @@ export function ProgressOverviewView({
                         title="Análise de Consistência"
                         description={weeklyAssessment.insight}
                         icon="pulse"
-                        color="#4F8FF7"
+                        color={theme.colors.info}
                         index={strengthInsights.length}
                     />
                 )}
@@ -562,8 +562,8 @@ export function ProgressOverviewView({
             {healthInsights.length > 0 && (
                 <View style={{ paddingHorizontal: 24, marginBottom: 32 }}>
                     <View style={{ marginBottom: 16 }}>
-                        <Text style={{ color: theme.colors.text, fontSize: 20, fontWeight: '900', letterSpacing: -0.5 }}>Monitoramento de Saúde</Text>
-                        <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 1 }}>Biometria & Bem-estar</Text>
+                        <Text style={{ color: theme.colors.text, fontSize: 20, fontFamily: 'Inter_700Bold', fontWeight: '700', letterSpacing: -0.5 }}>Monitoramento de Saúde</Text>
+                        <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1 }}>Biometria & Bem-estar</Text>
                     </View>
                     {healthInsights.map((insight, idx) => (
                         <AIInsightCard
@@ -586,23 +586,23 @@ export function ProgressOverviewView({
                     {/* Título fora do overflow:hidden */}
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
                         <View style={{ flex: 1, marginRight: 12 }}>
-                            <Text style={{ color: theme.colors.textSecondary }} className="text-[9px] font-black uppercase tracking-widest">Evolução</Text>
-                            <Text style={{ color: theme.colors.text }} className="text-lg font-black italic uppercase tracking-tighter">Peso Corporal</Text>
+                            <Text style={{ color: theme.colors.textSecondary }} className="text-[9px] font-bold uppercase tracking-widest">Evolução</Text>
+                            <Text style={{ color: theme.colors.text }} className="text-lg font-bold italic uppercase tracking-tighter">Peso Corporal</Text>
                         </View>
                         {weightTrend && (
                                 <View style={{
-                                    backgroundColor: weightTrend.isDown ? '#22C55E15' : '#F43F5E15',
+                                    backgroundColor: weightTrend.isDown ? theme.colors.success + '15' : theme.colors.error + '15',
                                     paddingHorizontal: 10, paddingVertical: 5, borderRadius: 12,
-                                    borderWidth: 1, borderColor: weightTrend.isDown ? '#22C55E30' : '#F43F5E30',
+                                    borderWidth: 1, borderColor: weightTrend.isDown ? theme.colors.success + '30' : theme.colors.error + '30',
                                     flexDirection: 'row', alignItems: 'center'
                                 }}>
                                     <Ionicons
                                         name={weightTrend.isDown ? 'trending-down' : 'trending-up'}
                                         size={14}
-                                        color={weightTrend.isDown ? '#22C55E' : '#F43F5E'}
+                                        color={weightTrend.isDown ? theme.colors.success : theme.colors.error}
                                         style={{ marginRight: 4 }}
                                     />
-                                    <Text style={{ color: weightTrend.isDown ? '#22C55E' : '#F43F5E', fontSize: 11, fontWeight: '900' }}>
+                                    <Text style={{ color: weightTrend.isDown ? theme.colors.success : theme.colors.error, fontSize: 11, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>
                                         {weightTrend.isDown ? '-' : '+'}{weightTrend.diff}kg
                                     </Text>
                                 </View>
@@ -612,7 +612,7 @@ export function ProgressOverviewView({
                         <LineChart
                             data={{
                                 labels: weightChartData.labels,
-                                datasets: [{ data: weightChartData.data, color: () => '#10B981', strokeWidth: 3 }]
+                                datasets: [{ data: weightChartData.data, color: () => theme.colors.success, strokeWidth: 3 }]
                             }}
                             width={screenWidth - 88}
                             height={180}
@@ -623,11 +623,11 @@ export function ProgressOverviewView({
                                 backgroundGradientFrom: theme.colors.card,
                                 backgroundGradientTo: theme.colors.card,
                                 decimalPlaces: 1,
-                                color: () => '#10B981',
+                                color: () => theme.colors.success,
                                 labelColor: () => theme.colors.textSecondary,
                                 style: { borderRadius: 16 },
                                 propsForDots: { r: '5', strokeWidth: '2', stroke: theme.colors.background },
-                                propsForLabels: { fontSize: 9, fontWeight: '700' },
+                                propsForLabels: { fontSize: 9, fontFamily: 'Inter_700Bold', fontWeight: '700' },
                                 fillShadowGradient: '#10B981',
                                 fillShadowGradientOpacity: 0.12
                             }}
@@ -645,13 +645,13 @@ export function ProgressOverviewView({
                 {/* Header fora do overflow:hidden para não cortar o título */}
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
                     <View style={{ flex: 1, marginRight: 12 }}>
-                        <Text style={{ color: theme.colors.textSecondary }} className="text-[9px] font-black uppercase tracking-widest">
+                        <Text style={{ color: theme.colors.textSecondary }} className="text-[9px] font-bold uppercase tracking-widest">
                             {['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'][new Date().getMonth()]} {new Date().getFullYear()}
                         </Text>
-                        <Text style={{ color: theme.colors.text }} className="text-lg font-black italic uppercase tracking-tighter">Mapa de Treinos</Text>
+                        <Text style={{ color: theme.colors.text }} className="text-lg font-bold italic uppercase tracking-tighter">Mapa de Treinos</Text>
                     </View>
-                    <View style={{ backgroundColor: '#10B98115', paddingHorizontal: 10, paddingVertical: 5, borderRadius: 10 }}>
-                        <Text style={{ color: '#10B981', fontSize: 10, fontWeight: '900' }}>
+                    <View style={{ backgroundColor: theme.colors.success + '15', paddingHorizontal: 10, paddingVertical: 5, borderRadius: 10 }}>
+                        <Text style={{ color: theme.colors.success, fontSize: 10, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>
                             {heatmapData.trainedDays.size} DIAS
                         </Text>
                     </View>
@@ -662,7 +662,7 @@ export function ProgressOverviewView({
                     <View style={{ flexDirection: 'row', marginBottom: 8, paddingHorizontal: 2 }}>
                         {dayNames.map((d, i) => (
                             <View key={i} style={{ flex: 1, alignItems: 'center' }}>
-                                <Text style={{ color: theme.colors.textSecondary, fontSize: 9, fontWeight: '800' }}>{d}</Text>
+                                <Text style={{ color: theme.colors.textSecondary, fontSize: 9, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>{d}</Text>
                             </View>
                         ))}
                     </View>
@@ -686,7 +686,7 @@ export function ProgressOverviewView({
                                         flex: 1,
                                         borderRadius: 8,
                                         backgroundColor: trained
-                                            ? '#10B981'
+                                            ? theme.colors.success
                                             : isPast
                                                 ? theme.colors.backgroundTertiary
                                                 : 'transparent',
@@ -697,9 +697,9 @@ export function ProgressOverviewView({
                                         opacity: trained ? 1 : isPast ? 0.4 : 0.2,
                                     }}>
                                         <Text style={{
-                                            color: trained ? '#FFFFFF' : theme.colors.textSecondary,
+                                            color: trained ? theme.colors.onImage : theme.colors.textSecondary,
                                             fontSize: 10,
-                                            fontWeight: trained ? '900' : '600'
+                                            fontWeight: trained ? '700' : '600'
                                         }}>
                                             {day}
                                         </Text>
@@ -714,8 +714,8 @@ export function ProgressOverviewView({
             {/* ─── Personal Records ─── */}
             {personalRecords.length > 0 && (
                 <Animated.View entering={FadeInDown.delay(600).springify()} className="px-6 mb-8">
-                    <Text style={{ color: theme.colors.textSecondary }} className="text-[9px] font-black uppercase tracking-widest mb-1">Seus Melhores</Text>
-                    <Text style={{ color: theme.colors.text, paddingRight: 6 }} className="text-lg font-black italic uppercase tracking-tighter mb-4">Recordes Pessoais</Text>
+                    <Text style={{ color: theme.colors.textSecondary }} className="text-[9px] font-bold uppercase tracking-widest mb-1">Seus Melhores</Text>
+                    <Text style={{ color: theme.colors.text, paddingRight: 6 }} className="text-lg font-bold italic uppercase tracking-tighter mb-4">Recordes Pessoais</Text>
 
                     <View style={{ backgroundColor: theme.colors.card, borderColor: theme.colors.cardBorder, borderWidth: 1.5, borderRadius: 22, overflow: 'hidden' }}>
                         {personalRecords.map((rec, index) => {
@@ -735,7 +735,7 @@ export function ProgressOverviewView({
                                 >
                                     <Text style={{ fontSize: 20, marginRight: 14 }}>{medals[index]}</Text>
                                     <View style={{ flex: 1 }}>
-                                        <Text style={{ color: theme.colors.text, fontSize: 14, fontWeight: '800' }} numberOfLines={1}>{rec.name}</Text>
+                                        <Text style={{ color: theme.colors.text, fontSize: 14, fontFamily: 'Inter_700Bold', fontWeight: '700' }} numberOfLines={1}>{rec.name}</Text>
                                     </View>
                                     <View style={{
                                         backgroundColor: theme.colors.primary + '15',
@@ -743,7 +743,7 @@ export function ProgressOverviewView({
                                     }}>
                                         <Text style={{
                                             color: theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.primary,
-                                            fontSize: 14, fontWeight: '900'
+                                            fontSize: 14, fontFamily: 'Inter_700Bold', fontWeight: '700'
                                         }}>{rec.weight}kg</Text>
                                     </View>
                                 </View>
@@ -759,27 +759,27 @@ export function ProgressOverviewView({
                 {/* Header + trend pill */}
                 <View style={{ flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 16 }}>
                     <View style={{ flex: 1, marginRight: 12 }}>
-                        <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 1.2 }}>
+                        <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1.2 }}>
                             Evolução
                         </Text>
-                        <Text style={{ color: theme.colors.text, fontSize: 22, fontWeight: '900', letterSpacing: -0.5, marginTop: 2 }}>
+                        <Text style={{ color: theme.colors.text, fontSize: 22, fontFamily: 'Inter_700Bold', fontWeight: '700', letterSpacing: -0.5, marginTop: 2 }}>
                             Volume Semanal
                         </Text>
                     </View>
                     <View style={{
-                        backgroundColor: weeklyVolumeStats.changePct >= 0 ? '#22C55E18' : '#F43F5E18',
+                        backgroundColor: weeklyVolumeStats.changePct >= 0 ? theme.colors.success + '18' : theme.colors.error + '18',
                         borderRadius: 14, paddingHorizontal: 12, paddingVertical: 8,
-                        borderWidth: 1, borderColor: weeklyVolumeStats.changePct >= 0 ? '#22C55E35' : '#F43F5E35',
+                        borderWidth: 1, borderColor: weeklyVolumeStats.changePct >= 0 ? theme.colors.success + '35' : theme.colors.error + '35',
                         flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 6,
                     }}>
                         <Ionicons
                             name={weeklyVolumeStats.changePct >= 0 ? 'trending-up' : 'trending-down'}
                             size={16}
-                            color={weeklyVolumeStats.changePct >= 0 ? '#22C55E' : '#F43F5E'}
+                            color={weeklyVolumeStats.changePct >= 0 ? theme.colors.success : theme.colors.error}
                         />
                         <Text style={{
-                            color: weeklyVolumeStats.changePct >= 0 ? '#22C55E' : '#F43F5E',
-                            fontSize: 15, fontWeight: '900',
+                            color: weeklyVolumeStats.changePct >= 0 ? theme.colors.success : theme.colors.error,
+                            fontSize: 15, fontFamily: 'Inter_700Bold', fontWeight: '700',
                         }}>
                             {weeklyVolumeStats.changePct >= 0 ? '+' : ''}{weeklyVolumeStats.changePct}%
                         </Text>
@@ -799,11 +799,11 @@ export function ProgressOverviewView({
                         }}>
                             <Ionicons name="barbell" size={16} color={theme.colors.primary} />
                         </View>
-                        <Text style={{ color: theme.colors.text, fontSize: 20, fontWeight: '900', letterSpacing: -0.5 }}>
+                        <Text style={{ color: theme.colors.text, fontSize: 20, fontFamily: 'Inter_700Bold', fontWeight: '700', letterSpacing: -0.5 }}>
                             {weeklyVolumeStats.current.volume}
-                            <Text style={{ fontSize: 11, color: theme.colors.textSecondary, fontWeight: '700' }}>t</Text>
+                            <Text style={{ fontSize: 11, color: theme.colors.textSecondary, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>t</Text>
                         </Text>
-                        <Text style={{ color: theme.colors.textSecondary, fontSize: 9, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 0.5, marginTop: 3 }}>
+                        <Text style={{ color: theme.colors.textSecondary, fontSize: 9, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5, marginTop: 3 }}>
                             Esta Semana
                         </Text>
                     </View>
@@ -812,26 +812,26 @@ export function ProgressOverviewView({
                     <View style={{
                         flex: 1, backgroundColor: theme.colors.card, borderRadius: 18,
                         padding: 14, borderWidth: 1.5,
-                        borderColor: weeklyVolumeStats.changePct >= 0 ? '#22C55E30' : '#F43F5E30',
+                        borderColor: weeklyVolumeStats.changePct >= 0 ? theme.colors.success + '30' : theme.colors.error + '30',
                     }}>
                         <View style={{
-                            backgroundColor: weeklyVolumeStats.changePct >= 0 ? '#22C55E20' : '#F43F5E20',
+                            backgroundColor: weeklyVolumeStats.changePct >= 0 ? theme.colors.success + '20' : theme.colors.error + '20',
                             width: 32, height: 32, borderRadius: 10, alignItems: 'center', justifyContent: 'center', marginBottom: 8,
                         }}>
                             <Ionicons
                                 name={weeklyVolumeStats.changePct >= 0 ? 'arrow-up' : 'arrow-down'}
                                 size={16}
-                                color={weeklyVolumeStats.changePct >= 0 ? '#22C55E' : '#F43F5E'}
+                                color={weeklyVolumeStats.changePct >= 0 ? theme.colors.success : theme.colors.error}
                             />
                         </View>
                         <Text style={{
-                            color: weeklyVolumeStats.changePct >= 0 ? '#22C55E' : '#F43F5E',
-                            fontSize: 20, fontWeight: '900', letterSpacing: -0.5
+                            color: weeklyVolumeStats.changePct >= 0 ? theme.colors.success : theme.colors.error,
+                            fontSize: 20, fontFamily: 'Inter_700Bold', fontWeight: '700', letterSpacing: -0.5
                         }}>
                             {weeklyVolumeStats.changePct >= 0 ? '+' : ''}{weeklyVolumeStats.changePct}
-                            <Text style={{ fontSize: 11, fontWeight: '700' }}>%</Text>
+                            <Text style={{ fontSize: 11, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>%</Text>
                         </Text>
-                        <Text style={{ color: theme.colors.textSecondary, fontSize: 9, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 0.5, marginTop: 3 }}>
+                        <Text style={{ color: theme.colors.textSecondary, fontSize: 9, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5, marginTop: 3 }}>
                             vs Sem. Ant.
                         </Text>
                     </View>
@@ -839,19 +839,19 @@ export function ProgressOverviewView({
                     {/* Melhor Semana */}
                     <View style={{
                         flex: 1, backgroundColor: theme.colors.card, borderRadius: 18,
-                        padding: 14, borderWidth: 1.5, borderColor: '#F59E0B30',
+                        padding: 14, borderWidth: 1.5, borderColor: theme.colors.warning + '30',
                     }}>
                         <View style={{
-                            backgroundColor: '#F59E0B20', width: 32, height: 32,
+                            backgroundColor: theme.colors.warning + '20', width: 32, height: 32,
                             borderRadius: 10, alignItems: 'center', justifyContent: 'center', marginBottom: 8,
                         }}>
-                            <Ionicons name="trophy" size={16} color="#F59E0B" />
+                            <Ionicons name="trophy" size={16} color={theme.colors.warning} />
                         </View>
-                        <Text style={{ color: theme.colors.text, fontSize: 20, fontWeight: '900', letterSpacing: -0.5 }}>
+                        <Text style={{ color: theme.colors.text, fontSize: 20, fontFamily: 'Inter_700Bold', fontWeight: '700', letterSpacing: -0.5 }}>
                             {Math.max(...weeklyVolumeData.map(w => w.volume))}
-                            <Text style={{ fontSize: 11, color: theme.colors.textSecondary, fontWeight: '700' }}>t</Text>
+                            <Text style={{ fontSize: 11, color: theme.colors.textSecondary, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>t</Text>
                         </Text>
-                        <Text style={{ color: theme.colors.textSecondary, fontSize: 9, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 0.5, marginTop: 3 }}>
+                        <Text style={{ color: theme.colors.textSecondary, fontSize: 9, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5, marginTop: 3 }}>
                             Recorde
                         </Text>
                     </View>
@@ -875,7 +875,7 @@ export function ProgressOverviewView({
                                     backgroundColor: theme.colors.backgroundTertiary,
                                     paddingHorizontal: 5, paddingVertical: 2, borderRadius: 5,
                                 }}>
-                                    <Text style={{ color: theme.colors.textSecondary, fontSize: 7, fontWeight: '900', textTransform: 'uppercase' }}>
+                                    <Text style={{ color: theme.colors.textSecondary, fontSize: 7, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase' }}>
                                         MÉD
                                     </Text>
                                 </View>
@@ -903,9 +903,9 @@ export function ProgressOverviewView({
                                         <Text style={{
                                             color: week.isCurrent
                                                 ? theme.colors.primary
-                                                : isBest ? '#F59E0B' : theme.colors.textMuted,
+                                                : isBest ? theme.colors.warning : theme.colors.textMuted,
                                             fontSize: 7,
-                                            fontWeight: '900',
+                                            fontFamily: 'Inter_700Bold', fontWeight: '700',
                                             marginBottom: 4,
                                         }}>
                                             {week.volume > 0 ? `${week.volume}t` : ''}
@@ -925,7 +925,7 @@ export function ProgressOverviewView({
                                         <Text style={{
                                             color: week.isCurrent ? theme.colors.primary : theme.colors.textMuted,
                                             fontSize: week.isCurrent ? 8 : 7,
-                                            fontWeight: week.isCurrent ? '900' : '700',
+                                            fontWeight: week.isCurrent ? '700' : '700',
                                             textAlign: 'center',
                                         }}>
                                             {week.label}
@@ -944,15 +944,15 @@ export function ProgressOverviewView({
                     }}>
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                             <View style={{ width: 10, height: 10, borderRadius: 3, backgroundColor: theme.colors.primary }} />
-                            <Text style={{ color: theme.colors.textSecondary, fontSize: 9, fontWeight: '700' }}>Semana atual</Text>
+                            <Text style={{ color: theme.colors.textSecondary, fontSize: 9, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>Semana atual</Text>
                         </View>
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                            <View style={{ width: 10, height: 10, borderRadius: 3, backgroundColor: '#F59E0B' }} />
-                            <Text style={{ color: theme.colors.textSecondary, fontSize: 9, fontWeight: '700' }}>Melhor semana</Text>
+                            <View style={{ width: 10, height: 10, borderRadius: 3, backgroundColor: theme.colors.warning }} />
+                            <Text style={{ color: theme.colors.textSecondary, fontSize: 9, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>Melhor semana</Text>
                         </View>
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                             <View style={{ width: 18, height: 1, backgroundColor: theme.colors.textSecondary + '50' }} />
-                            <Text style={{ color: theme.colors.textSecondary, fontSize: 9, fontWeight: '700' }}>Média</Text>
+                            <Text style={{ color: theme.colors.textSecondary, fontSize: 9, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>Média</Text>
                         </View>
                     </View>
                 </View>
@@ -962,15 +962,15 @@ export function ProgressOverviewView({
             <View className="px-6 mb-8">
                 <View className="flex-row items-center justify-between mb-4">
                     <View style={{ flex: 1, marginRight: 12 }}>
-                        <Text style={{ color: theme.colors.textSecondary }} className="text-[9px] font-black uppercase tracking-widest">Progressão</Text>
-                        <Text style={{ color: theme.colors.text }} className="text-lg font-black italic uppercase tracking-tighter">Evolução de Cargas</Text>
+                        <Text style={{ color: theme.colors.textSecondary }} className="text-[9px] font-bold uppercase tracking-widest">Progressão</Text>
+                        <Text style={{ color: theme.colors.text }} className="text-lg font-bold italic uppercase tracking-tighter">Evolução de Cargas</Text>
                     </View>
                     {loadEvolution.length > 3 && (
                         <TouchableOpacity
                             onPress={() => setShowAllEvolution(!showAllEvolution)}
                             style={{ backgroundColor: theme.colors.card, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 12, borderWidth: 1, borderColor: theme.colors.cardBorder }}
                         >
-                            <Text style={{ color: theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.primary }} className="text-[10px] font-black uppercase tracking-widest">
+                            <Text style={{ color: theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.primary }} className="text-[10px] font-bold uppercase tracking-widest">
                                 {showAllEvolution ? 'Recolher' : 'Ver Tudo'}
                             </Text>
                         </TouchableOpacity>
@@ -1005,18 +1005,18 @@ export function ProgressOverviewView({
                                     <Ionicons name="barbell" size={20} color={theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.primary} />
                                 </View>
                                 <View style={{ flex: 1 }}>
-                                    <Text style={{ color: theme.colors.text, fontSize: 14, fontWeight: '800' }} numberOfLines={1}>{ex!.name}</Text>
+                                    <Text style={{ color: theme.colors.text, fontSize: 14, fontFamily: 'Inter_700Bold', fontWeight: '700' }} numberOfLines={1}>{ex!.name}</Text>
                                     <View className="flex-row items-center mt-0.5">
-                                        <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontWeight: '700' }}>Recorde: </Text>
-                                        <Text style={{ color: theme.colors.text, fontSize: 11, fontWeight: '900' }}>{ex!.latest}kg</Text>
+                                        <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>Recorde: </Text>
+                                        <Text style={{ color: theme.colors.text, fontSize: 11, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>{ex!.latest}kg</Text>
                                     </View>
                                 </View>
                             </View>
                             <View className="items-end">
                                 <View
                                     style={{
-                                        backgroundColor: ex!.isUp ? '#22C55E15' : theme.colors.backgroundTertiary,
-                                        borderColor: ex!.isUp ? '#22C55E40' : theme.colors.cardBorder,
+                                        backgroundColor: ex!.isUp ? theme.colors.success + '15' : theme.colors.backgroundTertiary,
+                                        borderColor: ex!.isUp ? theme.colors.success + '40' : theme.colors.cardBorder,
                                         borderWidth: 1,
                                         flexDirection: 'row',
                                         alignItems: 'center',
@@ -1025,16 +1025,16 @@ export function ProgressOverviewView({
                                         borderRadius: 12,
                                     }}
                                 >
-                                    <Text style={{ color: theme.colors.textSecondary, fontSize: 11, fontWeight: '600' }}>{ex!.previous}kg</Text>
+                                    <Text style={{ color: theme.colors.textSecondary, fontSize: 11, fontFamily: 'Inter_600SemiBold', fontWeight: '600' }}>{ex!.previous}kg</Text>
                                     <Ionicons name="arrow-forward" size={10} color={theme.colors.textMuted} style={{ marginHorizontal: 5 }} />
-                                    <Text style={{ color: ex!.isUp ? '#22C55E' : theme.colors.text, fontSize: 14, fontWeight: '900' }}>
+                                    <Text style={{ color: ex!.isUp ? theme.colors.success : theme.colors.text, fontSize: 14, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>
                                         {ex!.latest}kg
                                     </Text>
                                 </View>
                                 {ex!.isUp && (
                                     <View style={{ marginTop: 4, flexDirection: 'row', alignItems: 'center' }}>
-                                        <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#22C55E', marginRight: 6 }} />
-                                        <Text style={{ color: '#22C55E', fontSize: 9, fontWeight: '900', textTransform: 'uppercase', letterSpacing: 1 }}>+{ex!.diff}kg</Text>
+                                        <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: theme.colors.success, marginRight: 6 }} />
+                                        <Text style={{ color: theme.colors.success, fontSize: 9, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1 }}>+{ex!.diff}kg</Text>
                                     </View>
                                 )}
                             </View>
@@ -1043,7 +1043,7 @@ export function ProgressOverviewView({
                     {loadEvolution.length === 0 && (
                         <View style={{ backgroundColor: theme.colors.card + '50', borderRadius: 20, padding: 32, alignItems: 'center', borderStyle: 'dashed', borderWidth: 1.5, borderColor: theme.colors.cardBorder }}>
                             <Ionicons name="flash-off" size={28} color={theme.colors.textMuted} />
-                            <Text style={{ color: theme.colors.textMuted, textAlign: 'center', marginTop: 12, fontSize: 11, fontWeight: '700', fontStyle: 'italic' }}>
+                            <Text style={{ color: theme.colors.textMuted, textAlign: 'center', marginTop: 12, fontSize: 11, fontFamily: 'Inter_700Bold', fontWeight: '700', fontStyle: 'italic' }}>
                                 Continue treinando para gerar dados de evolução
                             </Text>
                         </View>
@@ -1053,8 +1053,8 @@ export function ProgressOverviewView({
 
             {/* ─── Achievements / Conquistas ─── */}
             <Animated.View entering={FadeInDown.delay(900).springify()} className="px-6 mb-8">
-                <Text style={{ color: theme.colors.textSecondary }} className="text-[9px] font-black uppercase tracking-widest mb-1">Motivação</Text>
-                <Text style={{ color: theme.colors.text, paddingRight: 6 }} className="text-lg font-black italic uppercase tracking-tighter mb-4">Conquistas</Text>
+                <Text style={{ color: theme.colors.textSecondary }} className="text-[9px] font-bold uppercase tracking-widest mb-1">Motivação</Text>
+                <Text style={{ color: theme.colors.text, paddingRight: 6 }} className="text-lg font-bold italic uppercase tracking-tighter mb-4">Conquistas</Text>
 
                 <View style={{ flexDirection: 'row', gap: 10 }}>
                     {achievements.map((ach, idx) => (
@@ -1088,8 +1088,8 @@ export function ProgressOverviewView({
                             }}>
                                 <Ionicons name={ach.icon as any} size={20} color={ach.color} />
                             </View>
-                            <Text style={{ color: theme.colors.text, fontSize: 18, fontWeight: '900', marginBottom: 2 }}>{ach.value}</Text>
-                            <Text style={{ color: theme.colors.textSecondary, fontSize: 8, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 0.5, textAlign: 'center' }}>{ach.title}</Text>
+                            <Text style={{ color: theme.colors.text, fontSize: 18, fontFamily: 'Inter_700Bold', fontWeight: '700', marginBottom: 2 }}>{ach.value}</Text>
+                            <Text style={{ color: theme.colors.textSecondary, fontSize: 8, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5, textAlign: 'center' }}>{ach.title}</Text>
                         </View>
                     ))}
                 </View>
@@ -1102,8 +1102,8 @@ export function ProgressOverviewView({
                     className="rounded-[22px] p-6 overflow-hidden items-center"
                 >
                     <View className="w-full mb-6">
-                        <Text style={{ color: theme.colors.textSecondary }} className="text-[9px] font-black uppercase tracking-widest mb-1">Análise</Text>
-                        <Text style={{ color: theme.colors.text, paddingRight: 6 }} className="text-lg font-black italic uppercase tracking-tighter">Equilíbrio Muscular</Text>
+                        <Text style={{ color: theme.colors.textSecondary }} className="text-[9px] font-bold uppercase tracking-widest mb-1">Análise</Text>
+                        <Text style={{ color: theme.colors.text, paddingRight: 6 }} className="text-lg font-bold italic uppercase tracking-tighter">Equilíbrio Muscular</Text>
                     </View>
                     <MuscleFocusRadar />
                 </View>
@@ -1118,22 +1118,22 @@ export function ProgressOverviewView({
                 >
                     <View style={{ padding: 20, flex: 1, justifyContent: 'space-between' }}>
                         <LinearGradient
-                            colors={['#F59E0B10', 'transparent']}
+                            colors={[theme.colors.warning + '10', 'transparent']}
                             start={{ x: 0, y: 0 }}
                             end={{ x: 1, y: 1 }}
                             style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
                         />
                         <View>
-                            <View style={{ backgroundColor: '#F59E0B20', width: 38, height: 38, borderRadius: 12, alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
-                                <Ionicons name="flame" size={20} color="#F59E0B" />
+                            <View style={{ backgroundColor: theme.colors.warning + '20', width: 38, height: 38, borderRadius: 12, alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+                                <Ionicons name="flame" size={20} color={theme.colors.warning} />
                             </View>
-                            <Text style={{ color: theme.colors.textSecondary, fontSize: 9, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 1 }}>Consistência</Text>
-                            <Text style={{ color: theme.colors.text, fontSize: 28, fontWeight: '900', letterSpacing: -1, marginTop: 2 }}>
+                            <Text style={{ color: theme.colors.textSecondary, fontSize: 9, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1 }}>Consistência</Text>
+                            <Text style={{ color: theme.colors.text, fontSize: 28, fontFamily: 'Inter_700Bold', fontWeight: '700', letterSpacing: -1, marginTop: 2 }}>
                                 {consistency.currentMonthCount}<Text style={{ fontSize: 14, color: theme.colors.textSecondary }}>/30</Text>
                             </Text>
                         </View>
                         <View style={{ backgroundColor: theme.colors.backgroundTertiary, height: 5, borderRadius: 3, overflow: 'hidden' }}>
-                            <View style={{ backgroundColor: '#F59E0B', width: `${consistency.percentage}%`, height: '100%', borderRadius: 3 }} />
+                            <View style={{ backgroundColor: theme.colors.warning, width: `${consistency.percentage}%`, height: '100%', borderRadius: 3 }} />
                         </View>
                     </View>
                 </Animated.View>
@@ -1149,31 +1149,31 @@ export function ProgressOverviewView({
                         style={{ padding: 20, flex: 1, justifyContent: 'space-between' }}
                     >
                         <LinearGradient
-                            colors={['#10B98110', 'transparent']}
+                            colors={[theme.colors.success + '10', 'transparent']}
                             start={{ x: 0, y: 0 }}
                             end={{ x: 1, y: 1 }}
                             style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
                         />
                         <View>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                                <View style={{ backgroundColor: '#10B98120', width: 38, height: 38, borderRadius: 12, alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
-                                    <Ionicons name="scale" size={20} color="#10B981" />
+                                <View style={{ backgroundColor: theme.colors.success + '20', width: 38, height: 38, borderRadius: 12, alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+                                    <Ionicons name="scale" size={20} color={theme.colors.success} />
                                 </View>
                                 {weightTrend && (
-                                    <View style={{ backgroundColor: weightTrend.isDown ? '#22C55E15' : '#F43F5E15', paddingHorizontal: 7, paddingVertical: 3, borderRadius: 8, borderWidth: 1, borderColor: weightTrend.isDown ? '#22C55E30' : '#F43F5E30' }}>
-                                        <Text style={{ color: weightTrend.isDown ? '#22C55E' : '#F43F5E', fontSize: 9, fontWeight: '900' }}>
+                                    <View style={{ backgroundColor: weightTrend.isDown ? theme.colors.success + '15' : theme.colors.error + '15', paddingHorizontal: 7, paddingVertical: 3, borderRadius: 8, borderWidth: 1, borderColor: weightTrend.isDown ? theme.colors.success + '30' : theme.colors.error + '30' }}>
+                                        <Text style={{ color: weightTrend.isDown ? theme.colors.success : theme.colors.error, fontSize: 9, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>
                                             {weightTrend.isDown ? '-' : '+'}{weightTrend.diff}
                                         </Text>
                                     </View>
                                 )}
                             </View>
-                            <Text style={{ color: theme.colors.textSecondary, fontSize: 9, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 1 }}>Peso Atual</Text>
-                            <Text style={{ color: theme.colors.text, fontSize: 28, fontWeight: '900', letterSpacing: -1, marginTop: 2 }}>
+                            <Text style={{ color: theme.colors.textSecondary, fontSize: 9, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1 }}>Peso Atual</Text>
+                            <Text style={{ color: theme.colors.text, fontSize: 28, fontFamily: 'Inter_700Bold', fontWeight: '700', letterSpacing: -1, marginTop: 2 }}>
                                 {profile?.weight || '--'}<Text style={{ fontSize: 14, color: theme.colors.textSecondary }}>kg</Text>
                             </Text>
                         </View>
                         <View style={{ flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-end' }}>
-                            <Text style={{ color: theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.primary, fontSize: 9, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 1, marginRight: 4 }}>Atualizar</Text>
+                            <Text style={{ color: theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.primary, fontSize: 9, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1, marginRight: 4 }}>Atualizar</Text>
                             <Ionicons name="chevron-forward" size={10} color={theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.primary} />
                         </View>
                     </TouchableOpacity>

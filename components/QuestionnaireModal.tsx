@@ -92,7 +92,7 @@ export function QuestionnaireModal({
                         paddingVertical: 12,
                         color: theme.colors.text,
                         fontSize: 16,
-                        fontWeight: '600',
+                        fontFamily: 'Inter_600SemiBold', fontWeight: '600',
                     }}
                 />
             );
@@ -111,7 +111,7 @@ export function QuestionnaireModal({
                                     activeOpacity={0.75}
                                     style={{ ...optionStyle(selected), flex: 1, height: 48, borderRadius: 12, alignItems: 'center', justifyContent: 'center' }}
                                 >
-                                    <Text style={{ color: selected ? theme.colors.primaryDark : theme.colors.textSecondary, fontSize: 16, fontWeight: '800' }}>{item}</Text>
+                                    <Text style={{ color: selected ? theme.colors.primaryDark : theme.colors.textSecondary, fontSize: 16, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>{item}</Text>
                                 </TouchableOpacity>
                             );
                         })}
@@ -140,7 +140,7 @@ export function QuestionnaireModal({
                             style={{ ...optionStyle(selected), minHeight: 46, borderRadius: 12, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center' }}
                         >
                             {selected && <Ionicons name="checkmark-circle" size={17} color={theme.colors.primaryDark} style={{ marginRight: 6 }} />}
-                            <Text style={{ color: selected ? theme.colors.primaryDark : theme.colors.textSecondary, fontSize: 14, fontWeight: selected ? '800' : '600' }}>
+                            <Text style={{ color: selected ? theme.colors.primaryDark : theme.colors.textSecondary, fontSize: 14, fontWeight: selected ? '700' : '600' }}>
                                 {option.label}
                             </Text>
                         </TouchableOpacity>
@@ -165,7 +165,7 @@ export function QuestionnaireModal({
                             <Ionicons name="close" size={22} color={theme.colors.text} />
                         </TouchableOpacity>
                         <View style={{ flex: 1, marginLeft: 14 }}>
-                            <Text style={{ color: theme.colors.text, fontSize: 20, fontWeight: '800' }} numberOfLines={1}>{title}</Text>
+                            <Text style={{ color: theme.colors.text, fontSize: 20, fontFamily: 'Inter_700Bold', fontWeight: '700' }} numberOfLines={1}>{title}</Text>
                             <Text style={{ color: theme.colors.textSecondary, fontSize: 12, marginTop: 2 }}>{answeredCount} de {questions.length} respondidas</Text>
                         </View>
                     </View>
@@ -188,10 +188,10 @@ export function QuestionnaireModal({
                         >
                             <View style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 12 }}>
                                 <View style={{ width: 28, height: 28, borderRadius: 9, backgroundColor: theme.colors.primary + '20', alignItems: 'center', justifyContent: 'center', marginRight: 10 }}>
-                                    <Text style={{ color: theme.colors.primaryDark, fontSize: 12, fontWeight: '800' }}>{index + 1}</Text>
+                                    <Text style={{ color: theme.colors.primaryDark, fontSize: 12, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>{index + 1}</Text>
                                 </View>
                                 <View style={{ flex: 1 }}>
-                                    <Text style={{ color: theme.colors.text, fontSize: 16, fontWeight: '700', lineHeight: 22 }}>{question.text}</Text>
+                                    <Text style={{ color: theme.colors.text, fontSize: 16, fontFamily: 'Inter_700Bold', fontWeight: '700', lineHeight: 22 }}>{question.text}</Text>
                                     {question.subtitle && <Text style={{ color: theme.colors.textMuted, fontSize: 12, lineHeight: 17, marginTop: 3 }}>{question.subtitle}</Text>}
                                 </View>
                             </View>
@@ -207,8 +207,8 @@ export function QuestionnaireModal({
                         activeOpacity={0.8}
                         style={{ height: 54, borderRadius: 16, backgroundColor: canComplete ? theme.colors.primary : theme.colors.backgroundTertiary, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', opacity: canComplete ? 1 : 0.7 }}
                     >
-                        <Text style={{ color: canComplete ? '#052E16' : theme.colors.textMuted, fontSize: 15, fontWeight: '800' }}>Concluir acompanhamento</Text>
-                        <Ionicons name="checkmark" size={20} color={canComplete ? '#052E16' : theme.colors.textMuted} style={{ marginLeft: 8 }} />
+                        <Text style={{ color: canComplete ? theme.colors.successMuted : theme.colors.textMuted, fontSize: 15, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>Concluir acompanhamento</Text>
+                        <Ionicons name="checkmark" size={20} color={canComplete ? theme.colors.successMuted : theme.colors.textMuted} style={{ marginLeft: 8 }} />
                     </TouchableOpacity>
                 </View>
             </KeyboardAvoidingView>

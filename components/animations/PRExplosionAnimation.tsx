@@ -127,8 +127,8 @@ export const PRExplosionAnimation = ({ visible, onComplete }: PRExplosionAnimati
                 ))}
 
                 <Animated.View style={[styles.messageContainer, titleStyle]}>
-                    <Ionicons name="trophy" size={56} color="#F59E0B" style={{ textShadowColor: 'rgba(0,0,0,0.3)', textShadowOffset: { width: 0, height: 4 }, textShadowRadius: 8 }} />
-                    <Text style={[styles.title, { color: '#F59E0B', textShadowColor: 'rgba(0,0,0,0.3)', textShadowOffset: { width: 0, height: 2 }, textShadowRadius: 4 }]}>NOVO RECORDE!</Text>
+                    <Ionicons name="trophy" size={56} color={theme.colors.warning} style={{ textShadowColor: 'rgba(0,0,0,0.3)', textShadowOffset: { width: 0, height: 4 }, textShadowRadius: 8 }} />
+                    <Text style={[styles.title, { color: theme.colors.warning, textShadowColor: 'rgba(0,0,0,0.3)', textShadowOffset: { width: 0, height: 2 }, textShadowRadius: 4 }]}>NOVO RECORDE!</Text>
                 </Animated.View>
             </View>
         </Animated.View>
@@ -164,14 +164,14 @@ const styles = StyleSheet.create({
         borderRadius: 24,
         alignItems: 'center',
         shadowOffset: { width: 0, height: 10 },
-        shadowOpacity: 0.5,
-        shadowRadius: 20,
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
         elevation: 10,
     },
     title: {
         color: '#000',
         fontSize: 24,
-        fontWeight: '900',
+        fontFamily: 'Inter_700Bold', fontWeight: '700',
         marginTop: 8,
         textAlign: 'center',
         textTransform: 'uppercase',
@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
     subtitle: {
         color: 'rgba(0,0,0,0.7)',
         fontSize: 14,
-        fontWeight: '800',
+        fontFamily: 'Inter_700Bold', fontWeight: '700',
         marginTop: 2,
         textAlign: 'center',
     },

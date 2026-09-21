@@ -96,7 +96,7 @@ export default function ActivitiesScreen() {
                             <Ionicons name="chevron-back" size={22} color={theme.colors.text} />
                         </TouchableOpacity>
                         <View className="ml-4">
-                            <Text style={{ color: theme.colors.text, fontFamily: 'Sora_800ExtraBold', fontSize: 20, letterSpacing: -0.4 }}>
+                            <Text style={{ color: theme.colors.text, fontFamily: "Inter_700Bold", fontSize: 20, letterSpacing: -0.4 }}>
                                 ATIVIDADES
                             </Text>
                             <Text style={{ color: theme.colors.textMuted, fontFamily: 'Inter_500Medium', fontSize: 11 }}>

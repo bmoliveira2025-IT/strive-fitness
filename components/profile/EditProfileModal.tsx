@@ -1,3 +1,4 @@
+import Palette from '../../constants/palette.json';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
@@ -21,9 +22,9 @@ interface EditProfileModalProps {
 }
 
 const objectives: { value: TrainingObjective; label: string; icon: keyof typeof Ionicons.glyphMap; color: string }[] = [
-    { value: 'hipertrofia', label: 'Hipertrofia', icon: 'fitness', color: '#4F8FF7' },
-    { value: 'força', label: 'Força', icon: 'barbell', color: '#EF4444' },
-    { value: 'cutting', label: 'Definição', icon: 'flame', color: '#22C55E' },
+    { value: 'hipertrofia', label: 'Hipertrofia', icon: 'fitness', color: Palette.dark.info },
+    { value: 'força', label: 'Força', icon: 'barbell', color: Palette.dark.error },
+    { value: 'cutting', label: 'Definição', icon: 'flame', color: Palette.dark.success },
 ];
 
 export function EditProfileModal({
@@ -96,7 +97,7 @@ export function EditProfileModal({
                     {/* Header */}
                     <View style={{ paddingHorizontal: 20, paddingBottom: 14, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderBottomWidth: 1, borderBottomColor: theme.colors.cardBorder }}>
                         <View>
-                            <Text style={{ color: theme.colors.text, fontSize: 22, fontWeight: '800', letterSpacing: -0.4 }}>Editar perfil</Text>
+                            <Text style={{ color: theme.colors.text, fontSize: 22, fontFamily: 'Inter_700Bold', fontWeight: '700', letterSpacing: -0.4 }}>Editar perfil</Text>
                             <Text style={{ color: theme.colors.textSecondary, fontSize: 12, marginTop: 2 }}>Atualize seus dados pessoais</Text>
                         </View>
                         <TouchableOpacity
@@ -122,7 +123,7 @@ export function EditProfileModal({
                                     style={{ borderColor: theme.colors.primary, borderRadius: 20, width: 88, height: 88 }}
                                     className="overflow-hidden border-2 p-1"
                                 >
-                                    <View className="w-full h-full rounded-2xl bg-zinc-800 overflow-hidden items-center justify-center">
+                                    <View className="w-full h-full rounded-2xl bg-backgroundTertiary overflow-hidden items-center justify-center">
                                         {activePhotoUri ? (
                                             <Image
                                                 source={{ uri: activePhotoUri }}
@@ -143,7 +144,7 @@ export function EditProfileModal({
 
                         {/* Name Input */}
                         <View className="mb-6">
-                            <Text style={{ color: theme.colors.textSecondary, fontSize: 12, fontWeight: '700', marginBottom: 7 }}>Nome</Text>
+                            <Text style={{ color: theme.colors.textSecondary, fontSize: 12, fontFamily: 'Inter_700Bold', fontWeight: '700', marginBottom: 7 }}>Nome</Text>
                             <View style={{ backgroundColor: theme.colors.card, borderColor: theme.colors.cardBorder, minHeight: 52 }} className="rounded-2xl px-4 flex-row items-center border">
                                 <Ionicons name="person-outline" size={18} color={theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.primary} />
                                 <TextInput
@@ -159,7 +160,7 @@ export function EditProfileModal({
 
                         {/* Bio Input */}
                         <View className="mb-6">
-                            <Text style={{ color: theme.colors.textSecondary, fontSize: 12, fontWeight: '700', marginBottom: 7 }}>Biografia</Text>
+                            <Text style={{ color: theme.colors.textSecondary, fontSize: 12, fontFamily: 'Inter_700Bold', fontWeight: '700', marginBottom: 7 }}>Biografia</Text>
                             <View style={{ backgroundColor: theme.colors.card, borderColor: theme.colors.cardBorder }} className="rounded-2xl p-4 flex-row items-start border">
                                 <Ionicons name="information-circle-outline" size={18} color={theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.primary} style={{ marginTop: 2 }} />
                                 <TextInput
@@ -180,7 +181,7 @@ export function EditProfileModal({
                         {/* Stats Inputs Row */}
                         <View className="flex-row gap-4 mb-8">
                             <View className="flex-1">
-                                <Text style={{ color: theme.colors.textSecondary, fontSize: 12, fontWeight: '700', marginBottom: 7 }}>Peso (kg)</Text>
+                                <Text style={{ color: theme.colors.textSecondary, fontSize: 12, fontFamily: 'Inter_700Bold', fontWeight: '700', marginBottom: 7 }}>Peso (kg)</Text>
                                 <View style={{ backgroundColor: theme.colors.card, borderColor: theme.colors.cardBorder, minHeight: 52 }} className="rounded-2xl px-4 flex-row items-center border">
                                     <TextInput
                                         value={weight}
@@ -189,12 +190,12 @@ export function EditProfileModal({
                                         placeholderTextColor={theme.colors.textMuted}
                                         keyboardType="decimal-pad"
                                         style={{ color: theme.colors.text }}
-                                        className="flex-1 text-sm font-black text-center"
+                                        className="flex-1 text-sm font-bold text-center"
                                     />
                                 </View>
                             </View>
                             <View className="flex-1">
-                                <Text style={{ color: theme.colors.textSecondary, fontSize: 12, fontWeight: '700', marginBottom: 7 }}>Altura (cm)</Text>
+                                <Text style={{ color: theme.colors.textSecondary, fontSize: 12, fontFamily: 'Inter_700Bold', fontWeight: '700', marginBottom: 7 }}>Altura (cm)</Text>
                                 <View style={{ backgroundColor: theme.colors.card, borderColor: theme.colors.cardBorder, minHeight: 52 }} className="rounded-2xl px-4 flex-row items-center border">
                                     <TextInput
                                         value={height}
@@ -203,7 +204,7 @@ export function EditProfileModal({
                                         placeholderTextColor={theme.colors.textMuted}
                                         keyboardType="decimal-pad"
                                         style={{ color: theme.colors.text }}
-                                        className="flex-1 text-sm font-black text-center"
+                                        className="flex-1 text-sm font-bold text-center"
                                     />
                                 </View>
                             </View>
@@ -211,7 +212,7 @@ export function EditProfileModal({
 
                         {/* Objective Selector */}
                         <View className="mb-6">
-                            <Text style={{ color: theme.colors.textSecondary, fontSize: 12, fontWeight: '700', marginBottom: 10 }}>Objetivo do treino</Text>
+                            <Text style={{ color: theme.colors.textSecondary, fontSize: 12, fontFamily: 'Inter_700Bold', fontWeight: '700', marginBottom: 10 }}>Objetivo do treino</Text>
                             <View className="flex-row gap-2">
                                 {objectives.map((obj) => (
                                     <TouchableOpacity
@@ -260,7 +261,7 @@ export function EditProfileModal({
                                 height: '100%',
                             }}
                         >
-                            <Text style={{ color: '#FFFFFF' }} className="text-center font-bold text-sm">Salvar alterações</Text>
+                            <Text style={{ color: theme.colors.onPrimary }} className="text-center font-bold text-sm">Salvar alterações</Text>
                         </GradientButton>
                     </View>
                 </View>

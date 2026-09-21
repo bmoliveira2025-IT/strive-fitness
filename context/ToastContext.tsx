@@ -1,3 +1,4 @@
+import Palette from '../constants/palette.json';
 import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Dimensions, Platform } from 'react-native';
 import Animated, { FadeInUp, FadeOutUp, LinearTransition } from 'react-native-reanimated';
@@ -107,63 +108,62 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
     }, [show]);
 
     const getToastStyle = (type: ToastType) => {
-        const isDark = theme.mode === 'dark';
         switch (type) {
             case 'success':
                 return {
-                    bg: isDark ? '#0C281E' : '#ECFDF5',
-                    border: isDark ? '#10B98150' : '#A7F3D0',
+                    bg: theme.colors.surfaceElevated,
+                    border: theme.colors.success + '35',
                     icon: 'checkmark-circle' as const,
-                    iconColor: '#10B981',
-                    textColor: isDark ? '#D1FAE5' : '#065F46',
+                    iconColor: theme.colors.success,
+                    textColor: theme.colors.text,
                 };
             case 'error':
                 return {
-                    bg: isDark ? '#2C1214' : '#FEF2F2',
-                    border: isDark ? '#EF444450' : '#FECACA',
+                    bg: theme.colors.surfaceElevated,
+                    border: theme.colors.error + '35',
                     icon: 'alert-circle' as const,
-                    iconColor: '#EF4444',
-                    textColor: isDark ? '#FEE2E2' : '#991B1B',
+                    iconColor: theme.colors.error,
+                    textColor: theme.colors.text,
                 };
             case 'warning':
                 return {
-                    bg: isDark ? '#2B1E0C' : '#FFFBEB',
-                    border: isDark ? '#F59E0B50' : '#FDE68A',
+                    bg: theme.colors.surfaceElevated,
+                    border: theme.colors.warning + '35',
                     icon: 'warning' as const,
-                    iconColor: '#F59E0B',
-                    textColor: isDark ? '#FEF3C7' : '#92400E',
+                    iconColor: theme.colors.warning,
+                    textColor: theme.colors.text,
                 };
             case 'pr':
                 return {
-                    bg: isDark ? '#261F0B' : '#FEFCE8',
-                    border: isDark ? '#EAB30880' : '#FDE047',
+                    bg: theme.colors.surfaceElevated,
+                    border: theme.colors.warning + '35',
                     icon: 'trophy' as const,
-                    iconColor: '#EAB308',
-                    textColor: isDark ? '#FEF08A' : '#854D0E',
+                    iconColor: theme.colors.warning,
+                    textColor: theme.colors.text,
                 };
             case 'sync':
                 return {
-                    bg: isDark ? '#111827' : '#F0FDF4',
-                    border: isDark ? '#3B82F650' : '#BFDBFE',
+                    bg: theme.colors.surfaceElevated,
+                    border: theme.colors.info + '35',
                     icon: 'sync' as const,
-                    iconColor: '#3B82F6',
-                    textColor: isDark ? '#DBEAFE' : '#1E40AF',
+                    iconColor: theme.colors.info,
+                    textColor: theme.colors.text,
                 };
             case 'offline':
                 return {
-                    bg: isDark ? '#1E2430' : '#F1F5F9',
-                    border: isDark ? '#64748B50' : '#CBD5E1',
+                    bg: theme.colors.surfaceElevated,
+                    border: theme.colors.textMuted + '35',
                     icon: 'cloud-offline' as const,
-                    iconColor: '#94A3B8',
-                    textColor: isDark ? '#E2E8F0' : '#334155',
+                    iconColor: theme.colors.textMuted,
+                    textColor: theme.colors.text,
                 };
             default: // info
                 return {
-                    bg: isDark ? '#131D2E' : '#EFF6FF',
-                    border: isDark ? '#3B82F650' : '#BFDBFE',
+                    bg: theme.colors.surfaceElevated,
+                    border: theme.colors.info + '35',
                     icon: 'information-circle' as const,
-                    iconColor: '#3B82F6',
-                    textColor: isDark ? '#DBEAFE' : '#1E40AF',
+                    iconColor: theme.colors.info,
+                    textColor: theme.colors.text,
                 };
         }
     };
@@ -260,10 +260,10 @@ const styles = StyleSheet.create({
         borderRadius: 16,
         borderWidth: 1,
         marginBottom: 8,
-        shadowColor: '#000',
+        shadowColor: Palette.ink,
         shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.15,
-        shadowRadius: 10,
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
         elevation: 6,
     },
     toastInner: {
@@ -282,7 +282,7 @@ const styles = StyleSheet.create({
         paddingRight: 8,
     },
     title: {
-        fontFamily: 'Sora_600SemiBold',
+        fontFamily: "Inter_600SemiBold",
         fontSize: 13,
         marginBottom: 2,
     },
@@ -299,7 +299,7 @@ const styles = StyleSheet.create({
         marginLeft: 6,
     },
     actionText: {
-        fontFamily: 'Sora_600SemiBold',
+        fontFamily: "Inter_600SemiBold",
         fontSize: 11,
     },
 });

@@ -1,3 +1,4 @@
+import Palette from '../../constants/palette.json';
 import React, { useMemo, useEffect } from 'react';
 import { Text, View } from 'react-native';
 import Animated, { useAnimatedProps, useSharedValue, withTiming } from 'react-native-reanimated';
@@ -137,32 +138,32 @@ export function CardioSummaryWidget() {
                 padding: 24, 
                 borderWidth: 1, 
                 borderColor: theme.colors.cardBorder,
-                shadowColor: '#000',
+                shadowColor: Palette.ink,
                 shadowOffset: { width: 0, height: 4 },
                 shadowOpacity: theme.mode === 'dark' ? 0 : 0.05,
-                shadowRadius: 12,
+                shadowRadius: 8,
             }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                     <View style={{ flex: 1, paddingRight: 10 }}>
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-                            <Text style={{ color: theme.colors.text, fontSize: 16, fontWeight: '800' }}>Cardio</Text>
+                            <Text style={{ color: theme.colors.text, fontSize: 16, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>Cardio</Text>
                             <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: theme.colors.primary }} />
                         </View>
-                        <Text style={{ color: theme.colors.textSecondary, fontSize: 12, fontWeight: '600', marginBottom: 16 }}>
+                        <Text style={{ color: theme.colors.textSecondary, fontSize: 12, fontFamily: 'Inter_600SemiBold', fontWeight: '600', marginBottom: 16 }}>
                             Tempo de cardio na semana
                         </Text>
                         
                         <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 4 }}>
-                            <Text style={{ color: theme.colors.text, fontSize: 32, fontWeight: '900', letterSpacing: -1 }}>
+                            <Text style={{ color: theme.colors.text, fontSize: 32, fontFamily: 'Inter_700Bold', fontWeight: '700', letterSpacing: -1 }}>
                                 {internalStats.week.time.toFixed(0)}
                             </Text>
-                            <Text style={{ color: theme.colors.textSecondary, fontSize: 16, fontWeight: '700' }}>min</Text>
+                            <Text style={{ color: theme.colors.textSecondary, fontSize: 16, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>min</Text>
                         </View>
                     </View>
                     
                     <View style={{ alignItems: 'center' }}>
                         <SemiCircle progress={progressValue} color={theme.colors.primary} trackColor={trackColor} />
-                        <Text style={{ color: theme.colors.textMuted, fontSize: 11, fontWeight: '800', marginTop: 4 }}>
+                        <Text style={{ color: theme.colors.textMuted, fontSize: 11, fontFamily: 'Inter_700Bold', fontWeight: '700', marginTop: 4 }}>
                             {Math.min(Math.round(progressValue * 100), 100)}% da Meta
                         </Text>
                     </View>

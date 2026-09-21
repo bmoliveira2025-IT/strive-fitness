@@ -1,3 +1,4 @@
+import Palette from '../../constants/palette.json';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
@@ -29,7 +30,7 @@ export function AIInsights() {
             subtitle: totalWorkouts < 3
                 ? 'Adicione mais treinos para análises'
                 : 'Varie grupos musculares',
-            color: '#F59E0B',
+            color: theme.colors.warning,
         },
     ];
 
@@ -41,10 +42,10 @@ export function AIInsights() {
                     backgroundColor: '#000',
                     borderRadius: 30,
                     overflow: 'hidden',
-                    shadowColor: "#000",
+                    shadowColor: Palette.ink,
                     shadowOffset: { width: 0, height: 10 },
-                    shadowOpacity: 0.3,
-                    shadowRadius: 20,
+                    shadowOpacity: 0.1,
+                    shadowRadius: 8,
                     elevation: 5,
                 }}
             >
@@ -59,7 +60,7 @@ export function AIInsights() {
                     />
 
                     <View className="p-5">
-                        <Text style={{ color: '#FFF', textShadowColor: 'rgba(0,0,0,0.8)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 4 }} className="text-sm font-black italic uppercase tracking-tighter mb-4">Inteligência Artificial</Text>
+                        <Text style={{ color: theme.colors.onImage, textShadowColor: 'rgba(0,0,0,0.8)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 4 }} className="text-sm font-bold italic uppercase tracking-tighter mb-4">Inteligência Artificial</Text>
 
                         <View className="flex-row gap-3">
                             {insights.map((insight, index) => (
@@ -76,11 +77,11 @@ export function AIInsights() {
                                         >
                                             <Ionicons name={insight.icon as any} size={16} color={insight.color} />
                                         </View>
-                                        <Text style={{ color: '#FFF', textShadowColor: 'rgba(0,0,0,0.5)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 2 }} className="text-[11px] font-black uppercase tracking-tighter flex-1" numberOfLines={1}>
+                                        <Text style={{ color: theme.colors.onImage, textShadowColor: 'rgba(0,0,0,0.5)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 2 }} className="text-[11px] font-bold uppercase tracking-tighter flex-1" numberOfLines={1}>
                                             {insight.title}
                                         </Text>
                                     </View>
-                                    <Text style={{ color: 'rgba(255,255,255,0.7)', fontSize: 9, fontWeight: '700' }} numberOfLines={2}>
+                                    <Text style={{ color: 'rgba(255,255,255,0.7)', fontSize: 9, fontFamily: 'Inter_700Bold', fontWeight: '700' }} numberOfLines={2}>
                                         {insight.subtitle}
                                     </Text>
                                 </TouchableOpacity>

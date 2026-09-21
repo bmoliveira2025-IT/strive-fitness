@@ -1,3 +1,4 @@
+import Palette from '../constants/palette.json';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, usePathname, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -123,26 +124,26 @@ export function WorkoutPreviewModal({
                                 paddingHorizontal: 14,
                                 paddingVertical: 8,
                                 borderRadius: 14,
-                                backgroundColor: theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.08)' : '#F1F5F9',
+                                backgroundColor: theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.08)' : theme.colors.backgroundSecondary,
                                 borderWidth: 1,
                                 borderColor: theme.colors.border,
                             }}
                         >
                             <Ionicons name="create-outline" size={16} color={theme.colors.primary} />
-                            <Text style={{ color: theme.colors.text, fontSize: 13, fontWeight: '700' }}>
+                            <Text style={{ color: theme.colors.text, fontSize: 13, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>
                                 Editar
                             </Text>
                         </TouchableOpacity>
                     </View>
 
-                    <Text style={{ color: theme.colors.text, fontSize: 24, fontWeight: '800', marginBottom: 8, letterSpacing: -0.5 }}>
+                    <Text style={{ color: theme.colors.text, fontSize: 24, fontFamily: 'Inter_700Bold', fontWeight: '700', marginBottom: 8, letterSpacing: -0.5 }}>
                         {workout.name}
                     </Text>
 
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <Ionicons name="calendar-outline" size={14} color={theme.colors.textMuted} style={{ marginRight: 4 }} />
-                            <Text style={{ color: theme.colors.textMuted, fontSize: 13, fontWeight: '500' }}>
+                            <Text style={{ color: theme.colors.textMuted, fontSize: 13, fontFamily: 'Inter_500Medium', fontWeight: '500' }}>
                                 Criado em {new Date(workout.createdAt).toLocaleDateString('pt-BR', { day: 'numeric', month: 'short' })}
                             </Text>
                         </View>
@@ -150,7 +151,7 @@ export function WorkoutPreviewModal({
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                 <View style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: theme.colors.border, marginRight: 12 }} />
                                 <Ionicons name="time-outline" size={14} color={theme.colors.textMuted} style={{ marginRight: 4 }} />
-                                <Text style={{ color: theme.colors.textMuted, fontSize: 13, fontWeight: '500' }}>
+                                <Text style={{ color: theme.colors.textMuted, fontSize: 13, fontFamily: 'Inter_500Medium', fontWeight: '500' }}>
                                     Última vez: {workout.lastDone === 'Agora' ? 'Hoje' : workout.lastDone}
                                 </Text>
                             </View>
@@ -166,7 +167,7 @@ export function WorkoutPreviewModal({
                     contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 0, paddingBottom: 120 }}
                     showsVerticalScrollIndicator={false}
                 >
-                    <Text style={{ color: theme.colors.text, fontSize: 18, fontWeight: '700', marginBottom: 16 }}>
+                    <Text style={{ color: theme.colors.text, fontSize: 18, fontFamily: 'Inter_700Bold', fontWeight: '700', marginBottom: 16 }}>
                         Exercícios ({workout.exercises.length})
                     </Text>
 
@@ -246,7 +247,7 @@ export function WorkoutPreviewModal({
                                     });
                                 }}
                             >
-                                <Text style={{ color: theme.colors.text, fontSize: 15, fontWeight: '700', marginBottom: 2 }}>
+                                <Text style={{ color: theme.colors.text, fontSize: 15, fontFamily: 'Inter_700Bold', fontWeight: '700', marginBottom: 2 }}>
                                     {exercise.name}
                                 </Text>
                                 <Text style={{ color: theme.colors.textMuted, fontSize: 13 }}>
@@ -265,7 +266,7 @@ export function WorkoutPreviewModal({
                                     width: 36,
                                     height: 36,
                                     borderRadius: 12,
-                                    backgroundColor: theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.05)' : '#F1F5F9',
+                                    backgroundColor: theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.05)' : theme.colors.backgroundSecondary,
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     borderWidth: 1,
@@ -294,8 +295,8 @@ export function WorkoutPreviewModal({
                                 borderRadius: 20,
                                 shadowColor: theme.colors.primary,
                                 shadowOffset: { width: 0, height: 4 },
-                                shadowOpacity: theme.mode === 'light' ? 0.22 : 0.3,
-                                shadowRadius: 12,
+                                shadowOpacity: theme.mode === 'light' ? 0.1 : 0.1,
+                                shadowRadius: 8,
                                 elevation: 6
                             }}
                             gradientStyle={{
@@ -305,7 +306,7 @@ export function WorkoutPreviewModal({
                             activeOpacity={0.8}
                         >
                             <Ionicons name="play" size={20} color={theme.colors.onPrimary} style={{ marginRight: 8 }} />
-                            <Text style={{ color: theme.colors.onPrimary, fontSize: 18, fontWeight: '700' }}>
+                            <Text style={{ color: theme.colors.onPrimary, fontSize: 18, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>
                                 Iniciar Treino
                             </Text>
                         </GradientButton>
@@ -350,13 +351,13 @@ export function WorkoutPreviewModal({
                             maxWidth: 340,
                             borderWidth: 1,
                             borderColor: theme.colors.border,
-                            shadowColor: '#000',
+                            shadowColor: Palette.ink,
                             shadowOffset: { width: 0, height: 10 },
-                            shadowOpacity: 0.3,
-                            shadowRadius: 20,
+                            shadowOpacity: 0.1,
+                            shadowRadius: 8,
                             elevation: 10
                         }}>
-                            <Text style={{ color: theme.colors.text, fontSize: 18, fontWeight: '700', marginBottom: 4 }}>
+                            <Text style={{ color: theme.colors.text, fontSize: 18, fontFamily: 'Inter_700Bold', fontWeight: '700', marginBottom: 4 }}>
                                 Editar Meta do Exercício
                             </Text>
                             <Text style={{ color: theme.colors.textMuted, fontSize: 13, marginBottom: 20 }} numberOfLines={1}>
@@ -365,7 +366,7 @@ export function WorkoutPreviewModal({
 
                             <View style={{ flexDirection: 'row', gap: 12, marginBottom: 24 }}>
                                 <View style={{ flex: 1 }}>
-                                    <Text style={{ color: theme.colors.textSecondary, fontSize: 12, fontWeight: '600', marginBottom: 8 }}>
+                                    <Text style={{ color: theme.colors.textSecondary, fontSize: 12, fontFamily: 'Inter_600SemiBold', fontWeight: '600', marginBottom: 8 }}>
                                         SÉRIES
                                     </Text>
                                     <TextInput
@@ -381,13 +382,13 @@ export function WorkoutPreviewModal({
                                             paddingHorizontal: 16,
                                             color: theme.colors.text,
                                             fontSize: 16,
-                                            fontWeight: '700',
+                                            fontFamily: 'Inter_700Bold', fontWeight: '700',
                                             textAlign: 'center'
                                         }}
                                     />
                                 </View>
                                 <View style={{ flex: 1 }}>
-                                    <Text style={{ color: theme.colors.textSecondary, fontSize: 12, fontWeight: '600', marginBottom: 8 }}>
+                                    <Text style={{ color: theme.colors.textSecondary, fontSize: 12, fontFamily: 'Inter_600SemiBold', fontWeight: '600', marginBottom: 8 }}>
                                         REPETIÇÕES
                                     </Text>
                                     <TextInput
@@ -403,7 +404,7 @@ export function WorkoutPreviewModal({
                                             paddingHorizontal: 16,
                                             color: theme.colors.text,
                                             fontSize: 16,
-                                            fontWeight: '700',
+                                            fontFamily: 'Inter_700Bold', fontWeight: '700',
                                             textAlign: 'center'
                                         }}
                                     />
@@ -421,7 +422,7 @@ export function WorkoutPreviewModal({
                                         alignItems: 'center'
                                     }}
                                 >
-                                    <Text style={{ color: theme.colors.text, fontWeight: '600' }}>Cancelar</Text>
+                                    <Text style={{ color: theme.colors.text, fontFamily: 'Inter_600SemiBold', fontWeight: '600' }}>Cancelar</Text>
                                 </TouchableOpacity>
 
                                 <TouchableOpacity
@@ -434,7 +435,7 @@ export function WorkoutPreviewModal({
                                         alignItems: 'center'
                                     }}
                                 >
-                                    <Text style={{ color: theme.colors.onPrimary, fontWeight: '700' }}>Salvar</Text>
+                                    <Text style={{ color: theme.colors.onPrimary, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>Salvar</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>

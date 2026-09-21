@@ -1,3 +1,4 @@
+import Palette from '../constants/palette.json';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -278,7 +279,7 @@ export default function CommunityScreen() {
             <Animated.View
                 entering={FadeInUp.delay(index * 60).duration(350)}
                 style={{
-                    backgroundColor: theme.mode === 'dark' ? '#12151C' : '#FFFFFF',
+                    backgroundColor: theme.mode === 'dark' ? '#12151C' : theme.colors.card,
                     borderRadius: Radius.lg,
                     borderWidth: 1,
                     borderColor:
@@ -286,10 +287,10 @@ export default function CommunityScreen() {
                     marginHorizontal: 16,
                     marginBottom: 16,
                     overflow: 'hidden',
-                    shadowColor: '#000',
+                    shadowColor: Palette.ink,
                     shadowOffset: { width: 0, height: 4 },
-                    shadowOpacity: theme.mode === 'dark' ? 0.3 : 0.05,
-                    shadowRadius: 10,
+                    shadowOpacity: theme.mode === 'dark' ? 0.1 : 0.05,
+                    shadowRadius: 8,
                     elevation: 3,
                 }}
             >
@@ -331,7 +332,7 @@ export default function CommunityScreen() {
                                         style={{
                                             color: theme.colors.text,
                                             fontFamily: FontFamily.display,
-                                            fontWeight: '800',
+                                            fontWeight: '700',
                                             fontSize: 16,
                                         }}
                                     >
@@ -355,7 +356,7 @@ export default function CommunityScreen() {
                                         {isAuthorMe ? ' (Você)' : ''}
                                     </Text>
                                     {item.isFictitious && (
-                                        <Ionicons name="checkmark-circle" size={14} color="#3B82F6" />
+                                        <Ionicons name="checkmark-circle" size={14} color={theme.colors.info} />
                                     )}
                                 </View>
 
@@ -424,7 +425,7 @@ export default function CommunityScreen() {
                                 alignItems: 'center',
                                 gap: 6,
                                 backgroundColor:
-                                    theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.05)' : '#F1F5F9',
+                                    theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.05)' : theme.colors.backgroundSecondary,
                                 paddingHorizontal: 10,
                                 paddingVertical: 6,
                                 borderRadius: Radius.md,
@@ -467,7 +468,7 @@ export default function CommunityScreen() {
                             )}
                             {item.workoutStats.calories && (
                                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                                    <Ionicons name="flame-outline" size={13} color="#F59E0B" />
+                                    <Ionicons name="flame-outline" size={13} color={theme.colors.warning} />
                                     <Text style={{ color: theme.colors.textSecondary, fontSize: 11, fontFamily: FontFamily.sansMedium }}>
                                         {item.workoutStats.calories} kcal
                                     </Text>
@@ -518,11 +519,11 @@ export default function CommunityScreen() {
                             <Ionicons
                                 name={item.isLikedByMe ? 'heart' : 'heart-outline'}
                                 size={20}
-                                color={item.isLikedByMe ? '#EF4444' : theme.colors.textMuted}
+                                color={item.isLikedByMe ? theme.colors.error : theme.colors.textMuted}
                             />
                             <Text
                                 style={{
-                                    color: item.isLikedByMe ? '#EF4444' : theme.colors.textMuted,
+                                    color: item.isLikedByMe ? theme.colors.error : theme.colors.textMuted,
                                     fontSize: 13,
                                     fontFamily: item.isLikedByMe ? FontFamily.sansBold : FontFamily.sansMedium,
                                 }}
@@ -615,7 +616,7 @@ export default function CommunityScreen() {
                                         color: theme.colors.text,
                                         fontFamily: FontFamily.display,
                                         fontSize: 20,
-                                        fontWeight: '800',
+                                        fontWeight: '700',
                                         letterSpacing: -0.3,
                                     }}
                                 >
@@ -626,7 +627,7 @@ export default function CommunityScreen() {
                                         width: 8,
                                         height: 8,
                                         borderRadius: 4,
-                                        backgroundColor: '#10B981',
+                                        backgroundColor: theme.colors.success,
                                     }}
                                 />
                             </View>
@@ -656,15 +657,15 @@ export default function CommunityScreen() {
                             gap: 6,
                             shadowColor: theme.colors.primary,
                             shadowOffset: { width: 0, height: 2 },
-                            shadowOpacity: 0.35,
+                            shadowOpacity: 0.1,
                             shadowRadius: 4,
                             elevation: 4,
                         }}
                     >
-                        <Ionicons name="add" size={18} color="#000000" />
+                        <Ionicons name="add" size={18} color={theme.colors.onPrimary} />
                         <Text
                             style={{
-                                color: '#000000',
+                                color: theme.colors.onPrimary,
                                 fontSize: 13,
                                 fontFamily: FontFamily.sansBold,
                             }}
@@ -692,7 +693,7 @@ export default function CommunityScreen() {
                                         ? theme.colors.primary
                                         : theme.mode === 'dark'
                                         ? 'rgba(255, 255, 255, 0.07)'
-                                        : '#F1F5F9',
+                                        : theme.colors.backgroundSecondary,
                                     paddingHorizontal: 14,
                                     paddingVertical: 7,
                                     borderRadius: Radius.full,
@@ -795,7 +796,7 @@ export default function CommunityScreen() {
                 >
                     <View
                         style={{
-                            backgroundColor: theme.mode === 'dark' ? '#141720' : '#FFFFFF',
+                            backgroundColor: theme.mode === 'dark' ? '#141720' : theme.colors.card,
                             borderTopLeftRadius: 24,
                             borderTopRightRadius: 24,
                             paddingTop: 20,
@@ -821,7 +822,7 @@ export default function CommunityScreen() {
                                     width: 32,
                                     height: 32,
                                     borderRadius: 16,
-                                    backgroundColor: theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : '#E2E8F0',
+                                    backgroundColor: theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : theme.colors.backgroundTertiary,
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                 }}
@@ -848,7 +849,7 @@ export default function CommunityScreen() {
                                     {profile?.photoUri ? (
                                         <Image source={{ uri: profile.photoUri }} style={{ width: '100%', height: '100%' }} />
                                     ) : (
-                                        <Text style={{ color: '#000', fontFamily: FontFamily.display, fontWeight: '800' }}>
+                                        <Text style={{ color: theme.colors.onPrimary, fontFamily: FontFamily.display, fontWeight: '700' }}>
                                             {(userName || 'A').charAt(0).toUpperCase()}
                                         </Text>
                                     )}
@@ -875,7 +876,7 @@ export default function CommunityScreen() {
                                             key={cat.key}
                                             onPress={() => setPostCategory(cat.key as CommunityPost['category'])}
                                             style={{
-                                                backgroundColor: isSelected ? theme.colors.primary : theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.08)' : '#F1F5F9',
+                                                backgroundColor: isSelected ? theme.colors.primary : theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.08)' : theme.colors.backgroundSecondary,
                                                 paddingHorizontal: 12,
                                                 paddingVertical: 6,
                                                 borderRadius: Radius.md,
@@ -908,7 +909,7 @@ export default function CommunityScreen() {
                                             key={tag}
                                             onPress={() => setSelectedWorkoutTag(isSelected ? '' : tag)}
                                             style={{
-                                                backgroundColor: isSelected ? theme.colors.primary + '25' : theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.05)' : '#F8FAFC',
+                                                backgroundColor: isSelected ? theme.colors.primary + '25' : theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.05)' : theme.colors.background,
                                                 borderWidth: 1,
                                                 borderColor: isSelected ? theme.colors.primary : 'transparent',
                                                 paddingHorizontal: 10,
@@ -940,7 +941,7 @@ export default function CommunityScreen() {
                                 value={postContent}
                                 onChangeText={setPostContent}
                                 style={{
-                                    backgroundColor: theme.mode === 'dark' ? '#0E1017' : '#F8FAFC',
+                                    backgroundColor: theme.mode === 'dark' ? '#0E1017' : theme.colors.background,
                                     color: theme.colors.text,
                                     borderRadius: Radius.md,
                                     padding: 14,
@@ -949,7 +950,7 @@ export default function CommunityScreen() {
                                     textAlignVertical: 'top',
                                     minHeight: 120,
                                     borderWidth: 1,
-                                    borderColor: theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : '#E2E8F0',
+                                    borderColor: theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : theme.colors.backgroundTertiary,
                                     marginBottom: 16,
                                 }}
                             />
@@ -998,7 +999,7 @@ export default function CommunityScreen() {
                 >
                     <View
                         style={{
-                            backgroundColor: theme.mode === 'dark' ? '#141720' : '#FFFFFF',
+                            backgroundColor: theme.mode === 'dark' ? '#141720' : theme.colors.card,
                             borderTopLeftRadius: 24,
                             borderTopRightRadius: 24,
                             paddingTop: 20,
@@ -1019,7 +1020,7 @@ export default function CommunityScreen() {
                                     width: 32,
                                     height: 32,
                                     borderRadius: 16,
-                                    backgroundColor: theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : '#E2E8F0',
+                                    backgroundColor: theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : theme.colors.backgroundTertiary,
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                 }}
@@ -1072,7 +1073,7 @@ export default function CommunityScreen() {
                                             {item.userAvatar ? (
                                                 <Image source={{ uri: item.userAvatar }} style={{ width: '100%', height: '100%' }} />
                                             ) : (
-                                                <Text style={{ color: theme.colors.text, fontFamily: FontFamily.display, fontWeight: '800', fontSize: 12 }}>
+                                                <Text style={{ color: theme.colors.text, fontFamily: FontFamily.display, fontWeight: '700', fontSize: 12 }}>
                                                     {item.userName.charAt(0).toUpperCase()}
                                                 </Text>
                                             )}
@@ -1100,12 +1101,12 @@ export default function CommunityScreen() {
                             style={{
                                 flexDirection: 'row',
                                 alignItems: 'center',
-                                backgroundColor: theme.mode === 'dark' ? '#0E1017' : '#F1F5F9',
+                                backgroundColor: theme.mode === 'dark' ? '#0E1017' : theme.colors.backgroundSecondary,
                                 borderRadius: Radius.full,
                                 paddingHorizontal: 14,
                                 paddingVertical: 6,
                                 borderWidth: 1,
-                                borderColor: theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : '#E2E8F0',
+                                borderColor: theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : theme.colors.backgroundTertiary,
                             }}
                         >
                             <TextInput

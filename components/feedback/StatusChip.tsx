@@ -21,64 +21,63 @@ export const StatusChip: React.FC<StatusChipProps> = ({
     style
 }) => {
     const { theme } = useTheme();
-    const isDark = theme.mode === 'dark';
 
     const getColors = () => {
         switch (type) {
             case 'completed':
                 return {
-                    bg: isDark ? '#0C281E' : '#ECFDF5',
-                    border: isDark ? '#10B98150' : '#A7F3D0',
-                    text: isDark ? '#34D399' : '#059669',
+                    bg: theme.colors.successMuted,
+                    border: theme.colors.success + '35',
+                    text: theme.colors.success,
                     icon: icon || 'checkmark-circle' as const,
                 };
             case 'active':
                 return {
-                    bg: isDark ? '#0F2442' : '#EFF6FF',
-                    border: isDark ? '#3B82F650' : '#BFDBFE',
-                    text: isDark ? '#60A5FA' : '#2563EB',
+                    bg: theme.colors.accentMuted,
+                    border: theme.colors.primary + '35',
+                    text: theme.colors.primary,
                     icon: icon || 'play' as const,
                 };
             case 'pending':
                 return {
-                    bg: isDark ? '#2B1E0C' : '#FFFBEB',
-                    border: isDark ? '#F59E0B50' : '#FDE68A',
-                    text: isDark ? '#FBBF24' : '#D97706',
+                    bg: theme.colors.warningMuted,
+                    border: theme.colors.warning + '35',
+                    text: theme.colors.warning,
                     icon: icon || 'time-outline' as const,
                 };
             case 'rest':
                 return {
-                    bg: isDark ? '#1F1B2E' : '#F5F3FF',
-                    border: isDark ? '#8B5CF650' : '#DDD6FE',
-                    text: isDark ? '#A78BFA' : '#7C3AED',
+                    bg: theme.colors.infoMuted,
+                    border: theme.colors.info + '35',
+                    text: theme.colors.info,
                     icon: icon || 'bed-outline' as const,
                 };
             case 'pr':
                 return {
-                    bg: isDark ? '#261F0B' : '#FEFCE8',
-                    border: isDark ? '#EAB30880' : '#FDE047',
-                    text: isDark ? '#FACC15' : '#CA8A04',
+                    bg: theme.colors.warningMuted,
+                    border: theme.colors.warning + '35',
+                    text: theme.colors.warning,
                     icon: icon || 'trophy' as const,
                 };
             case 'trend_up':
                 return {
-                    bg: isDark ? '#0C281E' : '#ECFDF5',
-                    border: isDark ? '#10B98140' : '#A7F3D0',
-                    text: isDark ? '#34D399' : '#059669',
+                    bg: theme.colors.successMuted,
+                    border: theme.colors.success + '35',
+                    text: theme.colors.success,
                     icon: icon || 'trending-up' as const,
                 };
             case 'trend_stable':
                 return {
-                    bg: isDark ? '#1E2430' : '#F1F5F9',
-                    border: isDark ? '#64748B40' : '#CBD5E1',
-                    text: isDark ? '#94A3B8' : '#64748B',
+                    bg: theme.colors.backgroundSecondary,
+                    border: theme.colors.textMuted + '35',
+                    text: theme.colors.textMuted,
                     icon: icon || 'arrow-forward' as const,
                 };
             case 'trend_down':
                 return {
-                    bg: isDark ? '#2C1214' : '#FEF2F2',
-                    border: isDark ? '#EF444440' : '#FECACA',
-                    text: isDark ? '#F87171' : '#DC2626',
+                    bg: theme.colors.errorMuted,
+                    border: theme.colors.error + '35',
+                    text: theme.colors.error,
                     icon: icon || 'trending-down' as const,
                 };
             default:
@@ -139,7 +138,7 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-start',
     },
     label: {
-        fontFamily: 'Sora_600SemiBold',
+        fontFamily: "Inter_600SemiBold",
         letterSpacing: -0.2,
     },
 });

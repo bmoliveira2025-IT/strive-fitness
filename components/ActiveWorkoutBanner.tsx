@@ -1,3 +1,4 @@
+import Palette from '../constants/palette.json';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useRef } from 'react';
@@ -43,9 +44,8 @@ function DraggableBanner({ onPress, showDiscard = true }: Omit<ActiveWorkoutBann
 
     const panResponder = useRef(
         PanResponder.create({
-            onStartShouldSetPanResponder: () => false,
-            onMoveShouldSetPanResponder: (_, { dx, dy }) =>
-                Math.abs(dx) > 6 || Math.abs(dy) > 6,
+            onStartShouldSetPanResponder: () => true,
+            onMoveShouldSetPanResponder: () => true,
             onPanResponderGrant: () => {
                 pan.setOffset({
                     x: (pan.x as any)._value,
@@ -87,7 +87,11 @@ function DraggableBanner({ onPress, showDiscard = true }: Omit<ActiveWorkoutBann
                 {
                     text: 'Descartar',
                     style: 'destructive',
-                    onPress: () => { clearWorkout(); router.navigate('/(tabs)'); },
+                    onPress: () => {
+                        clearWorkout();
+                        useWorkoutStore.getState().clearWorkout();
+                        router.navigate('/(tabs)');
+                    },
                 },
             ]
         );
@@ -95,7 +99,6 @@ function DraggableBanner({ onPress, showDiscard = true }: Omit<ActiveWorkoutBann
 
     return (
         <Animated.View
-            {...panResponder.panHandlers}
             style={{
                 position: 'absolute',
                 width: BANNER_W,
@@ -105,8 +108,8 @@ function DraggableBanner({ onPress, showDiscard = true }: Omit<ActiveWorkoutBann
                 elevation: 12,
             }}
         >
-            {/* Drag handle strip */}
-            <View style={styles.handleContainer}>
+            {/* Drag handle strip — handles dragging so buttons underneath receive all clicks */}
+            <View {...panResponder.panHandlers} style={styles.handleContainer}>
                 <View style={[
                     styles.handle,
                     { backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.18)' },
@@ -229,10 +232,10 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: Radius.lg,
         padding: 14,
-        shadowColor: '#000',
+        shadowColor: Palette.ink,
         shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.2,
-        shadowRadius: 10,
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
         elevation: 6,
     },
     title: {

@@ -96,7 +96,7 @@ export function WeeklySummary({ stats, history }: WeeklySummaryProps) {
             value: stats.current.durationFormatted,
             subValue: stats.diff.isDurationDown ? `-${stats.diff.durationFormatted}` : `+${stats.diff.durationFormatted}`,
             isDown: stats.diff.isDurationDown,
-            color: '#4F8FF7',
+            color: theme.colors.info,
         },
         {
             icon: 'trending-up-outline' as const,
@@ -104,7 +104,7 @@ export function WeeklySummary({ stats, history }: WeeklySummaryProps) {
             value: stats.current.volumeFormatted,
             subValue: stats.diff.isVolumeDown ? `-${stats.diff.volumeFormatted}` : `+${stats.diff.volumeFormatted}`,
             isDown: stats.diff.isVolumeDown,
-            color: '#10B981',
+            color: theme.colors.success,
         },
     ];
 
@@ -120,7 +120,7 @@ export function WeeklySummary({ stats, history }: WeeklySummaryProps) {
                     <Text style={{
                         color: theme.colors.text,
                         fontSize: 22,
-                        fontWeight: '900',
+                        fontFamily: 'Inter_700Bold', fontWeight: '700',
                         letterSpacing: -0.5,
                     }}>
                         Evolução Semanal
@@ -128,7 +128,7 @@ export function WeeklySummary({ stats, history }: WeeklySummaryProps) {
                     <Text style={{
                         color: theme.colors.textSecondary,
                         fontSize: 10,
-                        fontWeight: '700',
+                        fontFamily: 'Inter_700Bold', fontWeight: '700',
                         textTransform: 'uppercase',
                         letterSpacing: 1.2,
                         marginTop: 2,
@@ -155,7 +155,7 @@ export function WeeklySummary({ stats, history }: WeeklySummaryProps) {
                     <Text style={{
                         color: theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.primary,
                         fontSize: 10,
-                        fontWeight: '800',
+                        fontFamily: 'Inter_700Bold', fontWeight: '700',
                         textTransform: 'uppercase',
                         letterSpacing: 0.5,
                     }}>
@@ -180,7 +180,7 @@ export function WeeklySummary({ stats, history }: WeeklySummaryProps) {
                     <View style={{
                         height: '100%',
                         width: `${goalProgress * 100}%`,
-                        backgroundColor: goalMet ? '#22C55E' : theme.colors.primary,
+                        backgroundColor: goalMet ? theme.colors.success : theme.colors.primary,
                     }} />
                 </View>
 
@@ -188,19 +188,19 @@ export function WeeklySummary({ stats, history }: WeeklySummaryProps) {
 
                     {/* Goal label */}
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-                        <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 1 }}>
+                        <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1 }}>
                             Frequência Semanal
                         </Text>
                         <View style={{
-                            backgroundColor: goalMet ? '#22C55E18' : theme.colors.primary + '18',
+                            backgroundColor: goalMet ? theme.colors.success + '18' : theme.colors.primary + '18',
                             paddingHorizontal: 10, paddingVertical: 4,
                             borderRadius: 10,
                             borderWidth: 1,
-                            borderColor: goalMet ? '#22C55E35' : theme.colors.primary + '35',
+                            borderColor: goalMet ? theme.colors.success + '35' : theme.colors.primary + '35',
                         }}>
                             <Text style={{
-                                color: goalMet ? '#22C55E' : theme.colors.primary,
-                                fontSize: 11, fontWeight: '900',
+                                color: goalMet ? theme.colors.success : theme.colors.primary,
+                                fontSize: 11, fontFamily: 'Inter_700Bold', fontWeight: '700',
                             }}>
                                 {trainedDays}/{targetDays} dias {goalMet ? '✓' : ''}
                             </Text>
@@ -234,7 +234,7 @@ export function WeeklySummary({ stats, history }: WeeklySummaryProps) {
                                             ? (day.isToday ? theme.colors.primary : theme.colors.textSecondary)
                                             : 'transparent',
                                         fontSize: 7,
-                                        fontWeight: '900',
+                                        fontFamily: 'Inter_700Bold', fontWeight: '700',
                                         marginBottom: 3,
                                         textAlign: 'center',
                                     }}>
@@ -287,7 +287,7 @@ export function WeeklySummary({ stats, history }: WeeklySummaryProps) {
                                                 ? theme.colors.textSecondary
                                                 : theme.colors.textMuted,
                                         fontSize: 9,
-                                        fontWeight: day.isToday ? '900' : '700',
+                                        fontWeight: day.isToday ? '700' : '700',
                                         textAlign: 'center',
                                     }}>
                                         {day.label}
@@ -331,7 +331,7 @@ export function WeeklySummary({ stats, history }: WeeklySummaryProps) {
                                     style={{
                                         color: theme.colors.text,
                                         fontSize: 16,
-                                        fontWeight: '900',
+                                        fontFamily: 'Inter_700Bold', fontWeight: '700',
                                         letterSpacing: -0.3,
                                     }}
                                     numberOfLines={1}
@@ -344,7 +344,7 @@ export function WeeklySummary({ stats, history }: WeeklySummaryProps) {
                                 <Text style={{
                                     color: theme.colors.textMuted,
                                     fontSize: 9,
-                                    fontWeight: '700',
+                                    fontFamily: 'Inter_700Bold', fontWeight: '700',
                                     textTransform: 'uppercase',
                                     letterSpacing: 0.4,
                                     marginTop: 2,
@@ -356,19 +356,19 @@ export function WeeklySummary({ stats, history }: WeeklySummaryProps) {
                                 <View style={{
                                     flexDirection: 'row', alignItems: 'center', gap: 2,
                                     marginTop: 6,
-                                    backgroundColor: (m.isDown ? '#EF444415' : '#22C55E15'),
+                                    backgroundColor: (m.isDown ? theme.colors.error + '15' : theme.colors.success + '15'),
                                     borderRadius: 7,
                                     paddingHorizontal: 5, paddingVertical: 2,
                                 }}>
                                     <Ionicons
                                         name={m.isDown ? 'trending-down' : 'trending-up'}
                                         size={9}
-                                        color={m.isDown ? '#EF4444' : '#22C55E'}
+                                        color={m.isDown ? theme.colors.error : theme.colors.success}
                                     />
                                     <Text style={{
-                                        color: m.isDown ? '#EF4444' : '#22C55E',
+                                        color: m.isDown ? theme.colors.error : theme.colors.success,
                                         fontSize: 8,
-                                        fontWeight: '800',
+                                        fontFamily: 'Inter_700Bold', fontWeight: '700',
                                     }}>
                                         {m.subValue}
                                     </Text>

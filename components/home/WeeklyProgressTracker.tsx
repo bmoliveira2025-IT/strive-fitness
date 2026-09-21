@@ -285,7 +285,7 @@ export function WeeklyProgressTracker({
           value={streak.toString()}
           subtext="dias"
           icon="flame"
-          iconColor="#F59E0B"
+          iconColor={theme.colors.warning}
         />
         <MetricCard
           title="Volume"
@@ -299,7 +299,7 @@ export function WeeklyProgressTracker({
           value={weekCount.toString()}
           subtext={`/${targetDays}`}
           icon="fitness-outline"
-          iconColor={theme.mode === "light" ? "#0284C7" : "#38BDF8"}
+          iconColor={theme.mode === "light" ? "#0284C7" : theme.colors.info}
         />
       </View>
     </View>

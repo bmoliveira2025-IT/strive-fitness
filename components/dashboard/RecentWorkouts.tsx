@@ -54,7 +54,7 @@ export function RecentWorkouts() {
                     }}
                 >
                     <View className="bg-primary/10 w-9 h-9 rounded items-center justify-center mr-3">
-                        <Ionicons name="fitness" size={18} color="#4F8FF7" />
+                        <Ionicons name="fitness" size={18} color={theme.colors.info} />
                     </View>
                     <View className="flex-1">
                         <Text className="text-text text-sm font-medium" numberOfLines={1}>{workout.name}</Text>
@@ -62,7 +62,7 @@ export function RecentWorkouts() {
                             {workout.exercises.length} exercícios • {formatDate(workout.lastDone!)}
                         </Text>
                     </View>
-                    <Ionicons name="chevron-forward" size={16} color="#64748B" />
+                    <Ionicons name="chevron-forward" size={16} color={theme.colors.textMuted} />
                 </TouchableOpacity>
             ))}
         </View>

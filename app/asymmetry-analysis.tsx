@@ -212,76 +212,76 @@ export default function AsymmetryAnalysisScreen() {
         <View className="flex-1" style={{ backgroundColor: 'transparent' }}>
             <View style={{ paddingTop: insets.top }} className="flex-row items-center justify-between px-4 pb-4 bg-transparent absolute top-0 z-50 w-full">
                 <TouchableOpacity onPress={() => router.back()} className="p-2 rounded-full bg-black/30">
-                    <Ionicons name="arrow-back" size={24} color="#FFF" />
+                    <Ionicons name="arrow-back" size={24} color={theme.colors.onImage} />
                 </TouchableOpacity>
                 <Text className="text-white font-bold text-lg">Análise de Assimetria</Text>
                 <TouchableOpacity onPress={() => router.push('/asymmetry-history')} className="p-2 rounded-full bg-black/30">
-                    <Ionicons name="time-outline" size={24} color="#FFF" />
+                    <Ionicons name="time-outline" size={24} color={theme.colors.onImage} />
                 </TouchableOpacity>
             </View>
 
             {/* History Comparison Modal */}
             <Modal visible={showHistory} animationType="slide" transparent={true} onRequestClose={() => setShowHistory(false)}>
-                <View className="flex-1 bg-zinc-900 mt-20 rounded-t-[32px] overflow-hidden">
-                    <View className="px-6 py-4 border-b border-zinc-800 flex-row justify-between items-center">
+                <View className="flex-1 bg-surface mt-20 rounded-t-[32px] overflow-hidden">
+                    <View className="px-6 py-4 border-b border-borderSubtle flex-row justify-between items-center">
                         <Text className="text-white font-bold text-xl">Comparativo de Evolução</Text>
-                        <TouchableOpacity onPress={() => setShowHistory(false)} className="p-2 bg-zinc-800 rounded-full">
-                            <Ionicons name="close" size={20} color="#FFF" />
+                        <TouchableOpacity onPress={() => setShowHistory(false)} className="p-2 bg-backgroundTertiary rounded-full">
+                            <Ionicons name="close" size={20} color={theme.colors.onImage} />
                         </TouchableOpacity>
                     </View>
 
                     <ScrollView contentContainerStyle={{ padding: 20 }}>
                         {history.length === 0 ? (
-                            <Text className="text-zinc-500 text-center mt-10">Nenhuma análise registrada.</Text>
+                            <Text className="text-text-muted text-center mt-10">Nenhuma análise registrada.</Text>
                         ) : (
                             <View>
                                 {/* Comparison Header */}
                                 <View className="flex-row justify-between mb-6">
                                     <View className="flex-1 mr-2">
-                                        <Text className="text-zinc-500 text-xs font-bold uppercase text-center mb-2">Atual</Text>
+                                        <Text className="text-text-muted text-xs font-bold uppercase text-center mb-2">Atual</Text>
                                         <View className={`p-4 rounded-2xl bg-zinc-800 border-2 ${history[0]?.asymmetryIndex < 10 ? 'borderColor-green-500/50' : 'borderColor-orange-500/50'}`}>
                                             <View className="h-32 bg-black rounded-lg mb-3 overflow-hidden">
                                                 {history[0]?.photoUri ? (
                                                     <Image source={{ uri: history[0].photoUri }} className="w-full h-full" resizeMode="cover" />
                                                 ) : (
                                                     <View className="flex-1 items-center justify-center">
-                                                        <Ionicons name="image-outline" size={24} color="#52525b" />
+                                                        <Ionicons name="image-outline" size={24} color={theme.colors.textMuted} />
                                                     </View>
                                                 )}
                                             </View>
                                             <Text className="text-white font-bold text-center text-2xl">{history[0]?.asymmetryIndex}%</Text>
                                             <Text style={{ color: history[0]?.color }} className="text-center font-bold text-xs uppercase mb-1">{history[0]?.classification}</Text>
-                                            <Text className="text-zinc-500 text-[10px] text-center">{new Date(history[0]?.timestamp).toLocaleDateString('pt-BR')}</Text>
+                                            <Text className="text-text-muted text-[10px] text-center">{new Date(history[0]?.timestamp).toLocaleDateString('pt-BR')}</Text>
                                         </View>
                                     </View>
 
                                     {/* Divider / VS */}
                                     <View className="items-center justify-center">
-                                        <View className="w-[1px] h-full bg-zinc-800 absolute" />
-                                        <View className="bg-zinc-900 p-2 rounded-full border border-zinc-700 z-10">
-                                            <Text className="text-zinc-500 text-xs font-bold">VS</Text>
+                                        <View className="w-[1px] h-full bg-backgroundTertiary absolute" />
+                                        <View className="bg-surface p-2 rounded-full border border-borderSubtle z-10">
+                                            <Text className="text-text-muted text-xs font-bold">VS</Text>
                                         </View>
                                     </View>
 
                                     <View className="flex-1 ml-2">
-                                        <Text className="text-zinc-500 text-xs font-bold uppercase text-center mb-2">Anterior</Text>
+                                        <Text className="text-text-muted text-xs font-bold uppercase text-center mb-2">Anterior</Text>
                                         {history.length > 1 ? (
-                                            <TouchableOpacity onPress={() => openHistoryItem(history[1])} className="p-4 rounded-2xl bg-zinc-800/50 border border-zinc-700/50">
+                                            <TouchableOpacity onPress={() => openHistoryItem(history[1])} className="p-4 rounded-2xl bg-backgroundTertiary/50 border border-borderSubtle/50">
                                                 <View className="h-32 bg-black rounded-lg mb-3 overflow-hidden opacity-50">
                                                     {history[1]?.photoUri ? (
                                                         <Image source={{ uri: history[1].photoUri }} className="w-full h-full" resizeMode="cover" />
                                                     ) : (
                                                         <View className="flex-1 items-center justify-center">
-                                                            <Ionicons name="image-outline" size={24} color="#52525b" />
+                                                            <Ionicons name="image-outline" size={24} color={theme.colors.textMuted} />
                                                         </View>
                                                     )}
                                                 </View>
-                                                <Text className="text-zinc-400 font-bold text-center text-2xl">{history[1]?.asymmetryIndex}%</Text>
-                                                <Text className="text-zinc-500 text-center font-bold text-xs uppercase mb-1">{history[1]?.classification}</Text>
+                                                <Text className="text-text-secondary font-bold text-center text-2xl">{history[1]?.asymmetryIndex}%</Text>
+                                                <Text className="text-text-muted text-center font-bold text-xs uppercase mb-1">{history[1]?.classification}</Text>
                                                 <Text className="text-zinc-600 text-[10px] text-center">{new Date(history[1]?.timestamp).toLocaleDateString('pt-BR')}</Text>
                                             </TouchableOpacity>
                                         ) : (
-                                            <View className="h-full justify-center items-center border-2 border-dashed border-zinc-800 rounded-2xl">
+                                            <View className="h-full justify-center items-center border-2 border-dashed border-borderSubtle rounded-2xl">
                                                 <Text className="text-zinc-600 text-xs text-center px-2">Sem histórico anterior</Text>
                                             </View>
                                         )}
@@ -290,21 +290,21 @@ export default function AsymmetryAnalysisScreen() {
 
                                 {/* Diff Analysis */}
                                 {history.length > 1 && (
-                                    <View className="bg-zinc-800 p-4 rounded-2xl border border-zinc-700">
-                                        <Text className="text-zinc-400 text-xs font-bold uppercase mb-2">Evolução</Text>
+                                    <View className="bg-backgroundTertiary p-4 rounded-2xl border border-borderSubtle">
+                                        <Text className="text-text-secondary text-xs font-bold uppercase mb-2">Evolução</Text>
                                         <View className="flex-row items-center gap-3">
                                             <View className={`rounded-full p-2 ${history[0].asymmetryIndex < history[1].asymmetryIndex ? 'bg-green-500/20' : 'bg-red-500/20'}`}>
                                                 <Ionicons
                                                     name={history[0].asymmetryIndex < history[1].asymmetryIndex ? "arrow-down" : "arrow-up"}
                                                     size={24}
-                                                    color={history[0].asymmetryIndex < history[1].asymmetryIndex ? "#22c55e" : "#ef4444"}
+                                                    color={history[0].asymmetryIndex < history[1].asymmetryIndex ? theme.colors.success : theme.colors.error}
                                                 />
                                             </View>
                                             <View>
                                                 <Text className="text-white font-bold text-lg">
                                                     {Math.abs(history[0].asymmetryIndex - history[1].asymmetryIndex).toFixed(1)}% {history[0].asymmetryIndex < history[1].asymmetryIndex ? 'Melhor' : 'Pior'}
                                                 </Text>
-                                                <Text className="text-zinc-500 text-xs">
+                                                <Text className="text-text-muted text-xs">
                                                     Comparado à análise anterior
                                                 </Text>
                                             </View>
@@ -336,7 +336,7 @@ export default function AsymmetryAnalysisScreen() {
 
                         <View className="flex-row justify-between items-center bg-black/40 p-6 rounded-3xl backdrop-blur-md">
                             <TouchableOpacity onPress={pickImage} className="p-3 bg-white/10 rounded-full">
-                                <Ionicons name="images" size={24} color="#FFF" />
+                                <Ionicons name="images" size={24} color={theme.colors.onImage} />
                             </TouchableOpacity>
 
                             <TouchableOpacity
@@ -362,8 +362,8 @@ export default function AsymmetryAnalysisScreen() {
                                     }}
                                 >
                                     <Text style={{
-                                        color: analysisMode === 'superior' ? '#000' : '#AAA',
-                                        fontWeight: 'bold',
+                                        color: analysisMode === 'superior' ? '#000' : theme.colors.textMuted,
+                                        fontFamily: 'Inter_700Bold', fontWeight: 'bold',
                                         fontSize: 12
                                     }}>SUPERIOR</Text>
                                 </TouchableOpacity>
@@ -377,8 +377,8 @@ export default function AsymmetryAnalysisScreen() {
                                     }}
                                 >
                                     <Text style={{
-                                        color: analysisMode === 'inferior' ? '#000' : '#AAA',
-                                        fontWeight: 'bold',
+                                        color: analysisMode === 'inferior' ? '#000' : theme.colors.textMuted,
+                                        fontFamily: 'Inter_700Bold', fontWeight: 'bold',
                                         fontSize: 12
                                     }}>INFERIOR</Text>
                                 </TouchableOpacity>
@@ -404,7 +404,7 @@ export default function AsymmetryAnalysisScreen() {
 
                     {/* Results Modal / Sheet */}
                     {analysisResult && (
-                        <View className="absolute bottom-0 left-0 right-0 bg-zinc-900 rounded-t-[32px] shadow-2xl border-t border-zinc-800 h-[65%]" style={{ paddingBottom: insets.bottom + 20 }}>
+                        <View className="absolute bottom-0 left-0 right-0 bg-surface rounded-t-[32px] shadow-2xl border-t border-borderSubtle h-[65%]" style={{ paddingBottom: insets.bottom + 20 }}>
                             <ScrollView contentContainerStyle={{ padding: 24, paddingBottom: 100 }}>
                                 <View className="items-center mb-6">
                                     <Text className="text-white font-bold text-3xl">{analysisResult.asymmetryIndex}%</Text>
@@ -412,8 +412,8 @@ export default function AsymmetryAnalysisScreen() {
 
                                     <View className="items-center mb-2">
                                         <Text className="text-white font-bold text-2xl">{analysisResult.classification}</Text>
-                                        <View className="flex-row items-center mt-1 bg-zinc-800 px-3 py-1 rounded-full border border-zinc-700">
-                                            <Ionicons name={analysisResult.bodyPart.includes('Superior') ? "body" : "walk"} size={12} color="#AAA" style={{ marginRight: 6 }} />
+                                        <View className="flex-row items-center mt-1 bg-backgroundTertiary px-3 py-1 rounded-full border border-borderSubtle">
+                                            <Ionicons name={analysisResult.bodyPart.includes('Superior') ? "body" : "walk"} size={12} color={theme.colors.textMuted} style={{ marginRight: 6 }} />
                                             <Text className="text-white/70 text-xs uppercase tracking-widest font-bold">
                                                 {analysisResult.bodyPart}
                                             </Text>
@@ -422,18 +422,18 @@ export default function AsymmetryAnalysisScreen() {
                                 </View>
 
                                 <View className="flex-row gap-4 mb-6">
-                                    <View className="flex-1 bg-zinc-800 p-4 rounded-xl border border-zinc-700">
-                                        <Text className="text-zinc-500 text-[10px] font-bold uppercase mb-2">Volume Esquerdo</Text>
+                                    <View className="flex-1 bg-backgroundTertiary p-4 rounded-xl border border-borderSubtle">
+                                        <Text className="text-text-muted text-[10px] font-bold uppercase mb-2">Volume Esquerdo</Text>
                                         <Text className="text-white font-bold text-xl">{analysisResult.details.leftSide}px</Text>
                                     </View>
-                                    <View className="flex-1 bg-zinc-800 p-4 rounded-xl border border-zinc-700">
-                                        <Text className="text-zinc-500 text-[10px] font-bold uppercase mb-2">Volume Direito</Text>
+                                    <View className="flex-1 bg-backgroundTertiary p-4 rounded-xl border border-borderSubtle">
+                                        <Text className="text-text-muted text-[10px] font-bold uppercase mb-2">Volume Direito</Text>
                                         <Text className="text-white font-bold text-xl">{analysisResult.details.rightSide}px</Text>
                                     </View>
                                 </View>
 
-                                <View className="bg-zinc-800 p-5 rounded-2xl border border-zinc-700 mb-6">
-                                    <Text className="text-zinc-400 text-xs font-bold uppercase mb-3">Recomendações</Text>
+                                <View className="bg-backgroundTertiary p-5 rounded-2xl border border-borderSubtle mb-6">
+                                    <Text className="text-text-secondary text-xs font-bold uppercase mb-3">Recomendações</Text>
                                     {analysisResult.recommendations.map((rec: string, index: number) => (
                                         <View key={index} className="flex-row items-start mb-2">
                                             <View className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5 mr-2" />
@@ -445,7 +445,7 @@ export default function AsymmetryAnalysisScreen() {
                                 <View className="flex-row gap-3">
                                     <TouchableOpacity
                                         onPress={reset}
-                                        className="flex-1 bg-zinc-800 p-4 rounded-xl items-center border border-zinc-700"
+                                        className="flex-1 bg-backgroundTertiary p-4 rounded-xl items-center border border-borderSubtle"
                                     >
                                         <Text className="text-white font-bold">Nova Análise</Text>
                                     </TouchableOpacity>
@@ -464,12 +464,12 @@ export default function AsymmetryAnalysisScreen() {
                         onPress={reset}
                         className="absolute top-12 left-4 p-2 bg-black/40 rounded-full z-10"
                     >
-                        <Ionicons name="close" size={24} color="#FFF" />
+                        <Ionicons name="close" size={24} color={theme.colors.onImage} />
                     </TouchableOpacity>
                 </View>
             )}
 
-            <StatusBar style="light" />
+            <StatusBar style={theme.mode === 'light' ? 'dark' : 'light'} />
         </View>
     );
 }

@@ -19,15 +19,15 @@ export function AIPerformanceReport() {
 
     const StatusBadge = ({ value, label, color }: { value: string | number, label: string, color?: string }) => (
         <View style={{ flex: 1, backgroundColor: theme.colors.backgroundTertiary, padding: 12, borderRadius: 18, alignItems: 'center', borderWidth: 1, borderColor: theme.colors.border }}>
-            <Text style={{ color: color || theme.colors.text, fontSize: 16, fontWeight: '900' }}>{value}</Text>
-            <Text style={{ color: theme.colors.textMuted, fontSize: 8, fontWeight: '700', textTransform: 'uppercase', marginTop: 2 }}>{label}</Text>
+            <Text style={{ color: color || theme.colors.text, fontSize: 16, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>{value}</Text>
+            <Text style={{ color: theme.colors.textMuted, fontSize: 8, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase', marginTop: 2 }}>{label}</Text>
         </View>
     );
 
     const renderDaily = () => (
         <Animated.View entering={FadeInDown.duration(400)} className="gap-4">
             <View style={{ backgroundColor: theme.colors.primary + '10', padding: 16, borderRadius: 20, borderLeftWidth: 4, borderLeftColor: theme.colors.primary }}>
-                <Text style={{ color: theme.colors.text, fontSize: 14, fontWeight: '600', lineHeight: 20 }}>
+                <Text style={{ color: theme.colors.text, fontSize: 14, fontFamily: 'Inter_600SemiBold', fontWeight: '600', lineHeight: 20 }}>
                     {dailyReport.insight}
                 </Text>
             </View>
@@ -38,11 +38,11 @@ export function AIPerformanceReport() {
             </View>
 
             <View className="gap-2">
-                <Text style={{ color: theme.colors.textMuted, fontSize: 9, fontWeight: '900', textTransform: 'uppercase', letterSpacing: 1 }}>DICAS DE PERFORMANCE</Text>
+                <Text style={{ color: theme.colors.textMuted, fontSize: 9, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1 }}>DICAS DE PERFORMANCE</Text>
                 {dailyReport.tips.map((tip, i) => (
                     <View key={i} className="flex-row items-center gap-3">
                         <Ionicons name="checkmark-circle" size={14} color={theme.colors.primary} />
-                        <Text style={{ color: theme.colors.text, fontSize: 12, fontWeight: '500' }}>{tip}</Text>
+                        <Text style={{ color: theme.colors.text, fontSize: 12, fontFamily: 'Inter_500Medium', fontWeight: '500' }}>{tip}</Text>
                     </View>
                 ))}
             </View>
@@ -52,7 +52,7 @@ export function AIPerformanceReport() {
     const renderWeekly = () => (
         <Animated.View entering={FadeInDown.duration(400)} className="gap-4">
             <View style={{ backgroundColor: theme.colors.primary + '10', padding: 16, borderRadius: 20, borderLeftWidth: 4, borderLeftColor: theme.colors.primary }}>
-                <Text style={{ color: theme.colors.text, fontSize: 14, fontWeight: '600', lineHeight: 20 }}>
+                <Text style={{ color: theme.colors.text, fontSize: 14, fontFamily: 'Inter_600SemiBold', fontWeight: '600', lineHeight: 20 }}>
                     {weeklyAssessment.insight}
                 </Text>
             </View>
@@ -72,7 +72,7 @@ export function AIPerformanceReport() {
     const renderMonthly = () => (
         <Animated.View entering={FadeInDown.duration(400)} className="gap-4">
             <View style={{ backgroundColor: theme.colors.primary + '10', padding: 16, borderRadius: 20, borderLeftWidth: 4, borderLeftColor: theme.colors.primary }}>
-                <Text style={{ color: theme.colors.text, fontSize: 14, fontWeight: '600', lineHeight: 20 }}>
+                <Text style={{ color: theme.colors.text, fontSize: 14, fontFamily: 'Inter_600SemiBold', fontWeight: '600', lineHeight: 20 }}>
                     {monthlyReport.summaryInsight}
                 </Text>
             </View>
@@ -83,11 +83,11 @@ export function AIPerformanceReport() {
             </View>
 
             <View className="gap-2">
-                <Text style={{ color: theme.colors.textMuted, fontSize: 9, fontWeight: '900', textTransform: 'uppercase', letterSpacing: 1 }}>DESTAQUES DO MÊS</Text>
+                <Text style={{ color: theme.colors.textMuted, fontSize: 9, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1 }}>DESTAQUES DO MÊS</Text>
                 {monthlyReport.topStrengths.map((strength, i) => (
                     <View key={i} className="flex-row items-center gap-3">
                         <Ionicons name="trophy" size={14} color="#FFD700" />
-                        <Text style={{ color: theme.colors.text, fontSize: 12, fontWeight: '500' }}>{strength}</Text>
+                        <Text style={{ color: theme.colors.text, fontSize: 12, fontFamily: 'Inter_500Medium', fontWeight: '500' }}>{strength}</Text>
                     </View>
                 ))}
             </View>
@@ -113,8 +113,8 @@ export function AIPerformanceReport() {
                         <Ionicons name="sparkles" size={24} color={theme.colors.primary} />
                     </View>
                     <View>
-                        <Text style={{ color: theme.colors.text }} className="text-xl font-black italic uppercase tracking-tighter">Strive AI Advisor</Text>
-                        <Text style={{ color: theme.colors.textMuted }} className="text-[10px] font-black uppercase tracking-[2px]">Análise Inteligente</Text>
+                        <Text style={{ color: theme.colors.text }} className="text-xl font-bold italic uppercase tracking-tighter">Strive AI Advisor</Text>
+                        <Text style={{ color: theme.colors.textMuted }} className="text-[10px] font-bold uppercase tracking-[2px]">Análise Inteligente</Text>
                     </View>
                 </View>
             </View>
@@ -139,7 +139,7 @@ export function AIPerformanceReport() {
                         <Text style={{
                             color: selectedTab === tab ? theme.colors.primary : theme.colors.textMuted,
                             fontSize: 10,
-                            fontWeight: '900',
+                            fontFamily: 'Inter_700Bold', fontWeight: '700',
                             textTransform: 'uppercase',
                             letterSpacing: 0.5
                         }}>

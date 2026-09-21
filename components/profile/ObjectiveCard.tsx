@@ -1,3 +1,4 @@
+import Palette from '../../constants/palette.json';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
@@ -19,21 +20,21 @@ const objectiveData: Record<TrainingObjective, {
         label: 'Hipertrofia',
         description: 'Ganho de massa muscular',
         icon: 'fitness',
-        color: '#4F8FF7',
+        color: Palette.dark.info,
         bgColor: 'rgba(79, 143, 247, 0.1)',
     },
     'força': {
         label: 'Força',
         description: 'Aumento de força máxima',
         icon: 'barbell',
-        color: '#EF4444',
+        color: Palette.dark.error,
         bgColor: 'rgba(239, 68, 68, 0.1)',
     },
     'cutting': {
         label: 'Definição',
         description: 'Perda de gordura',
         icon: 'flame',
-        color: '#22C55E',
+        color: Palette.dark.success,
         bgColor: 'rgba(34, 197, 94, 0.1)',
     },
 };

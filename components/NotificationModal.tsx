@@ -1,3 +1,4 @@
+import Palette from '../constants/palette.json';
 import React, { useState, useMemo } from 'react';
 import {
     Modal,
@@ -29,17 +30,17 @@ const getIconForType = (type: NotificationType) => {
     switch (type) {
         case 'achievement':
         case 'pr':
-            return { name: 'trophy' as const, color: '#EAB308', bg: '#EAB30815' };
+            return { name: 'trophy' as const, color: Palette.dark.warning, bg: Palette.dark.warning + '15' };
         case 'recovery':
-            return { name: 'fitness' as const, color: '#10B981', bg: '#10B98115' };
+            return { name: 'fitness' as const, color: Palette.dark.success, bg: Palette.dark.success + '15' };
         case 'consistency':
-            return { name: 'flame' as const, color: '#F97316', bg: '#F9731615' };
+            return { name: 'flame' as const, color: Palette.dark.warning, bg: Palette.dark.warning + '15' };
         case 'workout':
-            return { name: 'barbell' as const, color: '#3B82F6', bg: '#3B82F615' };
+            return { name: 'barbell' as const, color: Palette.dark.info, bg: Palette.dark.info + '15' };
         case 'goal':
-            return { name: 'flag' as const, color: '#8B5CF6', bg: '#8B5CF615' };
+            return { name: 'flag' as const, color: Palette.dark.primary, bg: Palette.dark.primary + '15' };
         default:
-            return { name: 'information-circle' as const, color: '#64748B', bg: '#64748B15' };
+            return { name: 'information-circle' as const, color: Palette.dark.textMuted, bg: Palette.dark.textMuted + '15' };
     }
 };
 
@@ -91,7 +92,7 @@ export const NotificationModal = ({ visible, onClose }: NotificationModalProps) 
             style={[
                 styles.modalContent,
                 {
-                    backgroundColor: theme.colors.background,
+                    backgroundColor: theme.colors.surfaceElevated,
                     height: SCREEN_HEIGHT * 0.88,
                     marginTop: SCREEN_HEIGHT * 0.12,
                     borderColor: theme.colors.cardBorder,
@@ -228,7 +229,7 @@ export const NotificationModal = ({ visible, onClose }: NotificationModalProps) 
                                     style={[
                                         styles.notificationCard,
                                         {
-                                            backgroundColor: notif.isRead ? theme.colors.card : (theme.mode === 'dark' ? '#171B22' : '#F8FAFC'),
+                                            backgroundColor: notif.isRead ? theme.colors.card : (theme.mode === 'dark' ? '#171B22' : theme.colors.background),
                                             borderColor: notif.isRead ? theme.colors.cardBorder : theme.colors.primary + '50',
                                             borderLeftColor: notif.isRead ? theme.colors.cardBorder : theme.colors.primary,
                                             borderLeftWidth: notif.isRead ? 1 : 4,
@@ -251,7 +252,7 @@ export const NotificationModal = ({ visible, onClose }: NotificationModalProps) 
                                                     styles.notifTitle,
                                                     {
                                                         color: theme.colors.text,
-                                                        fontFamily: notif.isRead ? 'Sora_600SemiBold' : 'Sora_700Bold'
+                                                        fontFamily: notif.isRead ? "Inter_600SemiBold" : "Inter_700Bold"
                                                     }
                                                 ]}
                                                 numberOfLines={1}
@@ -338,10 +339,10 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: 28,
         borderTopRightRadius: 28,
         borderTopWidth: 1,
-        shadowColor: '#000',
+        shadowColor: Palette.ink,
         shadowOffset: { width: 0, height: -4 },
-        shadowOpacity: 0.25,
-        shadowRadius: 16,
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
         elevation: 20,
     },
     header: {
@@ -358,7 +359,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     headerTitle: {
-        fontFamily: 'Sora_800ExtraBold',
+        fontFamily: "Inter_700Bold",
         fontSize: 20,
         letterSpacing: -0.4,
         marginRight: 8,
@@ -369,7 +370,7 @@ const styles = StyleSheet.create({
         borderRadius: 999,
     },
     badgeText: {
-        fontFamily: 'Sora_700Bold',
+        fontFamily: "Inter_700Bold",
         fontSize: 11,
     },
     closeBtn: {
@@ -394,7 +395,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 2,
     },
     tabText: {
-        fontFamily: 'Sora_600SemiBold',
+        fontFamily: "Inter_600SemiBold",
         fontSize: 13,
     },
     scrollArea: {
@@ -415,7 +416,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     actionLinkText: {
-        fontFamily: 'Sora_600SemiBold',
+        fontFamily: "Inter_600SemiBold",
         fontSize: 12,
     },
     notificationCard: {
@@ -469,7 +470,7 @@ const styles = StyleSheet.create({
         marginLeft: 'auto',
     },
     actionHintText: {
-        fontFamily: 'Sora_600SemiBold',
+        fontFamily: "Inter_600SemiBold",
         fontSize: 11.5,
         marginRight: 2,
     },

@@ -1,4 +1,9 @@
 /** @type {import('tailwindcss').Config} */
+const palette = require('./constants/palette.json');
+const color = (key) => {
+  const fallback = [1, 3, 5].map(offset => parseInt(palette.dark[key].slice(offset, offset + 2), 16)).join(' ');
+  return `rgb(var(--color-${key}, ${fallback}) / <alpha-value>)`;
+};
 module.exports = {
   content: ["./app/**/*.{js,jsx,ts,tsx}", "./components/**/*.{js,jsx,ts,tsx}"],
   presets: [require("nativewind/preset")],
@@ -6,43 +11,45 @@ module.exports = {
     extend: {
       colors: {
         // Premium Athletic Minimalism Neutral Base
-        background: '#0D0F12',
-        backgroundSecondary: '#13161B',
-        backgroundTertiary: '#1A1E24',
-        surface: '#161A20',
-        surfaceElevated: '#1E232B',
-        borderSubtle: 'rgba(255, 255, 255, 0.07)',
-        borderSubtleLight: 'rgba(15, 23, 42, 0.08)',
+        background: color('background'),
+        backgroundSecondary: color('backgroundSecondary'),
+        backgroundTertiary: color('backgroundTertiary'),
+        surface: color('card'),
+        surfaceElevated: color('surfaceElevated'),
+        borderSubtle: color('cardBorder'),
+        borderSubtleLight: color('cardBorder'),
 
         // Athletic Accent (20% Personality)
-        primary: '#B7F52A',
-        primaryLight: '#D7FF72',
-        primaryDark: '#8CC80D',
-        accent: '#B7F52A',
+        primary: color('primary'),
+        primaryLight: color('primaryLight'),
+        primaryDark: color('primaryDark'),
+        accent: color('primary'),
+        onPrimary: color('onPrimary'),
 
         text: {
-          DEFAULT: '#F8FAFC',
-          secondary: '#94A3B8',
-          muted: '#64748B',
-          dim: '#475569',
+          DEFAULT: color('text'),
+          secondary: color('textSecondary'),
+          muted: color('textMuted'),
+          dim: color('textMuted'),
         },
 
-        success: '#10B981',
-        error: '#EF4444',
-        warning: '#F59E0B',
+        success: color('success'),
+        error: color('error'),
+        warning: color('warning'),
+        info: color('info'),
 
         category: {
-          strength: '#1E293B',
-          cardio: '#312E81',
-          stretch: '#4C1D95',
-          mobility: '#064E3B',
+          strength: color('backgroundTertiary'),
+          cardio: color('infoMuted'),
+          stretch: color('backgroundSecondary'),
+          mobility: color('successMuted'),
         },
       },
       fontFamily: {
-        display: ['Sora_700Bold', 'sans-serif'],
-        'display-semibold': ['Sora_600SemiBold', 'sans-serif'],
-        'display-regular': ['Sora_400Regular', 'sans-serif'],
-        'display-extrabold': ['Sora_800ExtraBold', 'sans-serif'],
+        display: ['Inter_700Bold', 'sans-serif'],
+        'display-semibold': ['Inter_600SemiBold', 'sans-serif'],
+        'display-regular': ['Inter_400Regular', 'sans-serif'],
+        'display-extrabold': ['Inter_700Bold', 'sans-serif'],
         sans: ['Inter_400Regular', 'sans-serif'],
         'sans-medium': ['Inter_500Medium', 'sans-serif'],
         'sans-semibold': ['Inter_600SemiBold', 'sans-serif'],

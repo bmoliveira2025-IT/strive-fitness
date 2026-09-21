@@ -56,11 +56,11 @@ export function DailyInsightCard() {
                 overflow: 'hidden',
                 borderWidth: 1,
                 borderColor: theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.07)' : 'rgba(0, 0, 0, 0.06)',
-                backgroundColor: theme.mode === 'dark' ? '#13171D' : '#FFFFFF',
+                backgroundColor: theme.mode === 'dark' ? '#13171D' : theme.colors.card,
             }}
         >
             <LinearGradient
-                colors={theme.mode === 'dark' ? ['rgba(183, 245, 42, 0.06)', 'transparent'] : ['rgba(77, 124, 15, 0.04)', 'transparent']}
+                colors={theme.mode === 'dark' ? [theme.colors.primary + '0f', 'transparent'] : [theme.colors.primary + '0a', 'transparent']}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={{ padding: 16 }}
@@ -72,7 +72,7 @@ export function DailyInsightCard() {
                             width: 28,
                             height: 28,
                             borderRadius: 8,
-                            backgroundColor: theme.mode === 'dark' ? 'rgba(183, 245, 42, 0.15)' : 'rgba(77, 124, 15, 0.12)',
+                            backgroundColor: theme.mode === 'dark' ? theme.colors.primary + '26' : theme.colors.primary + '1f',
                             alignItems: 'center',
                             justifyContent: 'center',
                             marginRight: 8,

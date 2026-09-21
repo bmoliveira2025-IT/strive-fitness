@@ -1,7 +1,7 @@
 import Palette from '../../constants/palette.json';
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
-import { Platform, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../context/ThemeContext';
 import { FontFamily } from '../../constants/theme';
@@ -59,9 +59,9 @@ export default function TabLayout() {
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: theme.colors.tabBarBackground,
-          borderTopColor: theme.colors.tabBarBorder,
-          borderTopWidth: 1,
+          backgroundColor: theme.colors.background,
+          borderTopColor: theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.07)' : theme.colors.tabBarBorder,
+          borderTopWidth: StyleSheet.hairlineWidth,
           borderLeftWidth: 0,
           borderRightWidth: 0,
           borderBottomWidth: 0,
@@ -69,10 +69,10 @@ export default function TabLayout() {
           paddingBottom: bottomPadding,
           height: tabHeight,
           shadowColor: Palette.ink,
-          shadowOffset: { width: 0, height: -4 },
-          shadowOpacity: theme.mode === 'dark' ? 0.1 : 0.08,
-          shadowRadius: 8,
-          elevation: 24,
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: theme.mode === 'dark' ? 0.05 : 0.04,
+          shadowRadius: 6,
+          elevation: 0,
         },
         tabBarLabelStyle: {
           fontFamily: FontFamily.sansSemiBold,

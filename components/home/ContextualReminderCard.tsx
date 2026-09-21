@@ -1,3 +1,4 @@
+import Palette from '../../constants/palette.json';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
@@ -26,7 +27,7 @@ export function ContextualReminderCard({ streak, weekCount }: ContextualReminder
         if (streak > 0 && streak % 5 === 4) {
             return {
                 icon: 'flame',
-                iconColor: '#F59E0B',
+                iconColor: theme.colors.warning,
                 tag: 'RECORDE DE STREAK',
                 title: `Falta 1 dia para bater ${streak + 1} dias seguidos!`,
                 subtitle: 'Mantenha o foco hoje para estender sua maior sequência de disciplina.',
@@ -51,7 +52,7 @@ export function ContextualReminderCard({ streak, weekCount }: ContextualReminder
         if (weekCount >= targetDays) {
             return {
                 icon: 'checkmark-circle',
-                iconColor: '#10B981',
+                iconColor: theme.colors.success,
                 tag: 'META ATINGIDA',
                 title: 'Parabéns! Meta da semana concluída 🎉',
                 subtitle: 'Continue acumulando volume ou aproveite para focar em recuperação e cardio.',
@@ -84,11 +85,11 @@ export function ContextualReminderCard({ streak, weekCount }: ContextualReminder
                 overflow: 'hidden',
                 borderWidth: 1,
                 borderColor: theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)',
-                backgroundColor: theme.mode === 'dark' ? '#13171D' : '#FFFFFF',
-                shadowColor: '#000',
+                backgroundColor: theme.mode === 'dark' ? '#13171D' : theme.colors.card,
+                shadowColor: Palette.ink,
                 shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: theme.mode === 'dark' ? 0.3 : 0.05,
-                shadowRadius: 10,
+                shadowOpacity: theme.mode === 'dark' ? 0.1 : 0.05,
+                shadowRadius: 8,
                 elevation: 3,
             }}
         >

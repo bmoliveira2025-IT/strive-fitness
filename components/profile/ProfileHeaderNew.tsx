@@ -37,9 +37,9 @@ export function ProfileHeaderNew({ userName, email, photoUri, bio, weight, heigh
 
     const stats = [
         { label: 'Treinos', value: history.length, icon: 'barbell-outline' as const, color: profileAccent },
-        { label: 'Horas', value: totalHours || '--', icon: 'time-outline' as const, color: '#38BDF8' },
-        { label: 'IMC', value: (weight && height) ? (weight / (Math.pow(height / 100, 2))).toFixed(1) : '--', icon: 'fitness-outline' as const, color: '#10B981' },
-        { label: 'Nível', value: level, icon: 'flash-outline' as const, color: '#F59E0B' }
+        { label: 'Horas', value: totalHours || '--', icon: 'time-outline' as const, color: theme.colors.info },
+        { label: 'IMC', value: (weight && height) ? (weight / (Math.pow(height / 100, 2))).toFixed(1) : '--', icon: 'fitness-outline' as const, color: theme.colors.success },
+        { label: 'Nível', value: level, icon: 'flash-outline' as const, color: theme.colors.warning }
     ];
 
     return (
@@ -48,12 +48,12 @@ export function ProfileHeaderNew({ userName, email, photoUri, bio, weight, heigh
                 {/* Top Action Bar */}
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
                     <View style={{
-                        backgroundColor: theme.mode === 'dark' ? 'rgba(183, 245, 42, 0.12)' : 'rgba(77, 124, 15, 0.1)',
+                        backgroundColor: theme.mode === 'dark' ? theme.colors.primary + '1f' : theme.colors.primary + '1a',
                         paddingHorizontal: 12,
                         paddingVertical: 4,
                         borderRadius: Radius.sm,
                         borderWidth: 1,
-                        borderColor: theme.mode === 'dark' ? 'rgba(183, 245, 42, 0.25)' : 'rgba(77, 124, 15, 0.2)',
+                        borderColor: theme.mode === 'dark' ? theme.colors.primary + '40' : theme.colors.primary + '33',
                     }}>
                         <Text style={{
                             color: theme.colors.primary,

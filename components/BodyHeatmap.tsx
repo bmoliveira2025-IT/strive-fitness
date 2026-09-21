@@ -1,3 +1,4 @@
+import Palette from '../constants/palette.json';
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, Pressable } from 'react-native';
 import Svg, { Defs, RadialGradient, Stop, Ellipse, Path, G } from 'react-native-svg';
@@ -101,7 +102,7 @@ export default function BodyHeatmap({ statusMap, onMusclePress }: BodyHeatmapPro
             {/* Toggle Switch */}
             <View style={{
                 flexDirection: 'row',
-                backgroundColor: theme.mode === 'light' ? '#E4E4E7' : '#27272A',
+                backgroundColor: theme.mode === 'light' ? '#E4E4E7' : theme.colors.backgroundTertiary,
                 borderRadius: 100,
                 padding: 4,
                 marginBottom: 24
@@ -112,15 +113,15 @@ export default function BodyHeatmap({ statusMap, onMusclePress }: BodyHeatmapPro
                         paddingHorizontal: 16,
                         paddingVertical: 4,
                         borderRadius: 100,
-                        backgroundColor: view === 'Front' ? (theme.mode === 'light' ? '#FFF' : '#3F3F46') : 'transparent',
-                        shadowColor: view === 'Front' ? '#000' : 'transparent',
+                        backgroundColor: view === 'Front' ? (theme.mode === 'light' ? theme.colors.card : '#3F3F46') : 'transparent',
+                        shadowColor: view === 'Front' ? Palette.ink : 'transparent',
                         shadowOffset: { width: 0, height: 1 },
                         shadowOpacity: 0.1,
                         shadowRadius: 2,
                         elevation: view === 'Front' ? 2 : 0
                     }}
                 >
-                    <Text style={{ color: theme.colors.text, fontSize: 12, fontWeight: '700' }}>Frente</Text>
+                    <Text style={{ color: theme.colors.text, fontSize: 12, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>Frente</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                     onPress={() => setView('Back')}
@@ -128,15 +129,15 @@ export default function BodyHeatmap({ statusMap, onMusclePress }: BodyHeatmapPro
                         paddingHorizontal: 16,
                         paddingVertical: 4,
                         borderRadius: 100,
-                        backgroundColor: view === 'Back' ? (theme.mode === 'light' ? '#FFF' : '#3F3F46') : 'transparent',
-                        shadowColor: view === 'Back' ? '#000' : 'transparent',
+                        backgroundColor: view === 'Back' ? (theme.mode === 'light' ? theme.colors.card : '#3F3F46') : 'transparent',
+                        shadowColor: view === 'Back' ? Palette.ink : 'transparent',
                         shadowOffset: { width: 0, height: 1 },
                         shadowOpacity: 0.1,
                         shadowRadius: 2,
                         elevation: view === 'Back' ? 2 : 0
                     }}
                 >
-                    <Text style={{ color: theme.colors.text, fontSize: 12, fontWeight: '700' }}>Costas</Text>
+                    <Text style={{ color: theme.colors.text, fontSize: 12, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>Costas</Text>
                 </TouchableOpacity>
             </View>
 
@@ -204,19 +205,19 @@ export default function BodyHeatmap({ statusMap, onMusclePress }: BodyHeatmapPro
             {/* Legend */}
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 16, marginTop: 24 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <View style={{ width: 12, height: 12, borderRadius: 100, backgroundColor: '#EAB308', marginRight: 8 }} />
+                    <View style={{ width: 12, height: 12, borderRadius: 100, backgroundColor: theme.colors.warning, marginRight: 8 }} />
                     <Text style={{ color: theme.colors.textSecondary, fontSize: 12 }}>Subtreinado</Text>
                 </View>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <View style={{ width: 12, height: 12, borderRadius: 100, backgroundColor: '#22C55E', marginRight: 8 }} />
+                    <View style={{ width: 12, height: 12, borderRadius: 100, backgroundColor: theme.colors.success, marginRight: 8 }} />
                     <Text style={{ color: theme.colors.textSecondary, fontSize: 12 }}>Ideal</Text>
                 </View>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <View style={{ width: 12, height: 12, borderRadius: 100, backgroundColor: '#3B82F6', marginRight: 8 }} />
+                    <View style={{ width: 12, height: 12, borderRadius: 100, backgroundColor: theme.colors.info, marginRight: 8 }} />
                     <Text style={{ color: theme.colors.textSecondary, fontSize: 12 }}>Recuperando</Text>
                 </View>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <View style={{ width: 12, height: 12, borderRadius: 100, backgroundColor: '#EF4444', marginRight: 8 }} />
+                    <View style={{ width: 12, height: 12, borderRadius: 100, backgroundColor: theme.colors.error, marginRight: 8 }} />
                     <Text style={{ color: theme.colors.textSecondary, fontSize: 12 }}>Risco</Text>
                 </View>
             </View>

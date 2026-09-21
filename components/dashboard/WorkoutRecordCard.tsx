@@ -1,9 +1,10 @@
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import React, { memo, useCallback, useMemo } from 'react';
-import { Share, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Share, Text, TouchableOpacity, View } from 'react-native';
+import { FontFamily, Radius } from '../../constants/theme';
 import { useTheme } from '../../context/ThemeContext';
-import { WorkoutHistoryRecord } from '../../context/WorkoutHistoryContext';
+import { WorkoutHistoryRecord, useWorkoutHistory } from '../../context/WorkoutHistoryContext';
 
 interface WorkoutRecordCardProps {
     item: WorkoutHistoryRecord;
@@ -12,142 +13,186 @@ interface WorkoutRecordCardProps {
 
 export const WorkoutRecordCard = memo(function WorkoutRecordCard({ item }: WorkoutRecordCardProps) {
     const { theme } = useTheme();
+    const { deleteHistoryRecord } = useWorkoutHistory();
 
     const handleShare = useCallback(async () => {
         try {
             const exerciseNames = item.exercises?.map(e => e.name).join(', ') || '';
+            const durationMin = Math.floor(item.duration / 60);
+            const durationText = durationMin > 0 ? `${durationMin} min` : '< 1 min';
             await Share.share({
-                message: `💪 ${item.workoutName}\n\n${exerciseNames}\n\n⏱️ ${Math.floor(item.duration / 60)}min | 🏋️ ${item.totalVolume > 0 ? `${(item.totalVolume / 1000).toFixed(1)}t` : '---'}\n\n#Strive`,
+                message: `💪 ${item.workoutName}\n\n${exerciseNames}\n\n⏱️ ${durationText} | 🏋️ ${item.totalVolume > 0 ? `${(item.totalVolume / 1000).toFixed(1)}t` : `${item.totalSeries || 0} séries`}\n\n#Strive`,
             });
         } catch (error) {
             console.log('Share error:', error);
         }
     }, [item]);
 
-    const { day, month } = useMemo(() => {
+    const handleDelete = useCallback(() => {
+        Alert.alert(
+            'Excluir do Histórico',
+            `Deseja remover o registro "${item.workoutName}" das suas atividades?`,
+            [
+                { text: 'Cancelar', style: 'cancel' },
+                {
+                    text: 'Excluir',
+                    style: 'destructive',
+                    onPress: () => deleteHistoryRecord(item.id),
+                },
+            ]
+        );
+    }, [item, deleteHistoryRecord]);
+
+    const { dateFormatted, durationText } = useMemo(() => {
         const date = new Date(item.date);
+        const day = date.getDate();
+        const month = date.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '');
+        const durationMin = Math.floor(item.duration / 60);
         return {
-            day: date.getDate(),
-            month: date.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '').toUpperCase(),
+            dateFormatted: `${day} de ${month}`,
+            durationText: durationMin > 0 ? `${durationMin} min` : '< 1 min',
         };
-    }, [item.date]);
+    }, [item.date, item.duration]);
 
-    const hasMedia = item.media && item.media.length > 0;
     const fallbackImageUrl = item.exercises?.[0]?.image_url;
-
-    // Unified Elite Primary Accent
-    const accentColor = theme.colors.primary;
+    const hasMedia = item.media && item.media.length > 0;
+    const exerciseCount = item.exercises?.length || 0;
+    const seriesCount = item.totalSeries || item.exercises?.reduce((acc, e) => acc + (e.sets?.length || 0), 0) || 0;
 
     return (
         <View
             style={{
-                backgroundColor: theme.colors.backgroundSecondary,
-                borderRadius: 32,
-                marginBottom: 20,
-                marginHorizontal: 24,
-                overflow: 'hidden',
-                borderColor: theme.colors.border,
+                backgroundColor: theme.mode === 'dark' ? '#14171F' : theme.colors.card,
+                borderRadius: Radius.lg,
+                marginBottom: 10,
+                marginHorizontal: 16,
+                padding: 12,
+                borderColor: theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.07)' : theme.colors.border,
                 borderWidth: 1,
             }}
         >
-            <TouchableOpacity
-                activeOpacity={0.9}
-                className="p-5"
-            >
-                <View className="flex-row items-center justify-between mb-5">
-                    <View className="flex-row items-center">
-                        <View
-                            style={{ backgroundColor: theme.colors.backgroundTertiary, width: 38, height: 38, borderRadius: 14, alignItems: 'center', justifyContent: 'center', marginRight: 12, borderWidth: 1, borderColor: theme.colors.border }}
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                {/* Thumbnail / Ícone compacto */}
+                <View
+                    style={{
+                        width: 48,
+                        height: 48,
+                        borderRadius: 12,
+                        overflow: 'hidden',
+                        backgroundColor: theme.mode === 'dark' ? '#1E2330' : theme.colors.backgroundTertiary,
+                        borderWidth: 1,
+                        borderColor: theme.colors.border,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0,
+                    }}
+                >
+                    {hasMedia && item.media ? (
+                        <Image
+                            source={{ uri: item.media[0] }}
+                            style={{ width: '100%', height: '100%' }}
+                            contentFit="cover"
+                            cachePolicy="memory-disk"
+                        />
+                    ) : fallbackImageUrl ? (
+                        <Image
+                            source={{ uri: fallbackImageUrl }}
+                            style={{ width: '85%', height: '85%' }}
+                            contentFit="contain"
+                            cachePolicy="memory-disk"
+                        />
+                    ) : (
+                        <Ionicons name="barbell" size={20} color={theme.colors.primary} />
+                    )}
+                </View>
+
+                {/* Informações Principais */}
+                <View style={{ flex: 1, minWidth: 0 }}>
+                    <Text
+                        numberOfLines={1}
+                        style={{
+                            color: theme.colors.text,
+                            fontSize: 14,
+                            fontFamily: FontFamily.display,
+                            fontWeight: '700',
+                            marginBottom: 2,
+                        }}
+                    >
+                        {item.workoutName || 'Treino Concluído'}
+                    </Text>
+
+                    <Text
+                        style={{
+                            color: theme.colors.textMuted,
+                            fontSize: 11,
+                            fontFamily: FontFamily.sansMedium,
+                        }}
+                    >
+                        {dateFormatted} • {durationText}
+                        {seriesCount > 0 ? ` • ${seriesCount} séries` : ''}
+                    </Text>
+
+                    {/* Resumo de Exercícios ou Volume */}
+                    {item.totalVolume > 0 ? (
+                        <Text
+                            style={{
+                                color: theme.colors.primary,
+                                fontSize: 10,
+                                fontFamily: FontFamily.sansBold,
+                                marginTop: 2,
+                            }}
                         >
-                            <Ionicons name="barbell" size={20} color={accentColor} />
-                        </View>
-                        <View>
-                            <Text style={{ color: theme.colors.text }} className="font-black italic text-base uppercase tracking-tighter leading-none">
-                                {item.workoutName}
-                            </Text>
-                            <Text style={{ color: theme.colors.textMuted }} className="text-[10px] font-black uppercase tracking-widest mt-1.5 opacity-60">
-                                {day} {month} • {Math.floor(item.duration / 60)} MIN
-                            </Text>
-                        </View>
-                    </View>
+                            {(item.totalVolume / 1000).toFixed(1)}T de volume total
+                        </Text>
+                    ) : exerciseCount > 0 ? (
+                        <Text
+                            numberOfLines={1}
+                            style={{
+                                color: theme.colors.textSecondary,
+                                fontSize: 10,
+                                fontFamily: FontFamily.sans,
+                                marginTop: 2,
+                            }}
+                        >
+                            {item.exercises.slice(0, 2).map(e => e.name).join(', ')}
+                            {exerciseCount > 2 ? ` +${exerciseCount - 2}` : ''}
+                        </Text>
+                    ) : null}
+                </View>
+
+                {/* Ações Rápidas (Share e Delete) */}
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
                     <TouchableOpacity
                         onPress={handleShare}
-                        className="w-10 h-10 rounded-2xl items-center justify-center bg-zinc-500/10 border border-zinc-500/10"
+                        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                        style={{
+                            width: 32,
+                            height: 32,
+                            borderRadius: 16,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            backgroundColor: theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.04)',
+                        }}
                     >
-                        <Ionicons name="share-social" size={18} color={theme.colors.text} />
+                        <Ionicons name="share-social-outline" size={15} color={theme.colors.textSecondary} />
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        onPress={handleDelete}
+                        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                        style={{
+                            width: 32,
+                            height: 32,
+                            borderRadius: 16,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            backgroundColor: theme.mode === 'dark' ? 'rgba(239, 68, 68, 0.1)' : 'rgba(239, 68, 68, 0.08)',
+                        }}
+                    >
+                        <Ionicons name="trash-outline" size={15} color="#EF4444" />
                     </TouchableOpacity>
                 </View>
-
-                <View className="flex-row">
-                    {/* Media Section - Elite Polish */}
-                    <View style={{ width: 110, height: 110, borderRadius: 24, overflow: 'hidden', backgroundColor: theme.colors.backgroundTertiary, borderWidth: 1, borderColor: theme.colors.border }}>
-                        {hasMedia && item.media ? (
-                            <Image source={{ uri: item.media[0] }} style={{ width: '100%', height: '100%' }} contentFit="cover" cachePolicy="memory-disk" />
-                        ) : fallbackImageUrl ? (
-                            <View className="p-2 w-full h-full items-center justify-center">
-                                <Image
-                                    source={{ uri: fallbackImageUrl }}
-                                    style={{ width: '85%', height: '85%', opacity: 0.9 }}
-                                    contentFit="contain"
-                                    cachePolicy="memory-disk"
-                                />
-                            </View>
-                        ) : (
-                            <View style={{ width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center' }}>
-                                <MaterialCommunityIcons name="arm-flex" size={36} color={theme.colors.textMuted} style={{ opacity: 0.2 }} />
-                            </View>
-                        )}
-
-                        {item.totalVolume > 0 && (
-                            <View
-                                style={{ position: 'absolute', top: 8, left: 8, backgroundColor: theme.colors.primary, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8 }}
-                            >
-                                <Text style={{ color: '#000', fontSize: 8, fontWeight: '900' }}>{(item.totalVolume / 1000).toFixed(1)}T</Text>
-                            </View>
-                        )}
-                    </View>
-
-                    {/* Exercise Focus Section */}
-                    <View className="flex-1 ml-5 justify-center">
-                        <Text style={{ color: theme.colors.textMuted }} className="text-[9px] font-black uppercase tracking-[2px] mb-3 opacity-60">
-                            FOCO DA SESSÃO
-                        </Text>
-                        <View className="flex-row flex-wrap gap-2">
-                            {item.exercises?.slice(0, 3).map((ex, i) => (
-                                <View
-                                    key={i}
-                                    style={{
-                                        backgroundColor: theme.colors.backgroundTertiary,
-                                        paddingHorizontal: 12,
-                                        paddingVertical: 6,
-                                        borderRadius: 12,
-                                        borderWidth: 1,
-                                        borderColor: theme.colors.border
-                                    }}
-                                >
-                                    <Text style={{ color: theme.colors.text, fontSize: 9, fontWeight: '900' }} className="uppercase tracking-wide">{ex.name}</Text>
-                                </View>
-                            ))}
-                        </View>
-
-                        <View className="flex-row items-center mt-5 gap-4">
-                            <View className="flex-row items-center">
-                                <Ionicons name="flash" size={14} color={accentColor} />
-                                <Text style={{ color: theme.colors.text, fontSize: 10, fontWeight: '900', marginLeft: 6 }}>
-                                    {item.postWorkoutSurvey?.intensity || 'MODERADO'}
-                                </Text>
-                            </View>
-                            <View style={{ width: 1, height: 12, backgroundColor: theme.colors.border }} />
-                            <View className="flex-row items-center">
-                                <Ionicons name="heart" size={14} color={theme.colors.error} />
-                                <Text style={{ color: theme.colors.text, fontSize: 10, fontWeight: '900', marginLeft: 6 }}>
-                                    {item.postWorkoutSurvey?.feeling || 'FENOMENAL'}
-                                </Text>
-                            </View>
-                        </View>
-                    </View>
-                </View>
-            </TouchableOpacity>
+            </View>
         </View>
     );
 });

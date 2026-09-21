@@ -1,3 +1,4 @@
+import Palette from '../../constants/palette.json';
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
@@ -73,7 +74,7 @@ export default function LessonScreen() {
         </View>
 
         {/* Progress Bar Mock */}
-        <View className="absolute bottom-0 left-0 right-0 h-1 bg-zinc-800">
+        <View className="absolute bottom-0 left-0 right-0 h-1 bg-backgroundTertiary">
           <View className="h-full bg-primary w-1/3" />
         </View>
 
@@ -103,7 +104,7 @@ export default function LessonScreen() {
 
           <Text
             style={{ color: theme.colors.text }}
-            className="text-2xl font-black mb-4"
+            className="text-2xl font-bold mb-4"
           >
             {lesson.title}
           </Text>
@@ -184,7 +185,7 @@ export default function LessonScreen() {
                   }}
                   className="flex-row items-center p-4 rounded-2xl border mb-3"
                 >
-                  <View className="w-12 h-12 rounded-xl bg-zinc-800 items-center justify-center mr-4">
+                  <View className="w-12 h-12 rounded-xl bg-backgroundTertiary items-center justify-center mr-4">
                     <Ionicons
                       name="play"
                       size={20}
@@ -236,10 +237,10 @@ export default function LessonScreen() {
         <GradientButton
           style={{
             borderRadius: 16,
-            shadowColor: '#000',
+            shadowColor: Palette.ink,
             shadowOffset: { width: 0, height: 4 },
             shadowOpacity: 0.1,
-            shadowRadius: 10,
+            shadowRadius: 8,
             elevation: 4
           }}
           gradientStyle={{
@@ -250,7 +251,7 @@ export default function LessonScreen() {
             justifyContent: 'center'
           }}
         >
-          <Text className="text-white font-bold text-base">
+          <Text className="text-onPrimary font-bold text-base">
             Baixar Aula (Offline)
           </Text>
         </GradientButton>

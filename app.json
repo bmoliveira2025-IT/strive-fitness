@@ -37,8 +37,8 @@
       "name": "Strive Workout",
       "shortName": "Strive",
       "display": "standalone",
-      "themeColor": "#8B5CF6",
-      "backgroundColor": "#FFFFFF",
+      "themeColor": "#121619",
+      "backgroundColor": "#121619",
       "description": "Seu companheiro inteligente de treinos"
     },
     "plugins": [

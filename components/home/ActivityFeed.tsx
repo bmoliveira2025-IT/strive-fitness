@@ -33,7 +33,7 @@ export function ActivityFeed() {
                     marginBottom: 24,
                     padding: 20,
                     borderRadius: Radius.lg,
-                    backgroundColor: theme.mode === 'dark' ? '#13171D' : '#FFFFFF',
+                    backgroundColor: theme.mode === 'dark' ? '#13171D' : theme.colors.card,
                     borderWidth: 1,
                     borderColor: theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.07)' : 'rgba(0, 0, 0, 0.06)',
                     alignItems: 'center',
@@ -43,7 +43,7 @@ export function ActivityFeed() {
                     width: 44,
                     height: 44,
                     borderRadius: 22,
-                    backgroundColor: theme.mode === 'dark' ? 'rgba(183, 245, 42, 0.12)' : 'rgba(77, 124, 15, 0.1)',
+                    backgroundColor: theme.mode === 'dark' ? theme.colors.primary + '1f' : theme.colors.primary + '1a',
                     alignItems: 'center',
                     justifyContent: 'center',
                     marginBottom: 10,
@@ -108,7 +108,7 @@ export function ActivityFeed() {
                         color: theme.colors.text,
                         fontSize: 18,
                         fontFamily: FontFamily.display,
-                        fontWeight: '800',
+                        fontWeight: '700',
                         letterSpacing: -0.3,
                     }}>
                         Atividades Recentes

@@ -22,7 +22,7 @@ const AchievementCard = memo(function AchievementCard({ achievement, width }: { 
             <View style={{ alignItems: 'center', marginBottom: 12 }}>
                 <AchievementBadge icon={achievement.icon} type={achievement.tier} size={66} locked={!achievement.unlocked} />
             </View>
-            <Text style={{ color: achievement.unlocked ? theme.colors.text : theme.colors.textSecondary, fontSize: 14, fontWeight: '800', textAlign: 'center' }} numberOfLines={1}>
+            <Text style={{ color: achievement.unlocked ? theme.colors.text : theme.colors.textSecondary, fontSize: 14, fontFamily: 'Inter_700Bold', fontWeight: '700', textAlign: 'center' }} numberOfLines={1}>
                 {achievement.title}
             </Text>
             <Text style={{ color: theme.colors.textMuted, fontSize: 11, lineHeight: 15, textAlign: 'center', marginTop: 4, minHeight: 30 }} numberOfLines={2}>
@@ -31,7 +31,7 @@ const AchievementCard = memo(function AchievementCard({ achievement, width }: { 
             <View style={{ height: 5, backgroundColor: theme.colors.backgroundTertiary, borderRadius: 3, overflow: 'hidden', marginTop: 12 }}>
                 <View style={{ height: '100%', width: `${percentage}%`, backgroundColor: achievement.unlocked ? theme.colors.success : theme.colors.primary, borderRadius: 3 }} />
             </View>
-            <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontWeight: '700', textAlign: 'center', marginTop: 6 }}>
+            <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontFamily: 'Inter_700Bold', fontWeight: '700', textAlign: 'center', marginTop: 6 }}>
                 {achievement.unlocked ? 'Conquistada' : `${Math.min(achievement.current, achievement.target).toLocaleString()} / ${achievement.target.toLocaleString()}`}
             </Text>
         </View>
@@ -75,15 +75,15 @@ export default function AchievementsScreen() {
                                 <Ionicons name="chevron-back" size={22} color={theme.colors.text} />
                             </TouchableOpacity>
                             <View style={{ marginLeft: 14 }}>
-                                <Text style={{ color: theme.colors.text, fontSize: 24, fontWeight: '800', letterSpacing: -0.5 }}>Conquistas</Text>
+                                <Text style={{ color: theme.colors.text, fontSize: 24, fontFamily: 'Inter_700Bold', fontWeight: '700', letterSpacing: -0.5 }}>Conquistas</Text>
                                 <Text style={{ color: theme.colors.textSecondary, fontSize: 12, marginTop: 2 }}>Metas e marcos da sua jornada</Text>
                             </View>
                         </View>
 
                         <View style={{ backgroundColor: theme.colors.card, borderColor: theme.colors.cardBorder, borderWidth: 1, borderRadius: 18, padding: 16, marginBottom: 16 }}>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                                <Text style={{ color: theme.colors.text, fontSize: 16, fontWeight: '800' }}>Seu progresso</Text>
-                                <Text style={{ color: theme.colors.primaryDark, fontSize: 14, fontWeight: '800' }}>{unlocked}/{achievements.length}</Text>
+                                <Text style={{ color: theme.colors.text, fontSize: 16, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>Seu progresso</Text>
+                                <Text style={{ color: theme.colors.primaryDark, fontSize: 14, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>{unlocked}/{achievements.length}</Text>
                             </View>
                             <View style={{ height: 7, backgroundColor: theme.colors.backgroundTertiary, borderRadius: 4, overflow: 'hidden' }}>
                                 <View style={{ height: '100%', width: `${(unlocked / achievements.length) * 100}%`, backgroundColor: theme.colors.primary, borderRadius: 4 }} />
@@ -95,7 +95,7 @@ export default function AchievementsScreen() {
                                 <Ionicons name={motivation.icon as any} size={20} color={theme.colors.primaryDark} />
                             </View>
                             <View style={{ flex: 1 }}>
-                                <Text style={{ color: theme.colors.text, fontSize: 13, fontWeight: '800' }}>{motivation.title}</Text>
+                                <Text style={{ color: theme.colors.text, fontSize: 13, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>{motivation.title}</Text>
                                 <Text style={{ color: theme.colors.textSecondary, fontSize: 11, lineHeight: 16, marginTop: 2 }}>{motivation.message}</Text>
                             </View>
                         </View>
@@ -103,11 +103,11 @@ export default function AchievementsScreen() {
                         <View style={{ flexDirection: 'row', backgroundColor: theme.colors.card, borderRadius: 15, borderWidth: 1, borderColor: theme.colors.cardBorder, padding: 4 }}>
                             {([{ id: 'all', label: 'Todas' }, { id: 'unlocked', label: 'Obtidas' }, { id: 'locked', label: 'Em progresso' }] as { id: Filter; label: string }[]).map(tab => (
                                 <TouchableOpacity key={tab.id} onPress={() => setFilter(tab.id)} style={{ flex: 1, paddingVertical: 10, borderRadius: 11, backgroundColor: filter === tab.id ? theme.colors.primary : 'transparent', alignItems: 'center' }}>
-                                    <Text style={{ color: filter === tab.id ? '#052E16' : theme.colors.textMuted, fontSize: 11, fontWeight: '800' }}>{tab.label}</Text>
+                                    <Text style={{ color: filter === tab.id ? theme.colors.successMuted : theme.colors.textMuted, fontSize: 11, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>{tab.label}</Text>
                                 </TouchableOpacity>
                             ))}
                         </View>
-                        <Text style={{ color: theme.colors.textSecondary, fontSize: 13, fontWeight: '700', marginTop: 20, marginBottom: 12 }}>{filtered.length} medalhas</Text>
+                        <Text style={{ color: theme.colors.textSecondary, fontSize: 13, fontFamily: 'Inter_700Bold', fontWeight: '700', marginTop: 20, marginBottom: 12 }}>{filtered.length} medalhas</Text>
                     </View>
                 }
             />

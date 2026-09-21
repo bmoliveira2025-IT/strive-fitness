@@ -211,8 +211,8 @@ export default function WorkoutPreviewScreen() {
                             borderRadius: 24,
                             shadowColor: theme.colors.primary,
                             shadowOffset: { width: 0, height: 4 },
-                            shadowOpacity: theme.mode === 'light' ? 0.2 : 0.1,
-                            shadowRadius: 10,
+                            shadowOpacity: theme.mode === 'light' ? 0.1 : 0.1,
+                            shadowRadius: 8,
                             elevation: 4
                         }}
                         gradientStyle={{
@@ -240,7 +240,7 @@ export default function WorkoutPreviewScreen() {
                             borderColor: theme.colors.border,
                             shadowColor: theme.colors.shadow,
                             shadowOffset: { width: 0, height: 4 },
-                            shadowOpacity: 0.3,
+                            shadowOpacity: 0.1,
                             shadowRadius: 8,
                             elevation: 10,
                         }}

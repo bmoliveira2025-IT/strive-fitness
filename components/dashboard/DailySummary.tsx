@@ -1,3 +1,4 @@
+import Palette from '../../constants/palette.json';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useMemo } from 'react';
 import { Text, View } from 'react-native';
@@ -111,10 +112,10 @@ export function DailySummary({ history, userName = "Braulio", showHeader = true 
                 style={{
                     backgroundColor: theme.colors.card,
                     borderColor: theme.colors.cardBorder,
-                    shadowColor: '#000',
+                    shadowColor: Palette.ink,
                     shadowOffset: { width: 0, height: 10 },
                     shadowOpacity: 0.05,
-                    shadowRadius: 25, // Doubled for ultimate softness
+                    shadowRadius: 8, // Doubled for ultimate softness
                     elevation: 0,
                     borderWidth: 1,
                     borderRadius: 20,
@@ -125,7 +126,7 @@ export function DailySummary({ history, userName = "Braulio", showHeader = true 
                 <View className="mr-5">
                     <CircularProgress
                         progress={isCompleted ? 1 : 0}
-                        color={isCompleted ? '#10B981' : theme.colors.primary}
+                        color={isCompleted ? theme.colors.success : theme.colors.primary}
                         icon={isCompleted ? "checkmark" : "flame"}
                     />
                 </View>

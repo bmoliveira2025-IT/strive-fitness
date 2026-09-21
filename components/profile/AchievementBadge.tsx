@@ -51,7 +51,7 @@ export const AchievementBadge = memo(function AchievementBadge({
             </View>
             {level !== undefined && (
                 <View style={{ backgroundColor: accent, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8, marginTop: -10 }}>
-                    <Text style={{ color: '#FFFFFF', fontSize: 9, fontWeight: '800' }}>NÍVEL {level}</Text>
+                    <Text style={{ color: theme.colors.onImage, fontSize: 9, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>NÍVEL {level}</Text>
                 </View>
             )}
         </View>

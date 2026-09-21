@@ -1,3 +1,4 @@
+import Palette from '../../constants/palette.json';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -151,7 +152,7 @@ export function CommunityLeaderboardCard() {
             {/* Header */}
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                    <Ionicons name="trophy" size={16} color="#EAB308" />
+                    <Ionicons name="trophy" size={16} color={theme.colors.warning} />
                     <Text
                         style={{
                             color: theme.colors.textSecondary,
@@ -174,7 +175,7 @@ export function CommunityLeaderboardCard() {
                         borderColor: 'rgba(234, 179, 8, 0.3)',
                     }}
                 >
-                    <Text style={{ color: '#EAB308', fontSize: 10, fontFamily: FontFamily.sansBold }}>
+                    <Text style={{ color: theme.colors.warning, fontSize: 10, fontFamily: FontFamily.sansBold }}>
                         LIGA OFICIAL
                     </Text>
                 </View>
@@ -187,11 +188,11 @@ export function CommunityLeaderboardCard() {
                     overflow: 'hidden',
                     borderWidth: 1,
                     borderColor: theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)',
-                    backgroundColor: theme.mode === 'dark' ? '#12141A' : '#FFFFFF',
-                    shadowColor: '#000',
+                    backgroundColor: theme.mode === 'dark' ? '#12141A' : theme.colors.card,
+                    shadowColor: Palette.ink,
                     shadowOffset: { width: 0, height: 4 },
-                    shadowOpacity: theme.mode === 'dark' ? 0.25 : 0.05,
-                    shadowRadius: 10,
+                    shadowOpacity: theme.mode === 'dark' ? 0.1 : 0.05,
+                    shadowRadius: 8,
                     elevation: 3,
                 }}
             >
@@ -225,7 +226,7 @@ export function CommunityLeaderboardCard() {
                                         borderRadius: Radius.md,
                                         backgroundColor: isUserRow
                                             ? theme.colors.primary + '16'
-                                            : (theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.02)' : '#F8FAFC'),
+                                            : (theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.02)' : theme.colors.background),
                                         borderWidth: 1,
                                         borderColor: isUserRow ? theme.colors.primary : 'transparent',
                                     }}
@@ -314,7 +315,7 @@ export function CommunityLeaderboardCard() {
                                                         flexShrink: 0,
                                                     }}
                                                 >
-                                                    <Text style={{ color: '#000000', fontSize: 9, fontFamily: FontFamily.sansBold }}>
+                                                    <Text style={{ color: theme.colors.onPrimary, fontSize: 9, fontFamily: FontFamily.sansBold }}>
                                                         VOCÊ
                                                     </Text>
                                                 </View>
@@ -345,7 +346,7 @@ export function CommunityLeaderboardCard() {
                                             {user.points.toLocaleString()} pts
                                         </Text>
                                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}>
-                                            <Ionicons name="flame" size={11} color="#F59E0B" />
+                                            <Ionicons name="flame" size={11} color={theme.colors.warning} />
                                             <Text style={{ color: theme.colors.textMuted, fontSize: 10, fontFamily: FontFamily.sans }}>
                                                 {user.streak}d
                                             </Text>
@@ -362,9 +363,9 @@ export function CommunityLeaderboardCard() {
                             marginTop: 12,
                             padding: 10,
                             borderRadius: Radius.md,
-                            backgroundColor: theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.03)' : '#F1F5F9',
+                            backgroundColor: theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.03)' : theme.colors.backgroundSecondary,
                             borderWidth: 1,
-                            borderColor: theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.05)' : '#E2E8F0',
+                            borderColor: theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.05)' : theme.colors.backgroundTertiary,
                             gap: 6,
                         }}
                     >
@@ -396,7 +397,7 @@ export function CommunityLeaderboardCard() {
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     gap: 3,
-                                    backgroundColor: theme.mode === 'dark' ? '#181C26' : '#FFFFFF',
+                                    backgroundColor: theme.mode === 'dark' ? theme.colors.card : theme.colors.card,
                                     paddingVertical: 5,
                                     borderRadius: 6,
                                 }}
@@ -415,12 +416,12 @@ export function CommunityLeaderboardCard() {
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     gap: 3,
-                                    backgroundColor: theme.mode === 'dark' ? '#181C26' : '#FFFFFF',
+                                    backgroundColor: theme.mode === 'dark' ? theme.colors.card : theme.colors.card,
                                     paddingVertical: 5,
                                     borderRadius: 6,
                                 }}
                             >
-                                <Ionicons name="medal" size={11} color="#EAB308" />
+                                <Ionicons name="medal" size={11} color={theme.colors.warning} />
                                 <Text style={{ color: theme.colors.textSecondary, fontSize: 9, fontFamily: FontFamily.sansBold }}>
                                     +350 Medalha
                                 </Text>
@@ -434,12 +435,12 @@ export function CommunityLeaderboardCard() {
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     gap: 3,
-                                    backgroundColor: theme.mode === 'dark' ? '#181C26' : '#FFFFFF',
+                                    backgroundColor: theme.mode === 'dark' ? theme.colors.card : theme.colors.card,
                                     paddingVertical: 5,
                                     borderRadius: 6,
                                 }}
                             >
-                                <Ionicons name="chatbubble" size={11} color="#3B82F6" />
+                                <Ionicons name="chatbubble" size={11} color={theme.colors.info} />
                                 <Text style={{ color: theme.colors.textSecondary, fontSize: 9, fontFamily: FontFamily.sansBold }}>
                                     +80 Fórum
                                 </Text>

@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
     ActivityIndicator,
@@ -330,19 +331,20 @@ export default function FeedScreen() {
     const selectedGroupName = GROUPS.find((g) => g.id === selectedGroup)?.name || 'Feed de treinos';
 
     return (
-        <View style={{ flex: 1, backgroundColor: '#000000' }}>
-            {/* ════════════════ TOP HEADER (Idêntico ao da imagem) ════════════════ */}
+        <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
+            <StatusBar style={theme.mode === 'light' ? 'dark' : 'light'} />
+            {/* ════════════════ TOP HEADER ════════════════ */}
             <View
                 style={{
                     paddingTop: insets.top + 10,
                     paddingBottom: 14,
                     paddingHorizontal: 16,
-                    backgroundColor: '#000000',
+                    backgroundColor: theme.colors.background,
                     flexDirection: 'row',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    borderBottomWidth: 1,
-                    borderBottomColor: 'rgba(255, 255, 255, 0.08)',
+                    borderBottomWidth: StyleSheet.hairlineWidth,
+                    borderBottomColor: theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.08)' : theme.colors.cardBorder,
                 }}
             >
                 {/* Center Dropdown Title: Feed de treinos ⌵ */}
@@ -353,7 +355,7 @@ export default function FeedScreen() {
                 >
                     <Text
                         style={{
-                            color: '#FFFFFF',
+                            color: theme.colors.text,
                             fontSize: 19,
                             fontFamily: FontFamily.display,
                             letterSpacing: -0.4,
@@ -361,7 +363,7 @@ export default function FeedScreen() {
                     >
                         {selectedGroup === 'todos' ? 'Feed de treinos' : selectedGroupName}
                     </Text>
-                    <Ionicons name="chevron-down" size={18} color="#38BDF8" />
+                    <Ionicons name="chevron-down" size={18} color={theme.colors.primary} />
                 </TouchableOpacity>
 
                 {/* Right Action: + Button to create post */}

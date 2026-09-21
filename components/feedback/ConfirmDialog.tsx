@@ -1,3 +1,4 @@
+import Palette from '../../constants/palette.json';
 import React from 'react';
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -57,15 +58,15 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
                             styles.iconWrapper,
                             {
                                 backgroundColor: isDestructive
-                                    ? (theme.mode === 'dark' ? '#2C1214' : '#FEE2E2')
-                                    : (theme.mode === 'dark' ? '#0F2442' : '#EFF6FF'),
+                                    ? (theme.mode === 'dark' ? theme.colors.errorMuted : theme.colors.errorMuted)
+                                    : (theme.mode === 'dark' ? theme.colors.infoMuted : theme.colors.infoMuted),
                             }
                         ]}
                     >
                         <Ionicons
                             name={icon}
                             size={28}
-                            color={isDestructive ? '#EF4444' : theme.colors.primary}
+                            color={isDestructive ? theme.colors.error : theme.colors.primary}
                         />
                     </View>
 
@@ -98,11 +99,11 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
                             style={[
                                 styles.confirmBtn,
                                 {
-                                    backgroundColor: isDestructive ? '#EF4444' : theme.colors.primary,
+                                    backgroundColor: isDestructive ? theme.colors.error : theme.colors.primary,
                                 }
                             ]}
                         >
-                            <Text style={styles.confirmText}>
+                            <Text style={[styles.confirmText, { color: theme.colors.onPrimary }]}>
                                 {confirmText}
                             </Text>
                         </TouchableOpacity>
@@ -128,10 +129,10 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         padding: 24,
         alignItems: 'center',
-        shadowColor: '#000',
+        shadowColor: Palette.ink,
         shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.25,
-        shadowRadius: 16,
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
         elevation: 12,
     },
     iconWrapper: {
@@ -143,7 +144,7 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
     title: {
-        fontFamily: 'Sora_700Bold',
+        fontFamily: "Inter_700Bold",
         fontSize: 18,
         textAlign: 'center',
         marginBottom: 8,
@@ -169,7 +170,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     cancelText: {
-        fontFamily: 'Sora_600SemiBold',
+        fontFamily: "Inter_600SemiBold",
         fontSize: 14,
     },
     confirmBtn: {
@@ -180,8 +181,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     confirmText: {
-        fontFamily: 'Sora_600SemiBold',
+        fontFamily: "Inter_600SemiBold",
         fontSize: 14,
-        color: '#FFFFFF',
+        color: Palette.light.onImage,
     },
 });

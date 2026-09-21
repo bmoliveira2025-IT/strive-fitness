@@ -78,8 +78,8 @@ export function VitalsCheckInModal({ visible, onClose }: VitalsCheckInModalProps
                         className="rounded-2xl border-2 items-center justify-center"
                     >
                         <Text
-                            style={{ color: value >= num ? '#FFF' : theme.colors.textMuted }}
-                            className="text-lg font-black"
+                            style={{ color: value >= num ? theme.colors.onImage : theme.colors.textMuted }}
+                            className="text-lg font-bold"
                         >
                             {num}
                         </Text>
@@ -114,7 +114,7 @@ export function VitalsCheckInModal({ visible, onClose }: VitalsCheckInModalProps
                     {/* Header */}
                     <View className="flex-row items-center justify-between mb-6">
                         <View>
-                            <Text style={{ color: theme.colors.text }} className="text-2xl font-black">
+                            <Text style={{ color: theme.colors.text }} className="text-2xl font-bold">
                                 Como você está?
                             </Text>
                             <Text style={{ color: theme.colors.textMuted }} className="text-sm mt-1">
@@ -136,7 +136,7 @@ export function VitalsCheckInModal({ visible, onClose }: VitalsCheckInModalProps
                         value={sleep}
                         onChange={setSleep}
                         icon="moon"
-                        color="#8B5CF6"
+                        color={theme.colors.primary}
                     />
 
                     <RatingSlider
@@ -144,7 +144,7 @@ export function VitalsCheckInModal({ visible, onClose }: VitalsCheckInModalProps
                         value={energy}
                         onChange={setEnergy}
                         icon="flash"
-                        color="#F59E0B"
+                        color={theme.colors.warning}
                     />
 
                     <RatingSlider
@@ -152,7 +152,7 @@ export function VitalsCheckInModal({ visible, onClose }: VitalsCheckInModalProps
                         value={recovery}
                         onChange={setRecovery}
                         icon="fitness"
-                        color="#3B82F6"
+                        color={theme.colors.info}
                     />
 
                     <RatingSlider
@@ -160,7 +160,7 @@ export function VitalsCheckInModal({ visible, onClose }: VitalsCheckInModalProps
                         value={stress}
                         onChange={setStress}
                         icon="alert-circle"
-                        color="#EF4444"
+                        color={theme.colors.error}
                     />
 
                     {/* Save Button */}
@@ -173,7 +173,7 @@ export function VitalsCheckInModal({ visible, onClose }: VitalsCheckInModalProps
                         }}
                         className="rounded-2xl py-4 items-center mt-2"
                     >
-                        <Text className="text-black text-lg font-black uppercase tracking-wider">
+                        <Text className="text-onPrimary text-lg font-bold uppercase tracking-wider">
                             Salvar Check-in
                         </Text>
                     </TouchableOpacity>

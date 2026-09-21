@@ -37,10 +37,10 @@ export function VitalSignsSummary() {
     if (!stats) return null;
 
     const items = [
-        { label: 'Peso', value: stats.weight ? `${stats.weight}kg` : '-', icon: 'scale-outline', color: '#10B981', trend: stats.weightTrend },
-        { label: 'Sono', value: stats.sleep ? `${stats.sleep}/5` : '-', icon: 'moon-outline', color: '#8B5CF6' },
-        { label: 'Energia', value: stats.energy ? `${stats.energy}/5` : '-', icon: 'flash-outline', color: '#F59E0B' },
-        { label: 'Recuperação', value: stats.recovery ? `${stats.recovery}/5` : '-', icon: 'fitness-outline', color: '#3B82F6' },
+        { label: 'Peso', value: stats.weight ? `${stats.weight}kg` : '-', icon: 'scale-outline', color: theme.colors.success, trend: stats.weightTrend },
+        { label: 'Sono', value: stats.sleep ? `${stats.sleep}/5` : '-', icon: 'moon-outline', color: theme.colors.primary },
+        { label: 'Energia', value: stats.energy ? `${stats.energy}/5` : '-', icon: 'flash-outline', color: theme.colors.warning },
+        { label: 'Recuperação', value: stats.recovery ? `${stats.recovery}/5` : '-', icon: 'fitness-outline', color: theme.colors.info },
     ];
 
     return (
@@ -50,7 +50,7 @@ export function VitalSignsSummary() {
                 className="px-6 mb-6 flex-row items-center justify-between"
             >
                 <View style={{ flex: 1, marginRight: 12 }}>
-                    <Text numberOfLines={1} style={{ color: theme.colors.text }} className="text-xl font-black tracking-tighter uppercase italic">Sinais Vitais</Text>
+                    <Text numberOfLines={1} style={{ color: theme.colors.text }} className="text-xl font-bold tracking-tighter uppercase italic">Sinais Vitais</Text>
                     <Text numberOfLines={1} style={{ color: theme.colors.textMuted }} className="text-[10px] font-bold uppercase tracking-widest mt-0.5">Biometria & Recuperação</Text>
                 </View>
                 <View style={{ backgroundColor: theme.colors.primary + '15', padding: 8, borderRadius: 12 }}>
@@ -73,8 +73,8 @@ export function VitalSignsSummary() {
                             height: 100,
                             shadowColor: theme.colors.shadow,
                             shadowOffset: { width: 0, height: 8 },
-                            shadowOpacity: 1,
-                            shadowRadius: 12,
+                            shadowOpacity: 0.1,
+                            shadowRadius: 8,
                             elevation: 0,
                             borderRadius: 20,
                             borderWidth: 1,
@@ -95,18 +95,18 @@ export function VitalSignsSummary() {
                         </View>
 
                         <View>
-                            <Text style={{ color: theme.colors.textMuted }} className="text-[9px] font-black uppercase tracking-wider mb-0.5">{item.label}</Text>
+                            <Text style={{ color: theme.colors.textMuted }} className="text-[9px] font-bold uppercase tracking-wider mb-0.5">{item.label}</Text>
                             <View className="flex-row items-end">
-                                <Text style={{ color: theme.colors.text }} className="text-xl font-black tracking-tighter">{item.value}</Text>
+                                <Text style={{ color: theme.colors.text }} className="text-xl font-bold tracking-tighter">{item.value}</Text>
                                 {item.trend !== undefined && item.trend !== 0 && (
                                     <View
-                                        style={{ backgroundColor: (item.trend > 0 ? '#EF4444' : '#10B981') + '15' }}
+                                        style={{ backgroundColor: (item.trend > 0 ? theme.colors.error : theme.colors.success) + '15' }}
                                         className="ml-2 px-1 rounded-md flex-row items-center mb-1"
                                     >
                                         <Ionicons
                                             name={item.trend > 0 ? 'arrow-up' : 'arrow-down'}
                                             size={8}
-                                            color={item.trend > 0 ? '#EF4444' : '#10B981'}
+                                            color={item.trend > 0 ? theme.colors.error : theme.colors.success}
                                         />
                                     </View>
                                 )}

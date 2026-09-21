@@ -16,7 +16,10 @@ export default function Root({ children }: PropsWithChildren) {
                 <title>Strive Fitness</title>
                 <meta name="description" content="Seu companheiro inteligente de treinos, musculação e evolução física." />
                 <link rel="manifest" href="/manifest.json" />
-                <meta name="theme-color" content="#8B5CF6" />
+                <meta name="theme-color" media="(prefers-color-scheme: light)" content="#F3F5F4" />
+                <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#121619" />
+                <meta name="theme-color" content="#121619" />
+                <meta name="color-scheme" content="dark light" />
 
                 {/* Apple iOS PWA tags */}
                 <meta name="apple-mobile-web-app-capable" content="yes" />

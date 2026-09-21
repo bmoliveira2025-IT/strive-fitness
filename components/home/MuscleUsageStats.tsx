@@ -1,3 +1,4 @@
+import Palette from '../../constants/palette.json';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
@@ -95,23 +96,23 @@ export function MuscleUsageStats({ onOpenInfo }: MuscleUsageStatsProps = {}) {
                 className="flex-row items-center justify-between mb-5"
             >
                 <View style={{ flex: 1, marginRight: 12 }}>
-                    <Text numberOfLines={1} style={{ color: theme.colors.text }} className="text-xl font-black tracking-tighter italic uppercase">Foco Muscular</Text>
+                    <Text numberOfLines={1} style={{ color: theme.colors.text }} className="text-xl font-bold tracking-tighter italic uppercase">Foco Muscular</Text>
                     <View className="flex-row items-center mt-0.5">
                         <View style={{ backgroundColor: theme.colors.primary, width: 2, height: 10, borderRadius: 1, marginRight: 6, opacity: 0.5 }} />
-                        <Text numberOfLines={1} style={{ color: theme.colors.textMuted }} className="text-[10px] font-black uppercase tracking-widest leading-none">Distribuição Semanal</Text>
+                        <Text numberOfLines={1} style={{ color: theme.colors.textMuted }} className="text-[10px] font-bold uppercase tracking-widest leading-none">Distribuição Semanal</Text>
                     </View>
                 </View>
                 <TouchableOpacity
                     onPress={() => router.push('/muscle-coach-details')}
                     className="w-10 h-10 rounded-xl items-center justify-center"
                     style={{
-                        backgroundColor: theme.mode === 'light' ? '#FFFFFF' : theme.colors.card,
+                        backgroundColor: theme.mode === 'light' ? theme.colors.card : theme.colors.card,
                         borderWidth: 1.5,
                         borderColor: theme.colors.cardBorder,
-                        shadowColor: '#000',
+                        shadowColor: Palette.ink,
                         shadowOffset: { width: 0, height: 4 },
                         shadowOpacity: 0.05,
-                        shadowRadius: 10,
+                        shadowRadius: 8,
                     }}
                 >
                     <Ionicons name="stats-chart" size={18} color={theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.primary} />
@@ -120,15 +121,15 @@ export function MuscleUsageStats({ onOpenInfo }: MuscleUsageStatsProps = {}) {
 
             <View
                 style={{
-                    backgroundColor: theme.mode === 'light' ? '#FFFFFF' : theme.colors.card,
+                    backgroundColor: theme.mode === 'light' ? theme.colors.card : theme.colors.card,
                     borderRadius: 32,
                     padding: 20,
                     borderWidth: 1.5,
                     borderColor: theme.colors.cardBorder,
-                    shadowColor: "#000",
+                    shadowColor: Palette.ink,
                     shadowOffset: { width: 0, height: 12 },
                     shadowOpacity: theme.mode === 'light' ? 0.04 : 0.1,
-                    shadowRadius: 25,
+                    shadowRadius: 8,
                     elevation: 5,
                 }}
             >
@@ -177,7 +178,7 @@ export function MuscleUsageStats({ onOpenInfo }: MuscleUsageStatsProps = {}) {
                             <View className="flex-1 ml-4 justify-center">
                                 <View className="flex-row justify-between items-center mb-1.5">
                                     <View className="flex-row items-baseline">
-                                        <Text style={{ color: theme.colors.text }} className="font-black text-sm italic uppercase tracking-tight">{part.name}</Text>
+                                        <Text style={{ color: theme.colors.text }} className="font-bold text-sm italic uppercase tracking-tight">{part.name}</Text>
                                         <Text style={{ color: theme.colors.textMuted }} className="ml-2 text-[10px] font-bold">{part.count} SÉRIES</Text>
                                     </View>
                                     <View style={{
@@ -186,7 +187,7 @@ export function MuscleUsageStats({ onOpenInfo }: MuscleUsageStatsProps = {}) {
                                         paddingVertical: 2,
                                         borderRadius: 6
                                     }}>
-                                        <Text style={{ color: theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.primary }} className="text-[11px] font-black italic">{Math.round(part.intensity * 100)}%</Text>
+                                        <Text style={{ color: theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.primary }} className="text-[11px] font-bold italic">{Math.round(part.intensity * 100)}%</Text>
                                     </View>
                                 </View>
 

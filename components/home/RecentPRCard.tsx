@@ -99,11 +99,11 @@ export function RecentPRCard() {
                     overflow: 'hidden',
                     borderWidth: 1,
                     borderColor: theme.mode === 'dark' ? 'rgba(234, 179, 8, 0.25)' : 'rgba(234, 179, 8, 0.2)',
-                    backgroundColor: theme.mode === 'dark' ? '#14161C' : '#FFFFFF',
-                    shadowColor: '#EAB308',
+                    backgroundColor: theme.mode === 'dark' ? theme.colors.card : theme.colors.card,
+                    shadowColor: theme.colors.warning,
                     shadowOffset: { width: 0, height: 4 },
-                    shadowOpacity: theme.mode === 'dark' ? 0.15 : 0.08,
-                    shadowRadius: 10,
+                    shadowOpacity: theme.mode === 'dark' ? 0.1 : 0.08,
+                    shadowRadius: 8,
                     elevation: 3,
                 }}
             >
@@ -125,12 +125,12 @@ export function RecentPRCard() {
                                     borderRadius: 22,
                                     backgroundColor: 'rgba(234, 179, 8, 0.15)',
                                     borderWidth: 1.5,
-                                    borderColor: '#EAB308',
+                                    borderColor: theme.colors.warning,
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                 }}
                             >
-                                <Ionicons name="trophy" size={22} color="#EAB308" />
+                                <Ionicons name="trophy" size={22} color={theme.colors.warning} />
                             </View>
 
                             {/* Info */}
@@ -144,7 +144,7 @@ export function RecentPRCard() {
                                             borderRadius: 4,
                                         }}
                                     >
-                                        <Text style={{ color: '#EAB308', fontSize: 9, fontFamily: FontFamily.sansBold }}>
+                                        <Text style={{ color: theme.colors.warning, fontSize: 9, fontFamily: FontFamily.sansBold }}>
                                             NOVO RECORDE
                                         </Text>
                                     </View>
@@ -184,7 +184,7 @@ export function RecentPRCard() {
                                     color: theme.colors.primary,
                                     fontSize: 17,
                                     fontFamily: FontFamily.display,
-                                    fontWeight: '800',
+                                    fontWeight: '700',
                                 }}
                             >
                                 {parseFloat(latestPR.bestKg) > 0 ? `${latestPR.bestKg} kg` : `${latestPR.bestReps} reps`}

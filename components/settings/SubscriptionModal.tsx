@@ -14,7 +14,7 @@ export function SubscriptionModal({ visible, onClose }: SubscriptionModalProps) 
     const FeatureItem = ({ icon, text }: { icon: keyof typeof Ionicons.glyphMap; text: string }) => (
         <View className="flex-row items-center mb-4">
             <View className="w-8 h-8 rounded-full bg-blue-500/20 items-center justify-center mr-3">
-                <Ionicons name={icon} size={18} color="#4F8FF7" />
+                <Ionicons name={icon} size={18} color={theme.colors.info} />
             </View>
             <Text style={{ color: theme.colors.text }} className="text-base flex-1">{text}</Text>
         </View>

@@ -1,3 +1,4 @@
+import Palette from '../../constants/palette.json';
 import React from 'react';
 import { View, Text, StyleSheet, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -52,7 +53,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
                         onPress={onAction}
                         gradientStyle={{ paddingVertical: 12, paddingHorizontal: 24 }}
                     >
-                        <Text style={styles.btnText}>
+                        <Text style={[styles.btnText, { color: theme.colors.onPrimary }]}>
                             {actionLabel}
                         </Text>
                     </GradientButton>
@@ -79,7 +80,7 @@ const styles = StyleSheet.create({
         marginBottom: 18,
     },
     title: {
-        fontFamily: 'Sora_700Bold',
+        fontFamily: "Inter_700Bold",
         fontSize: 18,
         textAlign: 'center',
         marginBottom: 8,
@@ -96,8 +97,8 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
     btnText: {
-        fontFamily: 'Sora_600SemiBold',
+        fontFamily: "Inter_600SemiBold",
         fontSize: 14,
-        color: '#FFFFFF',
+        color: Palette.light.onImage,
     },
 });

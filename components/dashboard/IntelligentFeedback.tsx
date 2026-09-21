@@ -1,3 +1,4 @@
+import Palette from '../../constants/palette.json';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useMemo } from 'react';
@@ -33,7 +34,7 @@ export function IntelligentFeedback({ history }: IntelligentFeedbackProps) {
                 title: 'Comece sua jornada',
                 message: 'Inicie seu primeiro treino para começar a receber feedbacks inteligentes! 💪',
                 icon: 'rocket',
-                color: '#4F8FF7',
+                color: theme.colors.info,
                 gradient: ['#4F8FF7', '#3B82F6'] as const
             });
             return result;
@@ -132,7 +133,7 @@ export function IntelligentFeedback({ history }: IntelligentFeedbackProps) {
                 title: 'Evolução Detectada 🚀',
                 message: `Você domina a carga no ${candidate.name}. Já pensou em aumentar o peso hoje?`,
                 icon: 'trending-up',
-                color: '#22C55E',
+                color: theme.colors.success,
                 gradient: ['#10B981', '#059669'] as const
             });
         }
@@ -144,7 +145,7 @@ export function IntelligentFeedback({ history }: IntelligentFeedbackProps) {
                 title: 'Pronto para o Próximo Nível?',
                 message: 'Treinar hoje te coloca um passo à frente dos seus objetivos.',
                 icon: 'fitness',
-                color: '#4F8FF7',
+                color: theme.colors.info,
                 gradient: ['#4F8FF7', '#3B82F6'] as const
             });
         }
@@ -155,7 +156,7 @@ export function IntelligentFeedback({ history }: IntelligentFeedbackProps) {
 
     return (
         <View className="px-6 mb-12">
-            <Text style={{ color: theme.colors.textMuted }} className="text-[11px] font-black uppercase tracking-[2.5px] mb-5">Feedback do Coach AI</Text>
+            <Text style={{ color: theme.colors.textMuted }} className="text-[11px] font-bold uppercase tracking-[2.5px] mb-5">Feedback do Coach AI</Text>
 
             <View className="gap-5">
                 {displayInsights.map((insight, index) => (
@@ -166,10 +167,10 @@ export function IntelligentFeedback({ history }: IntelligentFeedbackProps) {
                             backgroundColor: '#000',
                             borderRadius: 30,
                             overflow: 'hidden',
-                            shadowColor: "#000",
+                            shadowColor: Palette.ink,
                             shadowOffset: { width: 0, height: 12 },
-                            shadowOpacity: 0.35,
-                            shadowRadius: 24,
+                            shadowOpacity: 0.1,
+                            shadowRadius: 8,
                             elevation: 8,
                         }}
                     >
@@ -192,7 +193,7 @@ export function IntelligentFeedback({ history }: IntelligentFeedbackProps) {
                                 </View>
 
                                 <View className="flex-1">
-                                    <Text style={{ color: '#FFF', textShadowColor: 'rgba(0,0,0,0.8)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 4 }} className="font-black text-base mb-1 tracking-tight">{insight.title}</Text>
+                                    <Text style={{ color: theme.colors.onImage, textShadowColor: 'rgba(0,0,0,0.8)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 4 }} className="font-bold text-base mb-1 tracking-tight">{insight.title}</Text>
                                     <Text style={{ color: 'rgba(255,255,255,0.75)', fontSize: 13, lineHeight: 19, textShadowColor: 'rgba(0,0,0,0.5)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 2 }}>{insight.message}</Text>
                                 </View>
                             </View>

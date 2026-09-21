@@ -116,8 +116,8 @@ function ExerciseDetailModal({ item, visible, onClose }: { item: ExerciseStats |
                                 )}
                             </View>
                             <View style={{ flex: 1 }}>
-                                <Text style={{ color: theme.colors.textMuted, fontSize: 9, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 1.5 }}>Progressão de Força</Text>
-                                <Text style={{ color: theme.colors.text, fontSize: 18, fontWeight: '900', letterSpacing: -0.4 }} numberOfLines={1}>{item.name}</Text>
+                                <Text style={{ color: theme.colors.textMuted, fontSize: 9, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1.5 }}>Progressão de Força</Text>
+                                <Text style={{ color: theme.colors.text, fontSize: 18, fontFamily: 'Inter_700Bold', fontWeight: '700', letterSpacing: -0.4 }} numberOfLines={1}>{item.name}</Text>
                             </View>
                             <TouchableOpacity onPress={onClose} style={{ width: 36, height: 36, borderRadius: 12, backgroundColor: theme.colors.backgroundTertiary, alignItems: 'center', justifyContent: 'center' }}>
                                 <Ionicons name="close" size={18} color={theme.colors.textMuted} />
@@ -128,8 +128,8 @@ function ExerciseDetailModal({ item, visible, onClose }: { item: ExerciseStats |
                         <View style={{ flexDirection: 'row', paddingHorizontal: 24, gap: 10, marginBottom: 24 }}>
                             {[
                                 { label: '1RM Máx.', value: `${Math.round(maxRM)}kg`, color: theme.colors.primary },
-                                { label: 'Evolução', value: totalImprovement > 0 ? `+${Math.round(totalImprovement)}kg` : `${Math.round(totalImprovement)}kg`, color: totalImprovement >= 0 ? '#22C55E' : '#EF4444' },
-                                { label: 'Sessões', value: String(sessions), color: '#F59E0B' },
+                                { label: 'Evolução', value: totalImprovement > 0 ? `+${Math.round(totalImprovement)}kg` : `${Math.round(totalImprovement)}kg`, color: totalImprovement >= 0 ? theme.colors.success : theme.colors.error },
+                                { label: 'Sessões', value: String(sessions), color: theme.colors.warning },
                             ].map((s, i) => (
                                 <View key={i} style={{
                                     flex: 1, backgroundColor: theme.colors.card,
@@ -137,8 +137,8 @@ function ExerciseDetailModal({ item, visible, onClose }: { item: ExerciseStats |
                                     borderWidth: 1, borderColor: theme.colors.cardBorder,
                                     alignItems: 'center',
                                 }}>
-                                    <Text style={{ color: s.color, fontSize: 18, fontWeight: '900', letterSpacing: -0.5 }}>{s.value}</Text>
-                                    <Text style={{ color: theme.colors.textMuted, fontSize: 9, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 0.8, marginTop: 3 }}>{s.label}</Text>
+                                    <Text style={{ color: s.color, fontSize: 18, fontFamily: 'Inter_700Bold', fontWeight: '700', letterSpacing: -0.5 }}>{s.value}</Text>
+                                    <Text style={{ color: theme.colors.textMuted, fontSize: 9, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.8, marginTop: 3 }}>{s.label}</Text>
                                 </View>
                             ))}
                         </View>
@@ -152,7 +152,7 @@ function ExerciseDetailModal({ item, visible, onClose }: { item: ExerciseStats |
                                     borderWidth: 1, borderColor: theme.colors.cardBorder,
                                     overflow: 'hidden',
                                 }}>
-                                    <Text style={{ color: theme.colors.textMuted, fontSize: 9, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12 }}>
+                                    <Text style={{ color: theme.colors.textMuted, fontSize: 9, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12 }}>
                                         Histórico de 1RM estimado
                                     </Text>
                                     <LineChart
@@ -183,7 +183,7 @@ function ExerciseDetailModal({ item, visible, onClose }: { item: ExerciseStats |
                             <View style={{ paddingHorizontal: 24, marginBottom: 8 }}>
                                 <View style={{ backgroundColor: theme.colors.card, borderRadius: 20, padding: 28, alignItems: 'center', borderWidth: 1, borderColor: theme.colors.cardBorder }}>
                                     <Ionicons name="stats-chart" size={32} color={theme.colors.textMuted} />
-                                    <Text style={{ color: theme.colors.textMuted, fontSize: 12, fontWeight: '700', marginTop: 10, textAlign: 'center' }}>
+                                    <Text style={{ color: theme.colors.textMuted, fontSize: 12, fontFamily: 'Inter_700Bold', fontWeight: '700', marginTop: 10, textAlign: 'center' }}>
                                         Complete mais sessões para gerar o gráfico de progressão
                                     </Text>
                                 </View>
@@ -204,7 +204,7 @@ function ExerciseDetailModal({ item, visible, onClose }: { item: ExerciseStats |
                                     gap: 10,
                                 }}>
                                     <Ionicons name={isPositive ? 'trending-up' : 'trending-down'} size={18} color={trendColor} />
-                                    <Text style={{ color: trendColor, fontSize: 13, fontWeight: '800' }}>
+                                    <Text style={{ color: trendColor, fontSize: 13, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>
                                         {isPositive ? '+' : ''}{Math.round(item.change)}kg na última sessão
                                     </Text>
                                 </View>
@@ -319,16 +319,16 @@ export function ProgressExercisesView() {
 
                     {/* Info */}
                     <View style={{ flex: 1 }}>
-                        <Text style={{ color: theme.colors.text, fontSize: 14, fontWeight: '900', letterSpacing: -0.3 }} numberOfLines={1}>{item.name}</Text>
+                        <Text style={{ color: theme.colors.text, fontSize: 14, fontFamily: 'Inter_700Bold', fontWeight: '700', letterSpacing: -0.3 }} numberOfLines={1}>{item.name}</Text>
                         <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4, gap: 8 }}>
-                            <Text style={{ color: theme.colors.text, fontSize: 20, fontWeight: '900', letterSpacing: -0.5 }}>
+                            <Text style={{ color: theme.colors.text, fontSize: 20, fontFamily: 'Inter_700Bold', fontWeight: '700', letterSpacing: -0.5 }}>
                                 {Math.round(item.latest1RM)}
                             </Text>
-                            <Text style={{ color: theme.colors.textMuted, fontSize: 9, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 1 }}>kg 1RM</Text>
+                            <Text style={{ color: theme.colors.textMuted, fontSize: 9, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1 }}>kg 1RM</Text>
                             {!isNeutral && (
                                 <View style={{ backgroundColor: trendColor + '20', borderColor: trendColor + '30', borderWidth: 1, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 7, paddingVertical: 2, borderRadius: 8 }}>
                                     <Ionicons name={isPositive ? 'triangle' : 'triangle'} size={6} color={trendColor} style={{ transform: [{ rotate: isPositive ? '0deg' : '180deg' }] }} />
-                                    <Text style={{ color: trendColor, fontSize: 9, fontWeight: '900', marginLeft: 3 }}>
+                                    <Text style={{ color: trendColor, fontSize: 9, fontFamily: 'Inter_700Bold', fontWeight: '700', marginLeft: 3 }}>
                                         {Math.abs(Math.round(item.change))}
                                     </Text>
                                 </View>
@@ -344,7 +344,7 @@ export function ProgressExercisesView() {
                             width={68}
                             height={32}
                         />
-                        <Text style={{ color: theme.colors.textMuted, fontSize: 9, fontWeight: '700' }}>
+                        <Text style={{ color: theme.colors.textMuted, fontSize: 9, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>
                             {item.history.length} sessões
                         </Text>
                     </View>
@@ -373,7 +373,7 @@ export function ProgressExercisesView() {
                         placeholderTextColor={theme.colors.textMuted}
                         value={searchQuery}
                         onChangeText={setSearchQuery}
-                        style={{ color: theme.colors.text, fontSize: 14, fontWeight: '700', flex: 1, marginLeft: 12 }}
+                        style={{ color: theme.colors.text, fontSize: 14, fontFamily: 'Inter_700Bold', fontWeight: '700', flex: 1, marginLeft: 12 }}
                     />
                     {searchQuery.length > 0 && (
                         <TouchableOpacity onPress={() => setSearchQuery('')}>
@@ -392,11 +392,11 @@ export function ProgressExercisesView() {
                 ListHeaderComponent={
                     <View style={{ paddingHorizontal: 24, marginBottom: 16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
                         <View style={{ flex: 1, paddingRight: 12 }}>
-                            <Text style={{ color: theme.colors.text, fontSize: 20, fontWeight: '900', letterSpacing: -0.5 }}>{searchQuery ? 'Resultados' : 'Cargas'}</Text>
-                            <Text style={{ color: theme.colors.textMuted, fontSize: 10, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1.5, marginTop: 2 }}>Tracking de Força • Toque para detalhar</Text>
+                            <Text style={{ color: theme.colors.text, fontSize: 20, fontFamily: 'Inter_700Bold', fontWeight: '700', letterSpacing: -0.5 }}>{searchQuery ? 'Resultados' : 'Cargas'}</Text>
+                            <Text style={{ color: theme.colors.textMuted, fontSize: 10, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1.5, marginTop: 2 }}>Tracking de Força • Toque para detalhar</Text>
                         </View>
                         <View style={{ backgroundColor: theme.colors.primary + '15', borderColor: theme.colors.primary + '30', borderWidth: 1, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20 }}>
-                            <Text style={{ color: theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.primary, fontSize: 10, fontWeight: '900' }}>
+                            <Text style={{ color: theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.primary, fontSize: 10, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>
                                 {filteredList.length} EXERCÍCIOS
                             </Text>
                         </View>
@@ -407,8 +407,8 @@ export function ProgressExercisesView() {
                         <View style={{ backgroundColor: theme.colors.card, borderColor: theme.colors.cardBorder, borderWidth: 1.5, width: 80, height: 80, borderRadius: 24, alignItems: 'center', justifyContent: 'center', marginBottom: 20 }}>
                             <Ionicons name="barbell" size={36} color={theme.colors.textMuted} />
                         </View>
-                        <Text style={{ color: theme.colors.text, fontSize: 16, fontWeight: '900', textAlign: 'center' }}>Sem registros</Text>
-                        <Text style={{ color: theme.colors.textMuted, fontSize: 11, fontWeight: '600', textAlign: 'center', marginTop: 8, textTransform: 'uppercase', letterSpacing: 0.8 }}>Complete seu primeiro treino para ver o tracking de carga</Text>
+                        <Text style={{ color: theme.colors.text, fontSize: 16, fontFamily: 'Inter_700Bold', fontWeight: '700', textAlign: 'center' }}>Sem registros</Text>
+                        <Text style={{ color: theme.colors.textMuted, fontSize: 11, fontFamily: 'Inter_600SemiBold', fontWeight: '600', textAlign: 'center', marginTop: 8, textTransform: 'uppercase', letterSpacing: 0.8 }}>Complete seu primeiro treino para ver o tracking de carga</Text>
                     </View>
                 }
             />

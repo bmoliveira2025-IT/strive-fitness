@@ -63,10 +63,10 @@ const WorkoutSessionCard = memo(function WorkoutSessionCard({ record }: { record
                         borderRadius: 14, paddingHorizontal: 10, paddingVertical: 8,
                         alignItems: 'center', minWidth: 52, marginRight: 14,
                     }}>
-                        <Text style={{ color: theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.primary, fontSize: 11, fontWeight: '900' }}>
+                        <Text style={{ color: theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.primary, fontSize: 11, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>
                             {new Date(record.date).getDate()}
                         </Text>
-                        <Text style={{ color: theme.colors.textMuted, fontSize: 9, fontWeight: '700', textTransform: 'uppercase' }}>
+                        <Text style={{ color: theme.colors.textMuted, fontSize: 9, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase' }}>
                             {new Date(record.date).toLocaleDateString('pt-BR', { month: 'short' })}
                         </Text>
                     </View>
@@ -74,27 +74,27 @@ const WorkoutSessionCard = memo(function WorkoutSessionCard({ record }: { record
                     {/* Info */}
                     <View style={{ flex: 1 }}>
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 3 }}>
-                            <Text style={{ color: theme.colors.textMuted, fontSize: 10, fontWeight: '700' }}>
+                            <Text style={{ color: theme.colors.textMuted, fontSize: 10, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>
                                 {formatDate(record.date)}
                             </Text>
                             {record.postWorkoutSurvey && (
                                 <View style={{
-                                    backgroundColor: record.postWorkoutSurvey.intensity === 'intenso' ? '#EF444418' : record.postWorkoutSurvey.intensity === 'moderado' ? '#F59E0B18' : '#22C55E18',
+                                    backgroundColor: record.postWorkoutSurvey.intensity === 'intenso' ? theme.colors.error + '18' : record.postWorkoutSurvey.intensity === 'moderado' ? theme.colors.warning + '18' : theme.colors.success + '18',
                                     paddingHorizontal: 6, paddingVertical: 1, borderRadius: 6,
                                 }}>
                                     <Text style={{
-                                        color: record.postWorkoutSurvey.intensity === 'intenso' ? '#EF4444' : record.postWorkoutSurvey.intensity === 'moderado' ? '#F59E0B' : '#22C55E',
-                                        fontSize: 8, fontWeight: '900', textTransform: 'uppercase',
+                                        color: record.postWorkoutSurvey.intensity === 'intenso' ? theme.colors.error : record.postWorkoutSurvey.intensity === 'moderado' ? theme.colors.warning : theme.colors.success,
+                                        fontSize: 8, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase',
                                     }}>
                                         {record.postWorkoutSurvey.intensity}
                                     </Text>
                                 </View>
                             )}
                         </View>
-                        <Text style={{ color: theme.colors.text, fontSize: 15, fontWeight: '900', letterSpacing: -0.3, marginBottom: 4 }} numberOfLines={1}>
+                        <Text style={{ color: theme.colors.text, fontSize: 15, fontFamily: 'Inter_700Bold', fontWeight: '700', letterSpacing: -0.3, marginBottom: 4 }} numberOfLines={1}>
                             {record.workoutName}
                         </Text>
-                        <Text style={{ color: theme.colors.textMuted, fontSize: 11, fontWeight: '600' }} numberOfLines={1}>
+                        <Text style={{ color: theme.colors.textMuted, fontSize: 11, fontFamily: 'Inter_600SemiBold', fontWeight: '600' }} numberOfLines={1}>
                             {preview}{extra}
                         </Text>
                     </View>
@@ -103,13 +103,13 @@ const WorkoutSessionCard = memo(function WorkoutSessionCard({ record }: { record
                     <View style={{ alignItems: 'flex-end', gap: 4, marginLeft: 10 }}>
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
                             <Ionicons name="time-outline" size={11} color={theme.colors.textMuted} />
-                            <Text style={{ color: theme.colors.text, fontSize: 12, fontWeight: '800' }}>{formatDuration(record.duration)}</Text>
+                            <Text style={{ color: theme.colors.text, fontSize: 12, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>{formatDuration(record.duration)}</Text>
                         </View>
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
                             <Ionicons name="barbell-outline" size={11} color={theme.colors.textMuted} />
-                            <Text style={{ color: theme.colors.text, fontSize: 12, fontWeight: '800' }}>{formatVolume(record.totalVolume)}</Text>
+                            <Text style={{ color: theme.colors.text, fontSize: 12, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>{formatVolume(record.totalVolume)}</Text>
                         </View>
-                        <Text style={{ color: theme.colors.textMuted, fontSize: 9, fontWeight: '600' }}>
+                        <Text style={{ color: theme.colors.textMuted, fontSize: 9, fontFamily: 'Inter_600SemiBold', fontWeight: '600' }}>
                             {record.exercises.length} exerc.
                         </Text>
                     </View>
@@ -125,7 +125,7 @@ const WorkoutSessionCard = memo(function WorkoutSessionCard({ record }: { record
                 {/* Expanded: exercise list */}
                 {expanded && (
                     <View style={{ paddingHorizontal: 16, paddingBottom: 14, borderTopWidth: 1, borderTopColor: theme.colors.border }}>
-                        <Text style={{ color: theme.colors.textMuted, fontSize: 9, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 1, marginTop: 12, marginBottom: 8 }}>
+                        <Text style={{ color: theme.colors.textMuted, fontSize: 9, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1, marginTop: 12, marginBottom: 8 }}>
                             Exercícios realizados
                         </Text>
                         {record.exercises.map((ex, i) => {
@@ -139,8 +139,8 @@ const WorkoutSessionCard = memo(function WorkoutSessionCard({ record }: { record
                                     borderBottomColor: theme.colors.border,
                                 }}>
                                     <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: theme.colors.primary, marginRight: 10 }} />
-                                    <Text style={{ color: theme.colors.text, fontSize: 13, fontWeight: '700', flex: 1 }} numberOfLines={1}>{ex.name}</Text>
-                                    <Text style={{ color: theme.colors.textMuted, fontSize: 11, fontWeight: '600' }}>
+                                    <Text style={{ color: theme.colors.text, fontSize: 13, fontFamily: 'Inter_700Bold', fontWeight: '700', flex: 1 }} numberOfLines={1}>{ex.name}</Text>
+                                    <Text style={{ color: theme.colors.textMuted, fontSize: 11, fontFamily: 'Inter_600SemiBold', fontWeight: '600' }}>
                                         {totalSets} séries{maxKg > 0 ? ` · ${maxKg}kg` : ''}
                                     </Text>
                                 </View>
@@ -156,12 +156,12 @@ const WorkoutSessionCard = memo(function WorkoutSessionCard({ record }: { record
                                         size={12}
                                         color={theme.colors.primary}
                                     />
-                                    <Text style={{ color: theme.colors.text, fontSize: 10, fontWeight: '700' }}>{record.postWorkoutSurvey.feeling}</Text>
+                                    <Text style={{ color: theme.colors.text, fontSize: 10, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>{record.postWorkoutSurvey.feeling}</Text>
                                 </View>
                                 {record.postWorkoutSurvey.completedAllSeries && (
-                                    <View style={{ backgroundColor: '#22C55E15', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 10, flexDirection: 'row', alignItems: 'center', gap: 5 }}>
-                                        <Ionicons name="checkmark-circle" size={12} color="#22C55E" />
-                                        <Text style={{ color: '#22C55E', fontSize: 10, fontWeight: '700' }}>Concluído</Text>
+                                    <View style={{ backgroundColor: theme.colors.success + '15', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 10, flexDirection: 'row', alignItems: 'center', gap: 5 }}>
+                                        <Ionicons name="checkmark-circle" size={12} color={theme.colors.success} />
+                                        <Text style={{ color: theme.colors.success, fontSize: 10, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>Concluído</Text>
                                     </View>
                                 )}
                             </View>
@@ -208,12 +208,12 @@ function WorkoutSessionsList() {
             <View style={{ flexDirection: 'row', paddingHorizontal: 24, gap: 10, marginBottom: 20 }}>
                 {[
                     { label: 'Total', value: String(history.length), sub: 'treinos', color: theme.colors.primary },
-                    { label: 'Volume', value: formatVolume(totalVolume), sub: 'total', color: '#10B981' },
-                    { label: 'Tempo', value: formatDuration(totalTime), sub: 'total', color: '#F59E0B' },
+                    { label: 'Volume', value: formatVolume(totalVolume), sub: 'total', color: theme.colors.success },
+                    { label: 'Tempo', value: formatDuration(totalTime), sub: 'total', color: theme.colors.warning },
                 ].map((s, i) => (
                     <View key={i} style={{ flex: 1, backgroundColor: theme.colors.card, borderRadius: 16, padding: 14, borderWidth: 1, borderColor: theme.colors.cardBorder, alignItems: 'center' }}>
-                        <Text style={{ color: s.color, fontSize: 17, fontWeight: '900', letterSpacing: -0.5 }}>{s.value}</Text>
-                        <Text style={{ color: theme.colors.textMuted, fontSize: 9, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5, marginTop: 2 }}>{s.sub}</Text>
+                        <Text style={{ color: s.color, fontSize: 17, fontFamily: 'Inter_700Bold', fontWeight: '700', letterSpacing: -0.5 }}>{s.value}</Text>
+                        <Text style={{ color: theme.colors.textMuted, fontSize: 9, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5, marginTop: 2 }}>{s.sub}</Text>
                     </View>
                 ))}
             </View>
@@ -232,7 +232,7 @@ function WorkoutSessionsList() {
                     placeholderTextColor={theme.colors.textMuted}
                     value={search}
                     onChangeText={setSearch}
-                    style={{ flex: 1, marginLeft: 10, color: theme.colors.text, fontSize: 13, fontWeight: '600' }}
+                    style={{ flex: 1, marginLeft: 10, color: theme.colors.text, fontSize: 13, fontFamily: 'Inter_600SemiBold', fontWeight: '600' }}
                 />
                 {search.length > 0 && (
                     <TouchableOpacity onPress={() => setSearch('')}>
@@ -256,11 +256,11 @@ function WorkoutSessionsList() {
             renderSectionHeader={({ section }) => (
                 <View style={{ paddingHorizontal: 24, paddingTop: 4, backgroundColor: theme.colors.background }}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
-                        <Text style={{ color: theme.colors.text, fontSize: 13, fontWeight: '800', textTransform: 'capitalize' }}>
+                        <Text style={{ color: theme.colors.text, fontSize: 13, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'capitalize' }}>
                             {section.title}
                         </Text>
                         <View style={{ flex: 1, height: 1, backgroundColor: theme.colors.border, marginLeft: 12 }} />
-                        <Text style={{ color: theme.colors.textMuted, fontSize: 10, fontWeight: '700', marginLeft: 8 }}>
+                        <Text style={{ color: theme.colors.textMuted, fontSize: 10, fontFamily: 'Inter_700Bold', fontWeight: '700', marginLeft: 8 }}>
                             {section.data.length} treinos
                         </Text>
                     </View>
@@ -270,7 +270,7 @@ function WorkoutSessionsList() {
             ListEmptyComponent={(
                 <View style={{ alignItems: 'center', paddingVertical: 48, paddingHorizontal: 24 }}>
                     <Ionicons name="barbell-outline" size={44} color={theme.colors.textMuted} />
-                    <Text style={{ color: theme.colors.textMuted, marginTop: 14, fontSize: 13, fontWeight: '700', textAlign: 'center' }}>
+                    <Text style={{ color: theme.colors.textMuted, marginTop: 14, fontSize: 13, fontFamily: 'Inter_700Bold', fontWeight: '700', textAlign: 'center' }}>
                         {search ? 'Nenhum treino encontrado' : 'Nenhum treino registrado ainda'}
                     </Text>
                 </View>
@@ -312,7 +312,7 @@ export function ProgressHistoryView() {
                 <View style={{
                     backgroundColor: theme.colors.primary, borderColor: theme.colors.background,
                     borderWidth: 4, width: 16, height: 16, borderRadius: 8, zIndex: 10,
-                    shadowColor: theme.colors.primary, shadowOpacity: 0.5, shadowRadius: 8, elevation: 5,
+                    shadowColor: theme.colors.primary, shadowOpacity: 0.1, shadowRadius: 8, elevation: 5,
                 }} />
                 {!isLast && <View style={{ backgroundColor: theme.colors.cardBorder, width: 2, borderRadius: 1, flex: 1, marginTop: -2, opacity: 0.3 }} />}
             </View>
@@ -347,7 +347,7 @@ export function ProgressHistoryView() {
                                 }}
                             >
                                 <Ionicons name={seg.icon as any} size={14} color={active ? '#000' : theme.colors.textMuted} />
-                                <Text style={{ color: active ? '#000' : theme.colors.textMuted, fontSize: 11, fontWeight: '800' }}>
+                                <Text style={{ color: active ? '#000' : theme.colors.textMuted, fontSize: 11, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>
                                     {seg.label}
                                 </Text>
                             </TouchableOpacity>
@@ -372,12 +372,12 @@ export function ProgressHistoryView() {
                     {/* Weekly Well-being */}
                     <View style={{ marginBottom: 40 }}>
                         <Animated.View entering={FadeInRight.duration(700)} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 24 }}>
-                            <View style={{ backgroundColor: '#F59E0B15', width: 42, height: 42, borderRadius: 14, alignItems: 'center', justifyContent: 'center', marginRight: 14 }}>
-                                <Ionicons name="calendar-clear" size={22} color="#F59E0B" />
+                            <View style={{ backgroundColor: theme.colors.warning + '15', width: 42, height: 42, borderRadius: 14, alignItems: 'center', justifyContent: 'center', marginRight: 14 }}>
+                                <Ionicons name="calendar-clear" size={22} color={theme.colors.warning} />
                             </View>
                             <View>
-                                <Text style={{ color: theme.colors.text, fontSize: 18, fontWeight: '900', letterSpacing: -0.4 }}>Monitoramento</Text>
-                                <Text style={{ color: theme.colors.textMuted, fontSize: 10, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1 }}>Bem-estar semanal</Text>
+                                <Text style={{ color: theme.colors.text, fontSize: 18, fontFamily: 'Inter_700Bold', fontWeight: '700', letterSpacing: -0.4 }}>Monitoramento</Text>
+                                <Text style={{ color: theme.colors.textMuted, fontSize: 10, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1 }}>Bem-estar semanal</Text>
                             </View>
                         </Animated.View>
 
@@ -385,26 +385,26 @@ export function ProgressHistoryView() {
                             weeklyHistory.map((item, idx) => (
                                 <TimelineItem key={idx} isLast={idx === weeklyHistory.length - 1} index={idx}>
                                     <View style={{ backgroundColor: theme.colors.card, borderColor: theme.colors.cardBorder, borderWidth: 1.5, borderRadius: 24, padding: 20, overflow: 'hidden' }}>
-                                        <LinearGradient colors={['#F59E0B08', 'transparent']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ position: 'absolute', inset: 0 }} />
+                                        <LinearGradient colors={[theme.colors.warning + '08', 'transparent']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ position: 'absolute', inset: 0 }} />
                                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                                            <Text style={{ color: theme.colors.text, fontSize: 17, fontWeight: '900', letterSpacing: -0.3 }}>{formatShortDate(item.date)}</Text>
+                                            <Text style={{ color: theme.colors.text, fontSize: 17, fontFamily: 'Inter_700Bold', fontWeight: '700', letterSpacing: -0.3 }}>{formatShortDate(item.date)}</Text>
                                             <View style={{ backgroundColor: theme.colors.backgroundTertiary, borderColor: theme.colors.cardBorder, borderWidth: 1, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 12 }}>
                                                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
                                                     <MaterialCommunityIcons name="scale-bathroom" size={13} color={theme.colors.textMuted} />
-                                                    <Text style={{ color: theme.colors.text, fontWeight: '900', fontSize: 13 }}>{item.weight}kg</Text>
+                                                    <Text style={{ color: theme.colors.text, fontFamily: 'Inter_700Bold', fontWeight: '700', fontSize: 13 }}>{item.weight}kg</Text>
                                                 </View>
                                             </View>
                                         </View>
                                         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
                                             {[
-                                                { label: 'Energia', val: item.energyLevel, color: '#F59E0B' },
-                                                { label: 'Sono', val: item.sleepQuality, color: '#8B5CF6' },
-                                                { label: 'Recup.', val: item.recoveryLevel, color: '#3B82F6' },
-                                                { label: 'Estresse', val: item.stressLevel, color: '#EF4444' },
+                                                { label: 'Energia', val: item.energyLevel, color: theme.colors.warning },
+                                                { label: 'Sono', val: item.sleepQuality, color: theme.colors.primary },
+                                                { label: 'Recup.', val: item.recoveryLevel, color: theme.colors.info },
+                                                { label: 'Estresse', val: item.stressLevel, color: theme.colors.error },
                                             ].map((stat, i) => (
                                                 <View key={i} style={{ width: '47%', backgroundColor: theme.colors.backgroundTertiary, borderRadius: 16, padding: 12, borderWidth: 1, borderColor: theme.colors.cardBorder }}>
-                                                    <Text style={{ color: theme.colors.textMuted, fontSize: 9, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 4 }}>{stat.label}</Text>
-                                                    <Text style={{ color: theme.colors.text, fontSize: 18, fontWeight: '900' }}>{stat.val}<Text style={{ fontSize: 11, color: theme.colors.textMuted, fontWeight: '600' }}>/5</Text></Text>
+                                                    <Text style={{ color: theme.colors.textMuted, fontSize: 9, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 4 }}>{stat.label}</Text>
+                                                    <Text style={{ color: theme.colors.text, fontSize: 18, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>{stat.val}<Text style={{ fontSize: 11, color: theme.colors.textMuted, fontFamily: 'Inter_600SemiBold', fontWeight: '600' }}>/5</Text></Text>
                                                     <View style={{ height: 3, backgroundColor: theme.colors.divider, borderRadius: 2, marginTop: 8, overflow: 'hidden' }}>
                                                         <View style={{ height: '100%', width: `${(stat.val / 5) * 100}%`, backgroundColor: stat.color, borderRadius: 2 }} />
                                                     </View>
@@ -417,7 +417,7 @@ export function ProgressHistoryView() {
                         ) : (
                             <View style={{ backgroundColor: theme.colors.card, borderColor: theme.colors.cardBorder, borderWidth: 1.5, borderStyle: 'dashed', borderRadius: 20, padding: 32, alignItems: 'center' }}>
                                 <Ionicons name="clipboard-outline" size={40} color={theme.colors.textMuted} />
-                                <Text style={{ color: theme.colors.textMuted, marginTop: 12, fontSize: 12, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.8 }}>Aguardando primeiro registro...</Text>
+                                <Text style={{ color: theme.colors.textMuted, marginTop: 12, fontSize: 12, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.8 }}>Aguardando primeiro registro...</Text>
                             </View>
                         )}
                     </View>
@@ -425,12 +425,12 @@ export function ProgressHistoryView() {
                     {/* Periodic Assessments */}
                     <View style={{ marginBottom: 40 }}>
                         <Animated.View entering={FadeInRight.duration(700).delay(150)} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 24 }}>
-                            <View style={{ backgroundColor: '#8B5CF615', width: 42, height: 42, borderRadius: 14, alignItems: 'center', justifyContent: 'center', marginRight: 14 }}>
-                                <Ionicons name="analytics" size={22} color="#8B5CF6" />
+                            <View style={{ backgroundColor: theme.colors.primary + '15', width: 42, height: 42, borderRadius: 14, alignItems: 'center', justifyContent: 'center', marginRight: 14 }}>
+                                <Ionicons name="analytics" size={22} color={theme.colors.primary} />
                             </View>
                             <View>
-                                <Text style={{ color: theme.colors.text, fontSize: 18, fontWeight: '900', letterSpacing: -0.4 }}>Avaliações</Text>
-                                <Text style={{ color: theme.colors.textMuted, fontSize: 10, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1 }}>Evolução e métricas</Text>
+                                <Text style={{ color: theme.colors.text, fontSize: 18, fontFamily: 'Inter_700Bold', fontWeight: '700', letterSpacing: -0.4 }}>Avaliações</Text>
+                                <Text style={{ color: theme.colors.textMuted, fontSize: 10, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1 }}>Evolução e métricas</Text>
                             </View>
                         </Animated.View>
 
@@ -438,11 +438,11 @@ export function ProgressHistoryView() {
                             periodicHistory.map((item, idx) => (
                                 <TimelineItem key={idx} isLast={idx === periodicHistory.length - 1} index={idx}>
                                     <View style={{ backgroundColor: theme.colors.card, borderColor: theme.colors.cardBorder, borderWidth: 1.5, borderRadius: 24, padding: 20, overflow: 'hidden' }}>
-                                        <LinearGradient colors={['#8B5CF608', 'transparent']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ position: 'absolute', inset: 0 }} />
+                                        <LinearGradient colors={[theme.colors.primary + '08', 'transparent']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ position: 'absolute', inset: 0 }} />
                                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-                                            <Text style={{ color: theme.colors.text, fontSize: 17, fontWeight: '900', letterSpacing: -0.3 }}>{formatShortDate(item.date)}</Text>
-                                            <View style={{ backgroundColor: '#8B5CF618', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 10 }}>
-                                                <Text style={{ color: '#8B5CF6', fontSize: 10, fontWeight: '900', textTransform: 'uppercase' }}>{item.difficulty || 'Avaliação'}</Text>
+                                            <Text style={{ color: theme.colors.text, fontSize: 17, fontFamily: 'Inter_700Bold', fontWeight: '700', letterSpacing: -0.3 }}>{formatShortDate(item.date)}</Text>
+                                            <View style={{ backgroundColor: theme.colors.primary + '18', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 10 }}>
+                                                <Text style={{ color: theme.colors.primary, fontSize: 10, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase' }}>{item.difficulty || 'Avaliação'}</Text>
                                             </View>
                                         </View>
                                         {item.measurements && (
@@ -451,21 +451,21 @@ export function ProgressHistoryView() {
                                                     if (key === 'updatedAt' || typeof val !== 'number') return null;
                                                     return (
                                                         <View key={key} style={{ backgroundColor: theme.colors.backgroundTertiary, borderColor: theme.colors.cardBorder, borderWidth: 1, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 10 }}>
-                                                            <Text style={{ color: theme.colors.textMuted, fontSize: 9, fontWeight: '800', textTransform: 'uppercase', marginRight: 5 }}>{key.slice(0, 3)}:</Text>
-                                                            <Text style={{ color: theme.colors.text, fontSize: 12, fontWeight: '900' }}>{val}<Text style={{ fontSize: 8, color: theme.colors.textMuted }}>cm</Text></Text>
+                                                            <Text style={{ color: theme.colors.textMuted, fontSize: 9, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase', marginRight: 5 }}>{key.slice(0, 3)}:</Text>
+                                                            <Text style={{ color: theme.colors.text, fontSize: 12, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>{val}<Text style={{ fontSize: 8, color: theme.colors.textMuted }}>cm</Text></Text>
                                                         </View>
                                                     );
                                                 })}
                                             </View>
                                         )}
                                         <View style={{ flexDirection: 'row', gap: 10 }}>
-                                            <View style={{ flex: 1, backgroundColor: '#F59E0B12', paddingHorizontal: 12, paddingVertical: 10, borderRadius: 12 }}>
-                                                <Text style={{ color: theme.colors.textMuted, fontSize: 8, fontWeight: '700', textTransform: 'uppercase' }}>Satisfação</Text>
-                                                <Text style={{ color: theme.colors.text, fontSize: 15, fontWeight: '900' }}>{item.satisfaction}/5</Text>
+                                            <View style={{ flex: 1, backgroundColor: theme.colors.warning + '12', paddingHorizontal: 12, paddingVertical: 10, borderRadius: 12 }}>
+                                                <Text style={{ color: theme.colors.textMuted, fontSize: 8, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase' }}>Satisfação</Text>
+                                                <Text style={{ color: theme.colors.text, fontSize: 15, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>{item.satisfaction}/5</Text>
                                             </View>
-                                            <View style={{ flex: 1, backgroundColor: '#EF444412', paddingHorizontal: 12, paddingVertical: 10, borderRadius: 12 }}>
-                                                <Text style={{ color: theme.colors.textMuted, fontSize: 8, fontWeight: '700', textTransform: 'uppercase' }}>Motivação</Text>
-                                                <Text style={{ color: theme.colors.text, fontSize: 15, fontWeight: '900' }}>{item.motivation}/5</Text>
+                                            <View style={{ flex: 1, backgroundColor: theme.colors.error + '12', paddingHorizontal: 12, paddingVertical: 10, borderRadius: 12 }}>
+                                                <Text style={{ color: theme.colors.textMuted, fontSize: 8, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase' }}>Motivação</Text>
+                                                <Text style={{ color: theme.colors.text, fontSize: 15, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>{item.motivation}/5</Text>
                                             </View>
                                         </View>
                                     </View>
@@ -474,7 +474,7 @@ export function ProgressHistoryView() {
                         ) : (
                             <View style={{ backgroundColor: theme.colors.card, borderColor: theme.colors.cardBorder, borderWidth: 1.5, borderStyle: 'dashed', borderRadius: 20, padding: 32, alignItems: 'center' }}>
                                 <Ionicons name="body-outline" size={40} color={theme.colors.textMuted} />
-                                <Text style={{ color: theme.colors.textMuted, marginTop: 12, fontSize: 12, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.8 }}>Prepare sua primeira avaliação...</Text>
+                                <Text style={{ color: theme.colors.textMuted, marginTop: 12, fontSize: 12, fontFamily: 'Inter_700Bold', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.8 }}>Prepare sua primeira avaliação...</Text>
                             </View>
                         )}
                     </View>

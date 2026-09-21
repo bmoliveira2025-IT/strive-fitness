@@ -59,10 +59,10 @@ export function WorkoutRecommendationCard({ recommendation }: WorkoutRecommendat
                                 <Ionicons name="barbell" size={16} color={theme.colors.primary} />
                             </View>
                             <View>
-                                <Text style={{ color: theme.colors.textMuted }} className="text-[10px] font-black uppercase tracking-widest">
+                                <Text style={{ color: theme.colors.textMuted }} className="text-[10px] font-bold uppercase tracking-widest">
                                     Sugestão de Hoje
                                 </Text>
-                                <Text style={{ color: theme.colors.text }} className="text-base font-black italic uppercase tracking-tight">
+                                <Text style={{ color: theme.colors.text }} className="text-base font-bold italic uppercase tracking-tight">
                                     {workout.name}
                                 </Text>
                             </View>
@@ -80,14 +80,14 @@ export function WorkoutRecommendationCard({ recommendation }: WorkoutRecommendat
                     <View className="flex-row items-center justify-between pt-4 border-t" style={{ borderTopColor: theme.colors.divider }}>
                         <View className="flex-row items-center">
                             <Ionicons name="flash-outline" size={12} color={theme.colors.textMuted} />
-                            <Text style={{ color: theme.colors.textMuted }} className="text-[9px] font-black uppercase tracking-widest ml-1">
+                            <Text style={{ color: theme.colors.textMuted }} className="text-[9px] font-bold uppercase tracking-widest ml-1">
                                 {workout.exercises.length} EXERCÍCIOS • {workout.isAIGenerated ? 'IA' : 'SALVO'}
                             </Text>
                         </View>
                         <View className="flex-row gap-2">
                             {musclesNeedingAttention.slice(0, 2).map((m, i) => (
                                 <View key={i} style={{ backgroundColor: theme.colors.primary + '10' }} className="px-1.5 py-0.5 rounded-md">
-                                    <Text style={{ color: theme.colors.primary }} className="text-[8px] font-black uppercase">{m}</Text>
+                                    <Text style={{ color: theme.colors.primary }} className="text-[8px] font-bold uppercase">{m}</Text>
                                 </View>
                             ))}
                         </View>

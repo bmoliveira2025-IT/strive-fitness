@@ -1,0 +1,17 @@
+.git
+.github
+.gradle
+android
+android_backup
+ios
+node_modules
+outputs
+.expo
+.vscode
+.agent
+*.log
+dist
+public/strive1.0.1.apk
+public/strive1.0.2.apk
+public/strive1.0.5.apk
+public/strive1.0.6.apk

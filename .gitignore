@@ -54,3 +54,6 @@ find_duplicates.ps1
 summarize_duplicates.ps1
 scripts/upload-apk.js
 
+
+.vercel
+.env*.local

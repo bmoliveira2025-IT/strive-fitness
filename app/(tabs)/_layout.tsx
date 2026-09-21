@@ -1,3 +1,4 @@
+import Palette from '../../constants/palette.json';
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import { Platform, View } from 'react-native';
@@ -21,7 +22,7 @@ const TabIcon = ({ name, focused, color, primaryColor, isDark }: TabIconProps) =
       borderRadius: 14,
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: focused ? (isDark ? 'rgba(183, 245, 42, 0.14)' : 'rgba(77, 124, 15, 0.12)') : 'transparent',
+      backgroundColor: focused ? (isDark ? Palette.dark.accentMuted : Palette.light.accentMuted) : 'transparent',
     }}
   >
     <Ionicons
@@ -58,8 +59,8 @@ export default function TabLayout() {
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: theme.mode === 'dark' ? '#0D0F12' : '#FFFFFF',
-          borderTopColor: theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)',
+          backgroundColor: theme.colors.tabBarBackground,
+          borderTopColor: theme.colors.tabBarBorder,
           borderTopWidth: 1,
           borderLeftWidth: 0,
           borderRightWidth: 0,
@@ -67,10 +68,10 @@ export default function TabLayout() {
           paddingTop: 6,
           paddingBottom: bottomPadding,
           height: tabHeight,
-          shadowColor: '#000',
+          shadowColor: Palette.ink,
           shadowOffset: { width: 0, height: -4 },
-          shadowOpacity: theme.mode === 'dark' ? 0.35 : 0.08,
-          shadowRadius: 10,
+          shadowOpacity: theme.mode === 'dark' ? 0.1 : 0.08,
+          shadowRadius: 8,
           elevation: 24,
         },
         tabBarLabelStyle: {
@@ -100,11 +101,11 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="progress"
+        name="feed"
         options={{
-          title: 'Progresso',
+          title: 'Feed',
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon name="stats-chart" focused={focused} color={color} primaryColor={primaryColor} isDark={isDark} />
+            <TabIcon name="chatbubbles" focused={focused} color={color} primaryColor={primaryColor} isDark={isDark} />
           ),
         }}
       />
@@ -118,11 +119,11 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="progress"
         options={{
-          title: 'Explorar',
+          title: 'Progresso',
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon name="search" focused={focused} color={color} primaryColor={primaryColor} isDark={isDark} />
+            <TabIcon name="stats-chart" focused={focused} color={color} primaryColor={primaryColor} isDark={isDark} />
           ),
         }}
       />
@@ -133,6 +134,12 @@ export default function TabLayout() {
           tabBarIcon: ({ color, focused }) => (
             <TabIcon name="person" focused={focused} color={color} primaryColor={primaryColor} isDark={isDark} />
           ),
+        }}
+      />
+      <Tabs.Screen
+        name="explore"
+        options={{
+          href: null,
         }}
       />
     </Tabs>

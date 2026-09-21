@@ -9,14 +9,15 @@ import { CommunityLeaderboardCard } from '../../components/home/CommunityLeaderb
 import { DailyInsightCard } from '../../components/home/DailyInsightCard';
 import { HomeHeader } from '../../components/home/HomeHeader';
 import { MuscleUsageStats } from '../../components/home/MuscleUsageStats';
-import { MusicPlayerWidget } from '../../components/home/MusicPlayerWidget';
 import { NextWorkoutCard } from '../../components/home/NextWorkoutCard';
 import { RecentPRCard } from '../../components/home/RecentPRCard';
 import { WeeklyProgressTracker } from '../../components/home/WeeklyProgressTracker';
 import { WorkoutListView } from '../../components/home/WorkoutListView';
 import { NotificationModal } from '../../components/NotificationModal';
 import { QuestionnaireModal } from '../../components/QuestionnaireModal';
+import { VisualOnboardingModal } from '../../components/onboarding/VisualOnboardingModal';
 import { HeroCard } from '../../components/dashboard/HeroCard';
+import { MuscleGroupHeatmapWidget } from '../../components/dashboard/MuscleGroupHeatmapWidget';
 import { QuickActions } from '../../components/dashboard/QuickActions';
 import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
@@ -242,7 +243,7 @@ export default function Home() {
 
             <ScrollView
                 className="flex-1"
-                contentContainerStyle={{ paddingBottom: 160 + Math.max(insets.bottom, 20) }}
+                contentContainerStyle={{ paddingBottom: Math.max(insets.bottom, 16) + 75 }}
                 showsVerticalScrollIndicator={false}
                 removeClippedSubviews
             >
@@ -268,9 +269,6 @@ export default function Home() {
                 {/* 7. QUICK ACTIONS: Iniciar, Criar Ficha, Biblioteca, Assist */}
                 <QuickActions />
 
-                {/* 8. MUSIC & PODCAST: MusiKA Integrated Player */}
-                <MusicPlayerWidget />
-
                 {/* 9. MEUS PLANOS: Saved Workouts with Quick Edit & Create */}
                 {validSavedWorkouts.length > 0 && (
                     <WorkoutListView
@@ -287,8 +285,10 @@ export default function Home() {
                 {/* 11. COMMUNITY RANKING: Weekly League & Social Leaderboard */}
                 <CommunityLeaderboardCard />
 
-                {/* 12. MUSCLE USAGE: Weekly Focus */}
-                <MuscleUsageStats />
+                {/* 12. MUSCLE GROUP HEATMAP (Boneco Anatômico Dinâmico) */}
+                <View style={{ paddingHorizontal: 20 }}>
+                    <MuscleGroupHeatmapWidget />
+                </View>
 
                 {/* 13. RECENT ACTIVITY: Progressive Batch Loading Feed */}
                 <ActivityFeed />
@@ -310,6 +310,12 @@ export default function Home() {
                     onClose={() => setShowSurvey(false)}
                 />
             )}
+
+            {/* Novo Onboarding Visual por Gênero & Planos de Treino */}
+            <VisualOnboardingModal
+                visible={!!profile && !profile.hasOnboarded}
+                onClose={() => {}}
+            />
         </View>
     );
 }

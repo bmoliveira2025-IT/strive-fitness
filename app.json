@@ -2,7 +2,7 @@
   "expo": {
     "name": "Strive Fitness",
     "slug": "strive-app",
-    "version": "1.0.6",
+    "version": "1.0.8",
     "orientation": "portrait",
     "icon": "./assets/images/adaptive-icon.png",
     "scheme": "strive-fitness-br",
@@ -12,10 +12,6 @@
       "supportsTablet": true,
       "infoPlist": {
         "UIBackgroundModes": [
-          "audio",
-          "fetch",
-          "remote-notification",
-          "audio",
           "fetch",
           "remote-notification"
         ]
@@ -23,15 +19,14 @@
     },
     "android": {
       "package": "com.bmoliveira.strive",
-      "versionCode": 7,
+      "versionCode": 9,
       "adaptiveIcon": {
         "backgroundColor": "#0A0A0B",
         "foregroundImage": "./assets/images/adaptive-icon.png"
       },
       "permissions": [
         "WAKE_LOCK",
-        "FOREGROUND_SERVICE",
-        "FOREGROUND_SERVICE_MEDIA_PLAYBACK"
+        "FOREGROUND_SERVICE"
       ],
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false

@@ -12,7 +12,7 @@ import {
 import { FontFamily, Radius } from '../../constants/theme';
 import { useTheme } from '../../context/ThemeContext';
 import { useWorkoutHistory, WorkoutHistoryRecord } from '../../context/WorkoutHistoryContext';
-import { AnatomicalMuscleBody, MuscleColorMap, MuscleIntensityMap } from './AnatomicalMuscleBody';
+import { AnatomicalMuscleBody, MuscleColorMap } from './AnatomicalMuscleBody';
 
 const exercisesData = require('../../assets/exercises.json');
 
@@ -86,7 +86,9 @@ export function MuscleGroupHeatmapWidget() {
     const router = useRouter();
     const { history } = useWorkoutHistory();
     const { width: windowWidth } = useWindowDimensions();
-    const isDesktop = windowWidth >= 768;
+    // The dashboard itself is constrained on tablets/desktop. Only split the
+    // anatomy and insights when there is enough real viewport for both panes.
+    const isDesktop = windowWidth >= 1100;
 
     const [period, setPeriod] = useState<PeriodType>('semana');
     const [mode, setMode] = useState<ViewMode>('carga');
@@ -281,7 +283,7 @@ export function MuscleGroupHeatmapWidget() {
                 if (item.loadPercentage > 0 && item.loadColor) {
                     map[muscle as keyof MuscleColorMap] = item.loadColor;
                 }
-            } else {
+            } else if (item.lastTrainedDate) {
                 map[muscle as keyof MuscleColorMap] = item.recoveryColor;
             }
         });
@@ -314,17 +316,21 @@ export function MuscleGroupHeatmapWidget() {
         <View
             style={{
                 backgroundColor: theme.colors.card,
-                borderRadius: 24,
-                borderWidth: 1.5,
+                borderRadius: 28,
+                borderWidth: 1,
                 borderColor: theme.colors.cardBorder,
-                padding: 18,
+                padding: isDesktop ? 22 : 16,
                 marginBottom: 16,
                 shadowColor: '#000000',
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: isDark ? 0.25 : 0.06,
-                shadowRadius: 12,
+                shadowOffset: { width: 0, height: 12 },
+                shadowOpacity: isDark ? 0.38 : 0.1,
+                shadowRadius: 28,
+                overflow: 'hidden',
             }}
         >
+            {/* Ambient accents create depth without competing with the heatmap. */}
+            <View pointerEvents="none" style={{ position: 'absolute', width: 220, height: 220, borderRadius: 110, right: -95, top: -115, backgroundColor: isDark ? 'rgba(56,189,248,0.09)' : 'rgba(14,165,233,0.07)' }} />
+            <View pointerEvents="none" style={{ position: 'absolute', width: 160, height: 160, borderRadius: 80, left: -95, bottom: 70, backgroundColor: isDark ? 'rgba(139,92,246,0.08)' : 'rgba(139,92,246,0.05)' }} />
             {/* ══════════════ 1. CABEÇALHO COM TÍTULO E AJUDA ══════════════ */}
             <View style={{ flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 }}>
                 <View style={{ flex: 1, marginRight: 12 }}>
@@ -338,7 +344,7 @@ export function MuscleGroupHeatmapWidget() {
                                 letterSpacing: -0.4,
                             }}
                         >
-                            Mapa Muscular 3D
+                            Mapa Muscular
                         </Text>
                         <View
                             style={{
@@ -357,7 +363,7 @@ export function MuscleGroupHeatmapWidget() {
                                     letterSpacing: 0.8,
                                 }}
                             >
-                                Anatômico
+                                Interativo
                             </Text>
                         </View>
                     </View>
@@ -369,7 +375,7 @@ export function MuscleGroupHeatmapWidget() {
                             lineHeight: 16,
                         }}
                     >
-                        Veja quais músculos receberam maior carga nos seus treinos.
+                        Carga e recuperação por região anatômica.
                     </Text>
                 </View>
 
@@ -517,12 +523,23 @@ export function MuscleGroupHeatmapWidget() {
                     gap: isDesktop ? 24 : 10,
                 }}
             >
-                {/* 3D Model Area */}
+                {/* Anatomical model stage */}
                 <View
                     style={{
                         alignItems: 'center',
                         justifyContent: 'center',
                         position: 'relative',
+                        width: isDesktop ? 286 : '100%',
+                        paddingTop: 12,
+                        paddingHorizontal: 12,
+                        borderRadius: 24,
+                        backgroundColor: isDark ? 'rgba(9, 15, 28, 0.72)' : 'rgba(248, 250, 252, 0.88)',
+                        borderWidth: 1,
+                        borderColor: isDark ? 'rgba(148, 163, 184, 0.14)' : 'rgba(148, 163, 184, 0.24)',
+                        shadowColor: isDark ? '#020617' : '#64748B',
+                        shadowOffset: { width: 0, height: 8 },
+                        shadowOpacity: isDark ? 0.35 : 0.12,
+                        shadowRadius: 22,
                     }}
                 >
                     {/* Botões Frente | Costas e Dica 3D */}
@@ -591,28 +608,30 @@ export function MuscleGroupHeatmapWidget() {
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
                             <Ionicons name="hand-left-outline" size={13} color={theme.colors.textMuted} />
                             <Text style={{ color: theme.colors.textMuted, fontSize: 10, fontFamily: FontFamily.sansMedium }}>
-                                Gire 360° ou toque
+                                Arraste ou toque
                             </Text>
                         </View>
                     </View>
 
-                    {/* Componente 3D Proporcional */}
+                    {/* Corpo anatômico realista com mapa de calor por treino */}
                     <View
                         style={{
                             height: 355,
                             alignItems: 'center',
                             justifyContent: 'center',
-                            marginVertical: 6,
+                            marginTop: 4,
+                            marginBottom: 2,
                         }}
                     >
                         <AnatomicalMuscleBody
                             viewSide={viewSide}
                             colors={bodyColorMap}
+                            intensities={Object.fromEntries(Object.entries(muscleMap).map(([name, item]) => [name, mode === 'carga' ? item.loadPercentage : item.recoveryPercentage]))}
                             mode={mode}
                             selectedMuscle={selectedMuscle}
                             onSelectMuscle={(m) => setSelectedMuscle(m)}
-                            onToggleSide={() => setViewSide((prev) => (prev === 'Front' ? 'Back' : 'Front'))}
-                            width={230}
+                            onToggleSide={() => setViewSide((side) => side === 'Front' ? 'Back' : 'Front')}
+                            width={250}
                             height={345}
                         />
                     </View>

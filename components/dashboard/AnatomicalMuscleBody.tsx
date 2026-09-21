@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
     Animated,
     Easing,
@@ -114,9 +114,11 @@ export function AnatomicalMuscleBody({
     // 3. Touch / Mouse Gesture PanResponder for Complete 360° Dragging
     const panResponder = useRef(
         PanResponder.create({
-            onStartShouldSetPanResponder: () => true,
+            // A tap belongs to the anatomical SVG. Only claim the gesture once
+            // the user actually drags, otherwise muscle selection is unreliable.
+            onStartShouldSetPanResponder: () => false,
             onMoveShouldSetPanResponder: (_, gestureState: PanResponderGestureState) => {
-                return Math.abs(gestureState.dx) > 3;
+                return Math.abs(gestureState.dx) > 6 && Math.abs(gestureState.dx) > Math.abs(gestureState.dy);
             },
             onPanResponderTerminationRequest: () => false,
             onPanResponderGrant: () => {
@@ -252,7 +254,7 @@ export function AnatomicalMuscleBody({
             >
                 {/* 1. Realistic 3D Muscle Base Image */}
                 <Image
-                    source={require('../../assets/anatomy_front_cropped.png')}
+                    source={require('../../assets/anatomy_front_realistic.png')}
                     style={[
                         {
                             width: '100%',
@@ -548,6 +550,28 @@ export function AnatomicalMuscleBody({
                                     strokeWidth={getMuscleStrokeWidth('Panturrilhas')}
                                 />
                             </G>
+
+                            {/* Anatomical subdivision lines: these keep the heatmap readable
+                                without turning each muscle group into a flat color blob. */}
+                            <G pointerEvents="none" fill="none" stroke={isDark ? '#E2E8F0' : '#0F172A'} strokeWidth="1.15" strokeLinecap="round">
+                                {/* Pectoralis: clavicular / sternocostal fibres */}
+                                <Path d="M 178 244 C 202 250 228 251 253 246" strokeOpacity={colors['Peito'] ? 0.34 : 0} />
+                                <Path d="M 259 246 C 284 251 310 250 334 244" strokeOpacity={colors['Peito'] ? 0.34 : 0} />
+                                {/* Rectus abdominis tendinous intersections + linea alba */}
+                                <Path d="M 256 286 L 256 429" strokeOpacity={colors['Abdômen'] ? 0.42 : 0} />
+                                <Path d="M 218 320 C 238 324 274 324 294 320 M 216 350 C 238 354 274 354 296 350 M 216 381 C 238 385 274 385 296 381 M 220 410 C 240 414 272 414 292 410" strokeOpacity={colors['Abdômen'] ? 0.38 : 0} />
+                                {/* Deltoid heads */}
+                                <Path d="M 145 232 C 154 244 158 263 157 286 M 367 232 C 358 244 354 263 355 286" strokeOpacity={colors['Ombros'] ? 0.3 : 0} />
+                                {/* Biceps central belly */}
+                                <Path d="M 142 315 C 135 333 133 351 136 366 M 370 315 C 377 333 379 351 376 366" strokeOpacity={colors['Bíceps'] ? 0.34 : 0} />
+                                {/* Forearm flexor compartments */}
+                                <Path d="M 126 378 C 112 409 98 440 84 466 M 386 378 C 400 409 414 440 428 466" strokeOpacity={colors['Antebraços'] ? 0.32 : 0} />
+                                {/* Quadriceps: rectus femoris, vastus lateralis/medialis */}
+                                <Path d="M 213 466 C 203 516 203 587 207 648 M 237 482 C 224 538 222 606 218 657 M 299 466 C 309 516 309 587 305 648 M 275 482 C 288 538 290 606 294 657" strokeOpacity={colors['Quadríceps'] ? 0.38 : 0} />
+                                <Path d="M 181 620 C 195 616 211 624 220 649 M 331 620 C 317 616 301 624 292 649" strokeOpacity={colors['Quadríceps'] ? 0.3 : 0} />
+                                {/* Tibialis anterior / lateral lower-leg division */}
+                                <Path d="M 207 707 C 205 760 204 832 199 902 M 305 707 C 307 760 308 832 313 902" strokeOpacity={colors['Panturrilhas'] ? 0.34 : 0} />
+                            </G>
                         </G>
                     </Svg>
                 </View>
@@ -570,7 +594,7 @@ export function AnatomicalMuscleBody({
             >
                 {/* 1. Realistic 3D Muscle Base Image */}
                 <Image
-                    source={require('../../assets/anatomy_back_cropped.png')}
+                    source={require('../../assets/anatomy_back_realistic.png')}
                     style={[
                         {
                             width: '100%',
@@ -784,6 +808,29 @@ export function AnatomicalMuscleBody({
                                     stroke={getMuscleStroke('Panturrilhas')}
                                     strokeWidth={getMuscleStrokeWidth('Panturrilhas')}
                                 />
+                            </G>
+
+                            {/* Posterior anatomical subdivision lines */}
+                            <G pointerEvents="none" fill="none" stroke={isDark ? '#E2E8F0' : '#0F172A'} strokeWidth="1.15" strokeLinecap="round">
+                                {/* Trapezius upper/middle/lower fibres and spine */}
+                                <Path d="M 256 146 L 256 315 M 178 220 C 210 226 235 245 256 272 M 334 220 C 302 226 277 245 256 272" strokeOpacity={colors['Trapézio'] ? 0.4 : 0} />
+                                {/* Rear deltoid heads */}
+                                <Path d="M 142 233 C 153 246 158 269 154 294 M 370 233 C 359 246 354 269 358 294" strokeOpacity={colors['Ombros'] ? 0.32 : 0} />
+                                {/* Latissimus / erector-spinae separation */}
+                                <Path d="M 212 278 C 224 323 230 375 247 419 M 300 278 C 288 323 282 375 265 419" strokeOpacity={colors['Costas'] ? 0.38 : 0} />
+                                <Path d="M 177 323 C 202 330 225 345 244 365 M 335 323 C 310 330 287 345 268 365" strokeOpacity={colors['Costas'] ? 0.28 : 0} />
+                                {/* Triceps long/lateral heads */}
+                                <Path d="M 140 315 C 146 332 145 351 136 369 M 372 315 C 366 332 367 351 376 369" strokeOpacity={colors['Tríceps'] ? 0.35 : 0} />
+                                {/* Forearm extensor compartments */}
+                                <Path d="M 126 378 C 113 410 99 442 85 467 M 386 378 C 399 410 413 442 427 467" strokeOpacity={colors['Antebraços'] ? 0.32 : 0} />
+                                {/* Gluteus maximus / medius boundary */}
+                                <Path d="M 171 466 C 198 458 227 463 254 482 M 341 466 C 314 458 285 463 258 482 M 256 436 L 256 522" strokeOpacity={colors['Glúteos'] ? 0.36 : 0} />
+                                {/* Hamstring heads */}
+                                <Path d="M 220 540 C 211 578 211 625 219 663 M 292 540 C 301 578 301 625 293 663" strokeOpacity={colors['Isquiotibiais'] ? 0.38 : 0} />
+                                <Path d="M 244 542 C 233 582 229 625 229 665 M 268 542 C 279 582 283 625 283 665" strokeOpacity={colors['Isquiotibiais'] ? 0.28 : 0} />
+                                {/* Gastrocnemius medial/lateral heads + Achilles */}
+                                <Path d="M 202 706 C 213 745 216 790 207 824 M 310 706 C 299 745 296 790 305 824" strokeOpacity={colors['Panturrilhas'] ? 0.38 : 0} />
+                                <Path d="M 201 824 C 200 853 199 884 198 910 M 311 824 C 312 853 313 884 314 910" strokeOpacity={colors['Panturrilhas'] ? 0.32 : 0} />
                             </G>
                         </G>
                     </Svg>

@@ -55,7 +55,9 @@ export default function TabLayout() {
         tabBarInactiveTintColor: theme.colors.textMuted,
         tabBarShowLabel: true,
         tabBarStyle: {
-          position: 'absolute',
+          // On web/PWA the bar must participate in layout; an absolute bar
+          // overlays the final part of every scrollable screen.
+          position: Platform.OS === 'web' ? 'relative' : 'absolute',
           left: 0,
           right: 0,
           bottom: 0,

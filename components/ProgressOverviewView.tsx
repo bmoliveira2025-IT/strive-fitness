@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useMemo, useState } from 'react';
-import { useWindowDimensions, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Platform, useWindowDimensions, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useTheme } from '../context/ThemeContext';
@@ -376,7 +376,8 @@ export function ProgressOverviewView({
             className="flex-1"
             showsVerticalScrollIndicator={false}
             removeClippedSubviews
-            contentContainerStyle={{ paddingBottom: 40 }}
+            // Keep the final cards above the persistent tab bar and floating menu.
+            contentContainerStyle={{ paddingBottom: Platform.OS === 'web' ? 24 : 112 }}
         >
 
             {/* ─── Today at a Glance ─── */}

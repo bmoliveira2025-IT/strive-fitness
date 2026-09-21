@@ -2475,13 +2475,13 @@ export default function WorkoutScreen() {
                                     style={{ backgroundColor: theme.mode === 'light' ? theme.colors.accentMuted : theme.colors.card, borderColor: theme.mode === 'light' ? theme.colors.accentMuted : theme.colors.cardBorder, borderWidth: 1, borderRadius: 18, padding: 14, minHeight: 76, flexDirection: 'row', alignItems: 'center' }}
                                 >
                                     <View style={{ backgroundColor: theme.mode === 'light' ? 'rgba(215,255,114,0.14)' : theme.colors.backgroundTertiary, width: 46, height: 46, borderRadius: 14, alignItems: 'center', justifyContent: 'center', marginRight: 14 }}>
-                                        <Ionicons name="compass-outline" size={22} color={theme.colors.primaryLight} />
+                                        <Ionicons name="compass-outline" size={22} color={theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.primaryLight} />
                                     </View>
                                     <View style={{ flex: 1 }}>
-                                        <Text style={{ color: theme.colors.onImage, fontSize: 15, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>Explorar treinos</Text>
-                                        <Text style={{ color: '#B8C1B4', fontSize: 11, fontFamily: 'Inter_600SemiBold', fontWeight: '600', marginTop: 3 }}>Descubra exercícios e programas</Text>
+                                        <Text style={{ color: theme.mode === 'light' ? theme.colors.text : theme.colors.onImage, fontSize: 15, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>Explorar treinos</Text>
+                                        <Text style={{ color: theme.mode === 'light' ? theme.colors.textSecondary : '#B8C1B4', fontSize: 11, fontFamily: 'Inter_600SemiBold', fontWeight: '600', marginTop: 3 }}>Descubra exercícios e programas</Text>
                                     </View>
-                                    <Ionicons name="arrow-forward" size={20} color={theme.colors.primaryLight} />
+                                    <Ionicons name="arrow-forward" size={20} color={theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.primaryLight} />
                                 </TouchableOpacity>
 
                                 <TouchableOpacity
@@ -3894,7 +3894,7 @@ export default function WorkoutScreen() {
                                     setShowMoreOptionsModal(false);
                                     handleShareWorkout();
                                 }}
-                                className="flex-row items-center p-4"
+                                className="flex-row items-center px-4 py-3"
                             >
                                 <Ionicons name="share-social-outline" size={24} color="white" />
                                 <Text className="text-white text-base ml-4">Compartilhar Treino</Text>
@@ -3996,8 +3996,8 @@ export default function WorkoutScreen() {
                                 }}
                                 className="flex-row items-center p-4"
                             >
-                                <Ionicons name="trash-outline" size={24} color={theme.colors.error} />
-                                <Text className="text-red-500 text-base ml-4">Descartar Treino</Text>
+                                <Ionicons name="trash-outline" size={20} color={theme.colors.error} />
+                                <Text className="text-red-500 text-sm ml-3">Descartar Treino</Text>
                             </TouchableOpacity>
                         </View>
                     </View>

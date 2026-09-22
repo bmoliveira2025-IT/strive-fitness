@@ -29,6 +29,25 @@
         font-family: 'Inter_500Medium', system-ui, sans-serif;
         font-variant-numeric: tabular-nums;
     }
+
+    :where(button, [role="button"], [role="tab"], a) {
+        min-height: 44px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        html:focus-within {
+            scroll-behavior: auto;
+        }
+
+        *,
+        *::before,
+        *::after {
+            animation-duration: 1ms !important;
+            animation-iteration-count: 1 !important;
+            scroll-behavior: auto !important;
+            transition-duration: 1ms !important;
+        }
+    }
 }
 
 @layer utilities {

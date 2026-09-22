@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import React from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Alert, ImageBackground, Platform, Text, TouchableOpacity, View, GestureResponderEvent } from 'react-native';

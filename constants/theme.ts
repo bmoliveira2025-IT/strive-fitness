@@ -26,6 +26,20 @@ export const Radius = {
   full: 9999,
 } as const;
 
+export const Control = {
+  minTouchSize: 44,
+  preferredTouchSize: 48,
+  iconSize: 22,
+  buttonHeight: 48,
+  inputHeight: 52,
+} as const;
+
+export const Motion = {
+  fast: 120,
+  normal: 180,
+  slow: 240,
+} as const;
+
 // Typography Font Family mapping with fallback
 export const FontFamily = {
   // Inter: a single, legible family for headings and tabular metrics

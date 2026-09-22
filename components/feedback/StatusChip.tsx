@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, ViewStyle } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useTheme } from '../../context/ThemeContext';
 
 export type StatusType = 'completed' | 'active' | 'pending' | 'rest' | 'pr' | 'trend_up' | 'trend_stable' | 'trend_down' | 'neutral';

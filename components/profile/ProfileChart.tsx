@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import React, { useMemo, useState } from 'react';
 import { Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import { Circle, Defs, LinearGradient, Path, Stop, Svg } from 'react-native-svg';

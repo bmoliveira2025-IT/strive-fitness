@@ -1,7 +1,7 @@
 import Palette from '../../constants/palette.json';
 import React from 'react';
 import { View, Text } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useSavedWorkouts } from '../../context/SavedWorkoutsContext';
 
 export function StatsRow() {

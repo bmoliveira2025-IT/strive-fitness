@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
 import React, { useMemo, useState } from 'react';
 import {
@@ -12,11 +12,10 @@ import {
 import { FontFamily, Radius } from '../../constants/theme';
 import { useTheme } from '../../context/ThemeContext';
 import { useWorkoutHistory, WorkoutHistoryRecord } from '../../context/WorkoutHistoryContext';
+import { getActivatedMuscles, getExerciseMuscleActivation } from '../../services/muscleActivation';
 import { AnatomicalMuscleBody, MuscleColorMap } from './AnatomicalMuscleBody';
 
-const exercisesData = require('../../assets/exercises.json');
-
-export type PeriodType = 'ultimo' | 'hoje' | 'semana' | 'mes';
+export type PeriodType = 'ultimo' | 'semana' | 'mes';
 export type ViewMode = 'carga' | 'recuperacao';
 
 interface MuscleData {
@@ -34,13 +33,13 @@ interface MuscleData {
 }
 
 const MUSCLE_DISPLAY_NAMES: Record<string, string> = {
-    'Peito': 'Peitoral Maior & Superior',
-    'Costas': 'Dorsais & Costas',
-    'Ombros': 'Deltoides (Ombros)',
-    'Bíceps': 'Bíceps & Braquial',
-    'Tríceps': 'Tríceps Braquial',
-    'Abdômen': 'Reto Abdominal & Core',
-    'Quadríceps': 'Quadríceps & Coxas',
+    'Peito': 'Peitoral',
+    'Costas': 'Dorsais / Costas',
+    'Ombros': 'Deltoides',
+    'Bíceps': 'Bíceps',
+    'Tríceps': 'Tríceps',
+    'Abdômen': 'Abdômen',
+    'Quadríceps': 'Quadríceps',
     'Isquiotibiais': 'Posterior de Coxa',
     'Panturrilhas': 'Panturrilhas',
     'Glúteos': 'Glúteos',
@@ -51,9 +50,9 @@ const MUSCLE_DISPLAY_NAMES: Record<string, string> = {
 // 4-5 Tier Heatmap Color Function (Carga)
 function getLoadHeatmapColor(pct: number): string | null {
     if (pct <= 0) return null;
-    if (pct <= 30) return '#F59E0B'; // Baixa (1-30%)
-    if (pct <= 60) return '#0EA5E9'; // Moderada (31-60%)
-    if (pct <= 80) return '#8B5CF6'; // Alta (61-80%)
+    if (pct <= 30) return '#2563EB'; // Baixa: azul frio (1-30%)
+    if (pct <= 60) return '#FACC15'; // Moderada: amarelo quente (31-60%)
+    if (pct <= 80) return '#F97316'; // Alta: laranja (61-80%)
     return '#EF4444'; // Muito Alta (81-100%)
 }
 
@@ -80,68 +79,6 @@ function formatRelativeTime(dateIso: string | null): string {
     }
 }
 
-// Robust anatomical muscle detector for exercises (checks body_parts, catalog, and names/keywords)
-function detectMuscleGroupsForExercise(ex: { id?: string | number; name?: string; body_parts?: string[] }): string[] {
-    const matched = new Set<string>();
-    let parts: string[] = (ex.body_parts || []).slice();
-
-    // Fallback to library catalog if body_parts is empty
-    if (parts.length === 0) {
-        const details = exercisesData.find(
-            (d: any) =>
-                (ex.id && d.id?.toString() === ex.id.toString()) ||
-                (ex.name && d.name?.toLowerCase().trim() === ex.name.toLowerCase().trim())
-        );
-        if (details?.body_parts) {
-            parts = details.body_parts;
-        }
-    }
-
-    const rawParts = parts.map((p) => p.toLowerCase().trim());
-    const exName = (ex.name || '').toLowerCase().trim();
-
-    const has = (terms: string[]) => terms.some((t) => rawParts.some((p) => p.includes(t)) || exName.includes(t));
-
-    if (has(['peito', 'chest', 'supino', 'crucifixo', 'crossover', 'peck deck', 'voador', 'flexão'])) {
-        matched.add('Peito');
-    }
-    if (has(['costas', 'back', 'dorsal', 'puxada', 'remada', 'pulldown', 'barra fixa', 'serrote', 'lat pulldown', 'chin-up'])) {
-        matched.add('Costas');
-    }
-    if (has(['ombro', 'shoulder', 'deltoid', 'deltoide', 'desenvolvimento', 'elevação lateral', 'elevação frontal', 'arnold', 'militar'])) {
-        matched.add('Ombros');
-    }
-    if (has(['bíceps', 'biceps', 'bicep', 'rosca', 'scott'])) {
-        matched.add('Bíceps');
-    }
-    if (has(['tríceps', 'triceps', 'tricep', 'testa', 'pulley', 'corda', 'coice', 'francês', 'mergulho', 'paralela'])) {
-        matched.add('Tríceps');
-    }
-    if (has(['abdômen', 'abdomen', 'abs', 'core', 'cintura', 'waist', 'abdominal', 'prancha', 'infra', 'supra', 'crunch'])) {
-        matched.add('Abdômen');
-    }
-    if (has(['quadríceps', 'quadriceps', 'quad', 'coxa', 'thigh', 'agachamento', 'leg press', 'extensora', 'hack', 'afundo', 'passada', 'sissy', 'avanço', 'squat'])) {
-        matched.add('Quadríceps');
-    }
-    if (has(['isquiotibiais', 'isquio', 'hamstring', 'posterior de coxa', 'flexora', 'stiff', 'mesa flexora', 'cadeira flexora', 'rdl'])) {
-        matched.add('Isquiotibiais');
-    }
-    if (has(['glúteo', 'gluteo', 'glute', 'glutes', 'hip', 'elevação pélvica', 'abdução', 'coice glúteo', 'bumbum'])) {
-        matched.add('Glúteos');
-    }
-    if (has(['panturrilha', 'calf', 'calves', 'gêmeos', 'solear', 'panturrilhas'])) {
-        matched.add('Panturrilhas');
-    }
-    if (has(['trapézio', 'trapezio', 'trap', 'traps', 'encolhimento', 'remada alta'])) {
-        matched.add('Trapézio');
-    }
-    if (has(['antebraço', 'antebraco', 'forearm', 'forearms', 'punho', 'rosca inversa', 'rosca punho'])) {
-        matched.add('Antebraços');
-    }
-
-    return Array.from(matched);
-}
-
 export function MuscleGroupHeatmapWidget() {
     const { theme } = useTheme();
     const isDark = theme.mode === 'dark';
@@ -166,9 +103,6 @@ export function MuscleGroupHeatmapWidget() {
         const now = new Date();
         if (period === 'ultimo') {
             return history.slice(0, 1);
-        } else if (period === 'hoje') {
-            const todayStr = now.toISOString().split('T')[0];
-            return history.filter((h) => h.date && h.date.split('T')[0] === todayStr);
         } else if (period === 'semana') {
             const sevenDaysAgo = new Date();
             sevenDaysAgo.setDate(now.getDate() - 7);
@@ -219,7 +153,7 @@ export function MuscleGroupHeatmapWidget() {
         // Search in ALL history for lastTrainedDate to compute accurate recovery
         (history || []).forEach((record) => {
             (record.exercises || []).forEach((ex) => {
-                const detected = detectMuscleGroupsForExercise(ex);
+                const detected = getActivatedMuscles(ex);
                 detected.forEach((group) => {
                     if (data[group]) {
                         if (!data[group].lastTrainedDate || new Date(record.date) > new Date(data[group].lastTrainedDate!)) {
@@ -237,12 +171,13 @@ export function MuscleGroupHeatmapWidget() {
             (record.exercises || []).forEach((ex) => {
                 const setsCount = ex.sets && ex.sets.length > 0 ? ex.sets.length : 1;
                 const exVolume = (ex.sets || []).reduce((acc, s) => acc + (s.kg || 0) * (s.reps || 1), 0);
-                const detected = detectMuscleGroupsForExercise(ex);
+                const activation = getExerciseMuscleActivation(ex);
 
-                detected.forEach((group) => {
+                Object.entries(activation).forEach(([group, intensity]) => {
                     if (data[group]) {
-                        data[group].sets += setsCount;
-                        data[group].volumeKg += exVolume;
+                        const factor = (intensity || 0) / 100;
+                        data[group].sets += setsCount * factor;
+                        data[group].volumeKg += exVolume * factor;
                         data[group].exercises.add(ex.name);
                         groupsTrainedInThisWorkout.add(group);
                     }
@@ -283,7 +218,7 @@ export function MuscleGroupHeatmapWidget() {
             result[g] = {
                 name: g,
                 displayName: MUSCLE_DISPLAY_NAMES[g] || g,
-                sets: item.sets,
+                sets: Math.round(item.sets * 10) / 10,
                 volumeKg: Math.round(item.volumeKg),
                 workoutsCount: item.workoutsCount,
                 exercises: Array.from(item.exercises),
@@ -444,7 +379,6 @@ export function MuscleGroupHeatmapWidget() {
                 >
                     {[
                         { key: 'ultimo', label: 'Último' },
-                        { key: 'hoje', label: 'Hoje' },
                         { key: 'semana', label: 'Semana' },
                         { key: 'mes', label: 'Mês' },
                     ].map((item) => {
@@ -783,19 +717,19 @@ export function MuscleGroupHeatmapWidget() {
                 {mode === 'carga' ? (
                     <>
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
-                            <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#F59E0B' }} />
+                            <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#2563EB' }} />
                             <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontFamily: FontFamily.sansSemiBold }}>
                                 Baixa (1-30%)
                             </Text>
                         </View>
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
-                            <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#0EA5E9' }} />
+                            <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#FACC15' }} />
                             <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontFamily: FontFamily.sansSemiBold }}>
                                 Moderada (31-60%)
                             </Text>
                         </View>
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
-                            <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#8B5CF6' }} />
+                            <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#F97316' }} />
                             <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontFamily: FontFamily.sansSemiBold }}>
                                 Alta (61-80%)
                             </Text>
@@ -845,7 +779,7 @@ export function MuscleGroupHeatmapWidget() {
                         }}
                     >
                         {mode === 'carga'
-                            ? `Músculos Mais Trabalhados (${period === 'ultimo' ? 'Último Treino' : period === 'hoje' ? 'Hoje' : period === 'semana' ? 'Esta Semana' : 'Este Mês'})`
+                            ? `Músculos Mais Trabalhados (${period === 'ultimo' ? 'Último Treino' : period === 'semana' ? 'Esta Semana' : 'Este Mês'})`
                             : 'Status de Recuperação Muscular'}
                     </Text>
 
@@ -869,21 +803,26 @@ export function MuscleGroupHeatmapWidget() {
                                             borderColor: selectedMuscle === m.name ? theme.colors.primary : theme.colors.border,
                                         }}
                                     >
-                                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flex: 1, marginRight: 8 }}>
                                             <View
                                                 style={{
                                                     width: 10,
                                                     height: 10,
                                                     borderRadius: 5,
                                                     backgroundColor: m.loadColor || theme.colors.primary,
+                                                    flexShrink: 0,
                                                 }}
                                             />
-                                            <Text style={{ color: theme.colors.text, fontSize: 13, fontFamily: FontFamily.sansBold }}>
+                                            <Text
+                                                numberOfLines={1}
+                                                ellipsizeMode="tail"
+                                                style={{ color: theme.colors.text, fontSize: 13, fontFamily: FontFamily.sansBold, flexShrink: 1 }}
+                                            >
                                                 {m.displayName}
                                             </Text>
                                         </View>
 
-                                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flexShrink: 0 }}>
                                             <Text style={{ color: theme.colors.textMuted, fontSize: 11, fontFamily: FontFamily.sansMedium }}>
                                                 {m.sets} séries • {m.volumeKg} kg
                                             </Text>
@@ -928,21 +867,26 @@ export function MuscleGroupHeatmapWidget() {
                                             borderColor: selectedMuscle === m.name ? m.recoveryColor : theme.colors.border,
                                         }}
                                     >
-                                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flex: 1, marginRight: 8 }}>
                                             <View
                                                 style={{
                                                     width: 10,
                                                     height: 10,
                                                     borderRadius: 5,
                                                     backgroundColor: m.recoveryColor,
+                                                    flexShrink: 0,
                                                 }}
                                             />
-                                            <Text style={{ color: theme.colors.text, fontSize: 13, fontFamily: FontFamily.sansBold }}>
+                                            <Text
+                                                numberOfLines={1}
+                                                ellipsizeMode="tail"
+                                                style={{ color: theme.colors.text, fontSize: 13, fontFamily: FontFamily.sansBold, flexShrink: 1 }}
+                                            >
                                                 {m.displayName}
                                             </Text>
                                         </View>
 
-                                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flexShrink: 0 }}>
                                             <Text style={{ color: theme.colors.textMuted, fontSize: 11, fontFamily: FontFamily.sansMedium }}>
                                                 {formatRelativeTime(m.lastTrainedDate)}
                                             </Text>
@@ -1167,14 +1111,14 @@ export function MuscleGroupHeatmapWidget() {
                         </View>
 
                         <Text style={{ color: theme.colors.textSecondary, fontSize: 13, lineHeight: 19, marginBottom: 12, fontFamily: FontFamily.sans }}>
-                            O **Mapa Muscular 3D** é um espelho visual e tecnológico da distribuição de estímulos dos seus treinos:
+                            O Mapa Muscular 3D mostra a distribuição estimada dos estímulos dos seus treinos:
                         </Text>
 
                         <View style={{ gap: 8, marginBottom: 16 }}>
                             <View style={{ flexDirection: 'row', gap: 8 }}>
                                 <Ionicons name="flame" size={16} color={theme.colors.primary} style={{ marginTop: 2 }} />
                                 <Text style={{ flex: 1, color: theme.colors.text, fontSize: 12, lineHeight: 17 }}>
-                                    <Text style={{ fontFamily: FontFamily.sansBold }}>Carga de Treino:</Text> Baseia-se no volume de séries e carga (kg) acumuladas em cada grupo muscular no período selecionado.
+                                    <Text style={{ fontFamily: FontFamily.sansBold }}>Carga de Treino:</Text> pondera músculos primários, secundários e estabilizadores de cada exercício. Vermelho indica maior ativação; azul, menor ativação.
                                 </Text>
                             </View>
 

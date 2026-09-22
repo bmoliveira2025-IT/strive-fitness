@@ -1,6 +1,6 @@
 import Palette from '../constants/palette.json';
-import { Ionicons } from '@expo/vector-icons';
-import * as ImagePicker from 'expo-image-picker';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import * as ImagePicker from '../services/imagePicker';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useMemo, useState } from 'react';
 import { Image, Modal, ScrollView, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';

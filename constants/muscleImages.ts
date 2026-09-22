@@ -1,26 +1,26 @@
 export const MUSCLE_IMAGES = {
-    'Peito': require('../assets/images/muscles/transparent/chest.png'),
-    'Bíceps': require('../assets/images/muscles/transparent/biceps.png'),
-    'Tríceps': require('../assets/images/muscles/transparent/triceps.png'),
-    'Costas': require('../assets/images/muscles/transparent/back.png'),
-    'Ombros': require('../assets/images/muscles/transparent/shoulders.png'),
-    'Abdômen': require('../assets/images/muscles/transparent/abs.png'),
-    'Quadríceps': require('../assets/images/muscles/transparent/quads.png'),
-    'Isquiotibiais': require('../assets/images/muscles/transparent/hamstrings.png'),
-    'Quadris': require('../assets/images/muscles/transparent/hips.png'),
-    'Panturrilhas': require('../assets/images/muscles/transparent/calves.png'),
-    'Antebraços': require('../assets/images/muscles/transparent/forearms.png'),
-    'Pescoço': require('../assets/images/muscles/transparent/neck.png'),
-    'Glúteos': require('../assets/images/muscles/transparent/glutes.png'),
-    'Gluteos': require('../assets/images/muscles/transparent/glutes.png'),
+    'Peito': require('../assets/images/muscles/optimized/chest.png'),
+    'Bíceps': require('../assets/images/muscles/optimized/biceps.png'),
+    'Tríceps': require('../assets/images/muscles/optimized/triceps.png'),
+    'Costas': require('../assets/images/muscles/optimized/back.png'),
+    'Ombros': require('../assets/images/muscles/optimized/shoulders.png'),
+    'Abdômen': require('../assets/images/muscles/optimized/abs.png'),
+    'Quadríceps': require('../assets/images/muscles/optimized/quads.png'),
+    'Isquiotibiais': require('../assets/images/muscles/optimized/hamstrings.png'),
+    'Quadris': require('../assets/images/muscles/optimized/hips.png'),
+    'Panturrilhas': require('../assets/images/muscles/optimized/calves.png'),
+    'Antebraços': require('../assets/images/muscles/optimized/forearms.png'),
+    'Pescoço': require('../assets/images/muscles/optimized/neck.png'),
+    'Glúteos': require('../assets/images/muscles/optimized/glutes.png'),
+    'Gluteos': require('../assets/images/muscles/optimized/glutes.png'),
     // Aliases for dynamic lookups
-    'Abdominais': require('../assets/images/muscles/transparent/abs.png'),
-    'Abs': require('../assets/images/muscles/transparent/abs.png'),
-    'Core': require('../assets/images/muscles/transparent/abs.png'),
-    'Cintura': require('../assets/images/muscles/transparent/abs.png'),
-    'Coxas': require('../assets/images/muscles/transparent/quads.png'), // Default to Quads for generic Thighs
-    'Braços': require('../assets/images/muscles/transparent/biceps.png'), // Default to Biceps for generic Arms
-    'Cardio': require('../assets/images/muscles/transparent/abs.png'), // Placeholder or use specialized icon if available
+    'Abdominais': require('../assets/images/muscles/optimized/abs.png'),
+    'Abs': require('../assets/images/muscles/optimized/abs.png'),
+    'Core': require('../assets/images/muscles/optimized/abs.png'),
+    'Cintura': require('../assets/images/muscles/optimized/abs.png'),
+    'Coxas': require('../assets/images/muscles/optimized/quads.png'), // Default to Quads for generic Thighs
+    'Braços': require('../assets/images/muscles/optimized/biceps.png'), // Default to Biceps for generic Arms
+    'Cardio': require('../assets/images/muscles/optimized/abs.png'), // Placeholder or use specialized icon if available
 };
 
 export const MUSCLE_GROUPS_LIST = [

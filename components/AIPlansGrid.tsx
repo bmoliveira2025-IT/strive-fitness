@@ -1,5 +1,5 @@
 import Palette from '../constants/palette.json';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import React, { useEffect, useState } from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { useSavedWorkouts } from '../context/SavedWorkoutsContext';

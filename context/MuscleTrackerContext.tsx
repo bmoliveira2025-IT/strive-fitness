@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useWorkoutHistory } from './WorkoutHistoryContext';
+import { getActivatedMuscles, getExerciseMuscleActivation } from '../services/muscleActivation';
 
 // Define the muscle groups we track (Portuguese keys)
 // These should match the keys in exercises_translated.json and muscleImages.ts
@@ -90,9 +91,10 @@ export function MuscleTrackerProvider({ children }: { children: ReactNode }) {
             const isThisWeek = workoutDate >= oneWeekAgo;
 
             workout.exercises.forEach(ex => {
-                const parts = inferBodyPart(ex.name);
+                const activation = getExerciseMuscleActivation(ex);
 
-                parts.forEach(part => {
+                Object.entries(activation).forEach(([part, intensity]) => {
+                    const factor = (intensity || 0) / 100;
                     // Update Last Trained
                     if (!lastTrained[part] || workoutDate > lastTrained[part]) {
                         lastTrained[part] = workoutDate;
@@ -104,7 +106,7 @@ export function MuscleTrackerProvider({ children }: { children: ReactNode }) {
 
                         if (validSets.length > 0) {
                             // Sets
-                            setsCount[part] = (setsCount[part] || 0) + validSets.length;
+                            setsCount[part] = (setsCount[part] || 0) + validSets.length * factor;
 
                             // Frequency (increment once per workout per muscle)
                             // We need to be careful not to double count if muscle appears twice in one workout? 
@@ -117,7 +119,7 @@ export function MuscleTrackerProvider({ children }: { children: ReactNode }) {
 
                         // Load
                         const totalLoad = validSets.reduce((sum, s) => sum + s.kg, 0);
-                        loadSum[part] = (loadSum[part] || 0) + totalLoad;
+                        loadSum[part] = (loadSum[part] || 0) + totalLoad * factor;
                     }
                 });
             });
@@ -127,7 +129,7 @@ export function MuscleTrackerProvider({ children }: { children: ReactNode }) {
             const musclesInWorkout = new Set<string>();
             if (isThisWeek) {
                 workout.exercises.forEach(ex => {
-                    const parts = inferBodyPart(ex.name);
+                    const parts = getActivatedMuscles(ex);
                     parts.forEach(p => musclesInWorkout.add(p));
                 });
                 musclesInWorkout.forEach(m => {
@@ -200,21 +202,6 @@ export function MuscleTrackerProvider({ children }: { children: ReactNode }) {
 
         setMuscleStats(stats);
         setLoading(false);
-    };
-
-    const inferBodyPart = (name: string): string[] => {
-        const n = name.toLowerCase();
-        // Basic keyword matching for prototype
-        if (n.includes('supino') || n.includes('chest') || n.includes('peito') || n.includes('fly')) return ['Peito'];
-        if (n.includes('puxada') || n.includes('remada') || n.includes('costas') || n.includes('pull')) return ['Costas'];
-        if (n.includes('agachamento') || n.includes('leg press') || n.includes('extensora') || n.includes('quad')) return ['Quadríceps'];
-        if (n.includes('stiff') || n.includes('mesa flexora') || n.includes('posterior')) return ['Isquiotibiais'];
-        if (n.includes('elevação') || n.includes('desenvolvimento') || n.includes('ombro')) return ['Ombros'];
-        if (n.includes('rosca') || n.includes('biceps')) return ['Bíceps'];
-        if (n.includes('triceps') || n.includes('testa') || n.includes('polia')) return ['Tríceps'];
-        if (n.includes('panturrilha')) return ['Panturrilhas'];
-        if (n.includes('abdominal') || n.includes('crunch')) return ['Abdômen'];
-        return [];
     };
 
     const getMuscleStatus = (muscleId: string) => muscleStats[muscleId];

@@ -1,13 +1,14 @@
-import { Ionicons } from '@expo/vector-icons';
-import { ResizeMode, Video } from 'expo-av';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { Image } from 'expo-image';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { MUSCLE_IMAGES } from '../constants/muscleImages';
 import { useFavorites } from '../context/FavoritesContext';
 import { useTheme } from '../context/ThemeContext';
+import { getExerciseMuscleActivation } from '../services/muscleActivation';
+import { AnatomicalMuscleBody, MuscleColorMap } from './dashboard/AnatomicalMuscleBody';
+import { WorkoutVideo, WorkoutVideoHandle } from './media/WorkoutVideo';
 // @ts-ignore
 import exercises from '../assets/exercises.json';
 
@@ -62,8 +63,23 @@ export function ExerciseDetailContent({ exerciseId, onClose, isModal = false }: 
     const isExerciseFavorite = isFavorite(exerciseId);
 
     // Video State
-    const video = useRef<Video>(null);
-    const [status, setStatus] = useState<any>({});
+    const video = useRef<WorkoutVideoHandle>(null);
+    const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+    const [muscleView, setMuscleView] = useState<'Front' | 'Back'>('Front');
+
+    const muscleActivation = useMemo(
+        () => exercise ? getExerciseMuscleActivation(exercise) : {},
+        [exercise]
+    );
+    const activationColor = (intensity: number) => {
+        if (intensity <= 30) return '#2563EB';
+        if (intensity <= 60) return '#FACC15';
+        if (intensity <= 80) return '#F97316';
+        return '#EF4444';
+    };
+    const muscleColors = useMemo<MuscleColorMap>(() => Object.fromEntries(
+        Object.entries(muscleActivation).map(([muscle, intensity]) => [muscle, activationColor(intensity || 0)])
+    ), [muscleActivation]);
 
     if (!exercise) {
         return (
@@ -72,30 +88,6 @@ export function ExerciseDetailContent({ exerciseId, onClose, isModal = false }: 
             </View>
         );
     }
-
-    // Helper to get muscle image
-    const getMuscleImage = (part: string) => {
-        if (!part) return null;
-        const key = part.toLowerCase().trim();
-
-        const map: Record<string, string> = {
-            'chest': 'Peito', 'peito': 'Peito',
-            'back': 'Costas', 'costas': 'Costas',
-            'shoulders': 'Ombros', 'ombros': 'Ombros',
-            'biceps': 'Bíceps', 'bíceps': 'Bíceps',
-            'triceps': 'Tríceps', 'tríceps': 'Tríceps',
-            'forearms': 'Bíceps', 'antebraços': 'Bíceps',
-            'abs': 'Abdômen', 'abdominais': 'Abdômen', 'waist': 'Abdômen', 'abdomen': 'Abdômen', 'core': 'Abdômen',
-            'quadriceps': 'Quadríceps', 'quadríceps': 'Quadríceps', 'legs': 'Quadríceps', 'thighs': 'Quadríceps', 'pernas': 'Quadríceps',
-            'hamstrings': 'Isquiotibiais', 'isquiotibiais': 'Isquiotibiais',
-            'calves': 'Panturrilhas', 'panturrilhas': 'Panturrilhas',
-            'hips': 'Glúteos', 'quadris': 'Glúteos', 'glutes': 'Glúteos',
-            'neck': 'Costas', 'pescoço': 'Costas'
-        };
-
-        const displayName = map[key] || part.charAt(0).toUpperCase() + part.slice(1);
-        return (MUSCLE_IMAGES as any)[displayName] || null;
-    };
 
     return (
         <View style={{ backgroundColor: theme.colors.background, flex: 1 }}>
@@ -121,30 +113,28 @@ export function ExerciseDetailContent({ exerciseId, onClose, isModal = false }: 
                     <TouchableOpacity
                         activeOpacity={1}
                         onPress={() => {
-                            if (status.isPlaying) {
-                                video.current?.pauseAsync();
+                            if (isVideoPlaying) {
+                                video.current?.pause();
                             } else {
-                                video.current?.playAsync();
+                                video.current?.play();
                             }
                         }}
                         style={{ backgroundColor: theme.colors.card }}
                         className="w-full h-96 mb-6 relative justify-center items-center rounded-b-3xl overflow-hidden"
                     >
-                        <Video
+                        <WorkoutVideo
                             ref={video}
-                            source={{ uri: exercise.video_url }}
-                            rate={1.0}
+                            sourceUrl={exercise.video_url}
                             volume={1.0}
-                            isMuted={false}
-                            resizeMode={ResizeMode.CONTAIN}
-                            shouldPlay={true}
-                            isLooping
-                            useNativeControls={false}
+                            muted={false}
+                            autoPlay
+                            loop
+                            controls={false}
                             style={{ width: '100%', height: '100%' }}
-                            onPlaybackStatusUpdate={status => setStatus(() => status)}
+                            onPlayingChange={setIsVideoPlaying}
                         />
                         {/* Play/Pause Overlay */}
-                        {!status.isPlaying && (
+                        {!isVideoPlaying && (
                             <View className="absolute bg-black/40 p-4 rounded-full">
                                 <Ionicons name="play" size={48} color="white" />
                             </View>
@@ -217,42 +207,53 @@ export function ExerciseDetailContent({ exerciseId, onClose, isModal = false }: 
                         </TouchableOpacity>
                     </View>
 
-                    {/* Muscle Map Section - Compact */}
+                    {/* Exercise-specific biomechanical muscle map */}
                     <View className="mb-6 w-full">
                         <Text style={{ color: theme.colors.textMuted }} className="uppercase text-xs font-bold tracking-widest mb-2 pl-1">
-                            MÚSCULOS ALVO
+                            ATIVAÇÃO MUSCULAR ESTIMADA
                         </Text>
-                        <View style={{ backgroundColor: theme.colors.card, borderColor: theme.colors.border, borderRadius: 20 }} className="w-full h-48 items-center justify-center p-2 border">
-                            {(() => {
-                                // Priority 1: High Quality Muscle Map (Transparent)
-                                const primaryPart = Array.isArray(exercise.body_parts)
-                                    ? exercise.body_parts[0]
-                                    : exercise.body_parts;
-                                const muscleImage = getMuscleImage(primaryPart);
-
-                                if (muscleImage) {
-                                    return (
-                                        <Image
-                                            source={muscleImage}
-                                            className="w-full h-full"
-                                            contentFit="contain"
-                                        />
-                                    );
-                                }
-
-                                // Priority 2: High Quality Exercise Image (GymVisual) - Fallback
-                                if (exercise.image_url) {
-                                    return (
-                                        <Image
-                                            source={{ uri: exercise.image_url }}
-                                            className="w-full h-full"
-                                            contentFit="contain"
-                                        />
-                                    );
-                                }
-
-                                return <Ionicons name="body" size={64} color={theme.colors.textMuted} />;
-                            })()}
+                        <View style={{ backgroundColor: theme.colors.card, borderColor: theme.colors.border, borderRadius: 20 }} className="w-full items-center justify-center p-3 border">
+                            <View style={{ flexDirection: 'row', gap: 8, marginBottom: 4 }}>
+                                {(['Front', 'Back'] as const).map((side) => (
+                                    <TouchableOpacity
+                                        key={side}
+                                        onPress={() => setMuscleView(side)}
+                                        accessibilityRole="button"
+                                        accessibilityState={{ selected: muscleView === side }}
+                                        style={{
+                                            minHeight: 44,
+                                            paddingHorizontal: 18,
+                                            borderRadius: 14,
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            backgroundColor: muscleView === side ? theme.colors.primary : theme.colors.backgroundSecondary,
+                                        }}
+                                    >
+                                        <Text style={{ color: muscleView === side ? theme.colors.onPrimary : theme.colors.textSecondary, fontWeight: '700' }}>
+                                            {side === 'Front' ? 'Frente' : 'Costas'}
+                                        </Text>
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
+                            <AnatomicalMuscleBody
+                                viewSide={muscleView}
+                                colors={muscleColors}
+                                intensities={muscleActivation}
+                                width={230}
+                                height={345}
+                                onToggleSide={() => setMuscleView((side) => side === 'Front' ? 'Back' : 'Front')}
+                            />
+                            <View style={{ width: '100%', gap: 8, marginTop: 4 }}>
+                                {Object.entries(muscleActivation)
+                                    .sort(([, a], [, b]) => (b || 0) - (a || 0))
+                                    .map(([muscle, intensity]) => (
+                                        <View key={muscle} style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                                            <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: activationColor(intensity || 0) }} />
+                                            <Text style={{ color: theme.colors.text, flex: 1, fontWeight: '600' }}>{muscle}</Text>
+                                            <Text style={{ color: theme.colors.textSecondary, fontVariant: ['tabular-nums'] }}>{Math.round(intensity || 0)}%</Text>
+                                        </View>
+                                    ))}
+                            </View>
                         </View>
                     </View>
 

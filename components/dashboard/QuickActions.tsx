@@ -1,5 +1,5 @@
 import Palette from '../../constants/palette.json';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
@@ -12,27 +12,27 @@ export function QuickActions() {
 
     const actions = [
         {
-            icon: 'barbell-outline' as const,
-            label: 'Novo Treino',
-            description: 'Rotina livre',
-            onPress: () => router.push('/workout'),
-        },
-        {
-            icon: 'create-outline' as const,
+            icon: 'add-circle-outline' as const,
             label: 'Criar Ficha',
-            description: 'Ajustar plano',
+            description: 'Novo plano',
             onPress: () => router.push({ pathname: '/workout', params: { isCreatingPlan: 'true' } }),
         },
         {
             icon: 'book-outline' as const,
-            label: 'Biblioteca',
-            description: 'Exercícios',
+            label: 'Exercícios',
+            description: 'Biblioteca',
             onPress: () => router.push({ pathname: '/explore', params: { tab: 'Exercícios', categoryId: '', categoryName: '' } }),
         },
         {
+            icon: 'trending-up-outline' as const,
+            label: 'Evolução',
+            description: 'Métricas & PRs',
+            onPress: () => router.push('/progress'),
+        },
+        {
             icon: 'sparkles-outline' as const,
-            label: 'Assistente IA',
-            description: 'Insights',
+            label: 'IA Coach',
+            description: 'Assistente',
             onPress: () => router.push('/activities'),
         },
     ];

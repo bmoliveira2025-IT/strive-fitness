@@ -1,12 +1,12 @@
-import { Ionicons } from '@expo/vector-icons';
-import { CameraView, useCameraPermissions } from 'expo-camera';
-import * as ImagePicker from 'expo-image-picker';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import * as ImagePicker from '../services/imagePicker';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
 import { Alert, Image, Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ModernLoading } from '../components/ui/ModernLoading';
+import { CameraSurface, CameraSurfaceHandle, useCameraPermissions } from '../components/media/CameraSurface';
 import { useTheme } from '../context/ThemeContext';
 import { supabase } from '../lib/supabase';
 
@@ -15,7 +15,7 @@ export default function AsymmetryAnalysisScreen() {
     const { theme } = useTheme();
     const insets = useSafeAreaInsets();
     const [permission, requestPermission] = useCameraPermissions();
-    const [cameraRef, setCameraRef] = useState<CameraView | null>(null);
+    const [cameraRef, setCameraRef] = useState<CameraSurfaceHandle | null>(null);
     const [photo, setPhoto] = useState<string | null>(null);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [analysisResult, setAnalysisResult] = useState<any>(null);
@@ -318,7 +318,7 @@ export default function AsymmetryAnalysisScreen() {
             </Modal>
 
             {!photo ? (
-                <CameraView
+                <CameraSurface
                     style={{ flex: 1 }}
                     facing="front"
                     ref={(ref) => setCameraRef(ref)}
@@ -388,7 +388,7 @@ export default function AsymmetryAnalysisScreen() {
                             </Text>
                         </View>
                     </View>
-                </CameraView>
+                </CameraSurface>
             ) : (
                 <View className="flex-1">
                     <Image source={{ uri: photo }} className="flex-1" resizeMode="contain" />

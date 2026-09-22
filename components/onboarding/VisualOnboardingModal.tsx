@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { ImageBackground } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
@@ -285,6 +285,8 @@ export function VisualOnboardingModal({ visible, onClose }: VisualOnboardingModa
             animationType="fade"
             transparent={false}
             statusBarTranslucent
+            accessibilityViewIsModal
+            onRequestClose={onClose}
         >
             <View style={{
                 flex: 1,
@@ -297,12 +299,15 @@ export function VisualOnboardingModal({ visible, onClose }: VisualOnboardingModa
                 {/* Top close / skip action */}
                 <View style={{ flexDirection: 'row', justifyContent: 'flex-end', paddingHorizontal: 20, marginBottom: 4 }}>
                     <TouchableOpacity
+                        accessibilityRole="button"
+                        accessibilityLabel="Pular configuração inicial"
                         onPress={() => {
                             updateProfile({ hasOnboarded: true });
                             AsyncStorage.setItem('@strive_has_onboarded', 'true').catch(() => {});
                             onClose();
                         }}
                         hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                        style={{ minWidth: 48, minHeight: 48, alignItems: 'center', justifyContent: 'center' }}
                     >
                         <Text style={{ color: '#94A3B8', fontSize: 13, fontFamily: FontFamily.sansMedium }}>
                             Pular
@@ -326,6 +331,8 @@ export function VisualOnboardingModal({ visible, onClose }: VisualOnboardingModa
 
                         {/* Card Masculino */}
                         <TouchableOpacity
+                            accessibilityRole="button"
+                            accessibilityLabel="Selecionar gênero masculino"
                             onPress={() => handleSelectGender('masculino')}
                             activeOpacity={0.88}
                             style={{
@@ -362,6 +369,8 @@ export function VisualOnboardingModal({ visible, onClose }: VisualOnboardingModa
 
                         {/* Card Feminino */}
                         <TouchableOpacity
+                            accessibilityRole="button"
+                            accessibilityLabel="Selecionar gênero feminino"
                             onPress={() => handleSelectGender('feminino')}
                             activeOpacity={0.88}
                             style={{

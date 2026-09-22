@@ -1,6 +1,6 @@
 import Palette from '../../constants/palette.json';
 import { View, Text, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useTheme } from '../../context/ThemeContext';
 import { TrainingObjective } from '../../context/UserProfileContext';
 

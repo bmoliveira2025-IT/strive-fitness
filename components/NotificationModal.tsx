@@ -11,7 +11,7 @@ import {
     StyleSheet
 } from 'react-native';
 import { BlurView } from 'expo-blur';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
 import { Notification, NotificationType, useNotifications } from '../context/NotificationContext';
 import { useTheme } from '../context/ThemeContext';

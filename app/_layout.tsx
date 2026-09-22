@@ -1,22 +1,13 @@
 import Palette from '../constants/palette.json';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { themeVariables } from '../constants/theme-variables';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useFonts } from 'expo-font';
-import {
-  Sora_400Regular,
-  Sora_600SemiBold,
-  Sora_700Bold,
-  Sora_800ExtraBold,
-} from '@expo-google-fonts/sora';
-import {
-  Inter_400Regular,
-  Inter_500Medium,
-  Inter_600SemiBold,
-  Inter_700Bold,
-} from '@expo-google-fonts/inter';
+import { Inter_400Regular } from '@expo-google-fonts/inter/400Regular';
+import { Inter_500Medium } from '@expo-google-fonts/inter/500Medium';
+import { Inter_600SemiBold } from '@expo-google-fonts/inter/600SemiBold';
+import { Inter_700Bold } from '@expo-google-fonts/inter/700Bold';
 import { Stack, usePathname, useRouter, useSegments } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { InteractionManager, LogBox, Platform, StatusBar as RNStatusBar, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import * as SystemUI from 'expo-system-ui';
@@ -30,7 +21,7 @@ import { useWorkoutStore } from '../store/useWorkoutStore';
 import '../global.css';
 
 import { ThemeProvider as NavThemeProvider, DefaultTheme, DarkTheme } from '@react-navigation/native';
-import * as Notifications from 'expo-notifications';
+import { configureNotificationHandler } from '../services/notificationRuntime';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ActiveWorkoutBanner } from '../components/ActiveWorkoutBanner';
@@ -43,15 +34,7 @@ import { PushNotificationProvider } from '../context/PushNotificationContext';
 import { ToastProvider } from '../context/ToastContext';
 import { WorkoutHistoryProvider } from '../context/WorkoutHistoryContext';
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: false,
-    shouldShowBanner: true,
-    shouldShowList: true,
-  }),
-});
+configureNotificationHandler();
 
 function AuthProtection({ children }: { children: React.ReactNode }) {
   const { session, isOfflineGuest, loading } = useAuth();
@@ -98,7 +81,6 @@ function StackContent() {
 
   return (
     <>
-      <WebInstallBanner />
       <AuthProtection>
         <NavThemeProvider value={
           theme.mode === 'dark' 
@@ -211,12 +193,9 @@ function RootLayoutContent() {
 export default function TabLayout() {
   const [isMounted, setIsMounted] = useState(false);
   const [splashFinished, setSplashFinished] = useState(false);
+  const handleSplashFinished = useCallback(() => setSplashFinished(true), []);
   const [fontsLoaded] = useFonts({
     ...Ionicons.font,
-    Sora_400Regular,
-    Sora_600SemiBold,
-    Sora_700Bold,
-    Sora_800ExtraBold,
     Inter_400Regular,
     Inter_500Medium,
     Inter_600SemiBold,
@@ -241,7 +220,7 @@ export default function TabLayout() {
 
   if (!isMounted || !fontsLoaded || !splashFinished) {
     return (
-      <AnimatedSplashScreen onFinish={() => setSplashFinished(true)} />
+      <AnimatedSplashScreen onFinish={handleSplashFinished} />
     );
   }
 

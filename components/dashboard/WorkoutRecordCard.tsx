@@ -1,4 +1,4 @@
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { Image } from 'expo-image';
 import React, { memo, useCallback, useMemo } from 'react';
 import { Alert, Share, Text, TouchableOpacity, View } from 'react-native';

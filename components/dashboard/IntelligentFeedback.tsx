@@ -1,5 +1,5 @@
 import Palette from '../../constants/palette.json';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useMemo } from 'react';
 import { ImageBackground, Text, View } from 'react-native';

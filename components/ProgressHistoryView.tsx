@@ -1,4 +1,4 @@
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { memo, useMemo, useState } from 'react';
 import { ScrollView, SectionList, Text, TextInput, TouchableOpacity, View } from 'react-native';
@@ -390,7 +390,7 @@ export function ProgressHistoryView() {
                                             <Text style={{ color: theme.colors.text, fontSize: 17, fontFamily: 'Inter_700Bold', fontWeight: '700', letterSpacing: -0.3 }}>{formatShortDate(item.date)}</Text>
                                             <View style={{ backgroundColor: theme.colors.backgroundTertiary, borderColor: theme.colors.cardBorder, borderWidth: 1, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 12 }}>
                                                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
-                                                    <MaterialCommunityIcons name="scale-bathroom" size={13} color={theme.colors.textMuted} />
+                                                    <Ionicons name="scale-outline" size={13} color={theme.colors.textMuted} />
                                                     <Text style={{ color: theme.colors.text, fontFamily: 'Inter_700Bold', fontWeight: '700', fontSize: 13 }}>{item.weight}kg</Text>
                                                 </View>
                                             </View>

@@ -1,5 +1,5 @@
 import Palette from '../constants/palette.json';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
 import { Image } from 'expo-image';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -67,7 +67,7 @@ const BODY_PART_TRANSLATION: Record<string, string> = {
     'lats': 'Dorsais',
 };
 
-const GridItem = memo(({ item, isSelected, toggleFavorite, isItemFavorite, onSelect, onInfo }: any) => {
+const GridItem = memo(function GridItem({ item, isSelected, toggleFavorite, isItemFavorite, onSelect, onInfo }: any) {
     const { theme } = useTheme();
     return (
         <TouchableOpacity
@@ -142,7 +142,7 @@ const GridItem = memo(({ item, isSelected, toggleFavorite, isItemFavorite, onSel
     );
 });
 
-const ExerciseCardItem = memo(({ item, isSelected, isItemFavorite, onSelect, onInfo, allowMultiSelect }: any) => {
+const ExerciseCardItem = memo(function ExerciseCardItem({ item, isSelected, isItemFavorite, onSelect, onInfo, allowMultiSelect }: any) {
     const { theme } = useTheme();
     return (
         <TouchableOpacity

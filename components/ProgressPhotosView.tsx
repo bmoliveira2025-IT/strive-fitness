@@ -1,6 +1,6 @@
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { Image } from 'expo-image';
-import * as ImagePicker from 'expo-image-picker';
+import * as ImagePicker from '../services/imagePicker';
 import React, { useCallback, useState } from 'react';
 import { Alert, FlatList, Modal, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import { useTheme } from '../context/ThemeContext';

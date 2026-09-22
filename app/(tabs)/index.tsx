@@ -9,8 +9,6 @@ import { CardioSummaryWidget } from '../../components/home/CardioSummaryWidget';
 import { CommunityLeaderboardCard } from '../../components/home/CommunityLeaderboardCard';
 import { DailyInsightCard } from '../../components/home/DailyInsightCard';
 import { HomeHeader } from '../../components/home/HomeHeader';
-import { MuscleUsageStats } from '../../components/home/MuscleUsageStats';
-import { NextWorkoutCard } from '../../components/home/NextWorkoutCard';
 import { RecentPRCard } from '../../components/home/RecentPRCard';
 import { WeeklyProgressTracker } from '../../components/home/WeeklyProgressTracker';
 import { WorkoutListView } from '../../components/home/WorkoutListView';
@@ -20,6 +18,7 @@ import { VisualOnboardingModal } from '../../components/onboarding/VisualOnboard
 import { HeroCard } from '../../components/dashboard/HeroCard';
 import { MuscleGroupHeatmapWidget } from '../../components/dashboard/MuscleGroupHeatmapWidget';
 import { QuickActions } from '../../components/dashboard/QuickActions';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
 import { useSavedWorkouts } from '../../context/SavedWorkoutsContext';
@@ -273,51 +272,60 @@ export default function Home() {
                 showsVerticalScrollIndicator={false}
                 removeClippedSubviews
             >
-                {/* 1. HERO: Premium Card with Contextual Action */}
-                <HeroCard />
+                {/* ══════════════ ZONA 1: HOJE & AÇÃO IMEDIATA ══════════════ */}
+                <Animated.View entering={FadeInDown.delay(50).duration(500)}>
+                    <HeroCard />
+                </Animated.View>
 
-                {/* 2. WEEKLY PROGRESS: Dynamic goal tracker + streak + volume */}
-                <WeeklyProgressTracker
-                    streak={streak}
-                    weekCount={stats.current.count}
-                    weekVolume={stats.current.volumeFormatted}
-                />
-
-                {/* 3. NEXT WORKOUT: shown only when user hasn't trained today */}
-                <NextWorkoutCard />
-
-                {/* 5. RECENT PR: Personal Record Milestone */}
-                <RecentPRCard />
-
-                {/* 6. CARDIO TRACKER */}
-                <CardioSummaryWidget />
-
-                {/* 7. QUICK ACTIONS: Iniciar, Criar Ficha, Biblioteca, Assist */}
-                <QuickActions />
-
-                {/* 9. MEUS PLANOS: Saved Workouts with Quick Edit & Create */}
-                {validSavedWorkouts.length > 0 && (
-                    <WorkoutListView
-                        workouts={validSavedWorkouts}
-                        onWorkoutPress={handleOpenPreview}
-                        onDeleteWorkout={deleteWorkout}
-                        onToggleFavorite={toggleWorkoutFavorite}
+                {/* ══════════════ ZONA 2: FISIOLOGIA & PERFORMANCE ══════════════ */}
+                <Animated.View entering={FadeInDown.delay(120).duration(500)}>
+                    <WeeklyProgressTracker
+                        streak={streak}
+                        weekCount={stats.current.count}
+                        weekVolume={stats.current.volumeFormatted}
                     />
+                </Animated.View>
+
+                <Animated.View entering={FadeInDown.delay(180).duration(500)} style={{ paddingHorizontal: 20, marginBottom: 20 }}>
+                    <MuscleGroupHeatmapWidget />
+                </Animated.View>
+
+                {/* ══════════════ ZONA 3: TREINOS, PLANOS & FERRAMENTAS ══════════════ */}
+                {validSavedWorkouts.length > 0 && (
+                    <Animated.View entering={FadeInDown.delay(230).duration(500)}>
+                        <WorkoutListView
+                            workouts={validSavedWorkouts}
+                            onWorkoutPress={handleOpenPreview}
+                            onDeleteWorkout={deleteWorkout}
+                            onToggleFavorite={toggleWorkoutFavorite}
+                        />
+                    </Animated.View>
                 )}
 
-                {/* 10. DAILY INSIGHT: AI Coach performance tip */}
-                <DailyInsightCard />
+                <Animated.View entering={FadeInDown.delay(280).duration(500)}>
+                    <QuickActions />
+                </Animated.View>
 
-                {/* 11. COMMUNITY RANKING: Weekly League & Social Leaderboard */}
-                <CommunityLeaderboardCard />
+                <Animated.View entering={FadeInDown.delay(330).duration(500)}>
+                    <CardioSummaryWidget />
+                </Animated.View>
 
-                {/* 12. MUSCLE GROUP HEATMAP (Boneco Anatômico Dinâmico) */}
-                <View style={{ paddingHorizontal: 20 }}>
-                    <MuscleGroupHeatmapWidget />
-                </View>
+                {/* ══════════════ ZONA 4: INTELIGÊNCIA, MOTIVAÇÃO & COMUNIDADE ══════════════ */}
+                <Animated.View entering={FadeInDown.delay(380).duration(500)}>
+                    <RecentPRCard />
+                </Animated.View>
 
-                {/* 13. RECENT ACTIVITY: Progressive Batch Loading Feed */}
-                <ActivityFeed />
+                <Animated.View entering={FadeInDown.delay(430).duration(500)}>
+                    <DailyInsightCard />
+                </Animated.View>
+
+                <Animated.View entering={FadeInDown.delay(480).duration(500)}>
+                    <CommunityLeaderboardCard />
+                </Animated.View>
+
+                <Animated.View entering={FadeInDown.delay(530).duration(500)}>
+                    <ActivityFeed />
+                </Animated.View>
 
             </ScrollView>
 

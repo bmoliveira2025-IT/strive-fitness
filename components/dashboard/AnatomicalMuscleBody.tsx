@@ -19,6 +19,7 @@ import Svg, {
     Stop,
 } from 'react-native-svg';
 import { useTheme } from '../../context/ThemeContext';
+import { useReducedMotion } from '../../hooks/useReducedMotion';
 
 export interface MuscleColorMap {
     'Peito'?: string;
@@ -65,6 +66,7 @@ export function AnatomicalMuscleBody({
     resetTrigger,
 }: AnatomicalMuscleBodyProps) {
     const { theme } = useTheme();
+    const reducedMotion = useReducedMotion();
     const isDark = theme.mode === 'dark';
 
     // 1. Idle 3D Micro-Motion (Breathing & Subtle Float)
@@ -99,6 +101,10 @@ export function AnatomicalMuscleBody({
 
     // Idle breathing animation
     useEffect(() => {
+        if (reducedMotion) {
+            idleAnim.setValue(0);
+            return;
+        }
         const loop = Animated.loop(
             Animated.sequence([
                 Animated.timing(idleAnim, {
@@ -117,7 +123,7 @@ export function AnatomicalMuscleBody({
         );
         loop.start();
         return () => loop.stop();
-    }, [idleAnim]);
+    }, [idleAnim, reducedMotion]);
 
     // Flip action
     const triggerFlip = (targetSide?: 'Front' | 'Back') => {
@@ -360,7 +366,7 @@ export function AnatomicalMuscleBody({
             >
                 {/* 1. Realistic 3D Muscle Base Image */}
                 <Image
-                    source={require('../../assets/anatomy_front_realistic.png')}
+                    source={require('../../assets/anatomy_front_optimized.png')}
                     style={[
                         {
                             width: '100%',
@@ -445,7 +451,7 @@ export function AnatomicalMuscleBody({
                             {/* Trapézio Superior (Frontal) */}
                             <G {...getSvgPressProps('Trapézio')}>
                                 <Path
-                                    d="M 487 210 L 440 235 L 380 260 L 340 290 L 410 280 L 487 270 L 564 280 L 634 290 L 594 260 L 534 235 Z"
+                                    d="M 487 210 L 445 225 L 415 240 L 375 250 L 340 252 L 360 260 L 410 268 L 482 278 L 492 278 L 564 268 L 614 260 L 634 252 L 599 250 L 559 240 L 529 225 Z"
                                     fill={getMuscleFill('Trapézio', 'grad-traps-front')}
                                     fillOpacity={getMuscleOpacity('Trapézio')}
                                     stroke={getMuscleStroke('Trapézio')}
@@ -456,14 +462,14 @@ export function AnatomicalMuscleBody({
                             {/* Deltoides Anteriores e Laterais (Ombros) */}
                             <G {...getSvgPressProps('Ombros')}>
                                 <Path
-                                    d="M 309 280 L 290 310 L 282 340 L 282 370 L 274 400 L 266 415 L 309 415 L 329 360 L 344 310 Z"
+                                    d="M 340 252 L 315 255 L 288 275 L 270 305 L 263 340 L 262 370 L 264 395 L 275 415 L 295 425 L 312 420 L 325 395 L 335 360 L 340 315 L 345 285 Z"
                                     fill={getMuscleFill('Ombros', 'grad-delts-front')}
                                     fillOpacity={getMuscleOpacity('Ombros')}
                                     stroke={getMuscleStroke('Ombros')}
                                     strokeWidth={getMuscleStrokeWidth('Ombros')}
                                 />
                                 <Path
-                                    d="M 665 280 L 684 310 L 692 340 L 692 370 L 700 400 L 708 415 L 665 415 L 645 360 L 630 310 Z"
+                                    d="M 634 252 L 659 255 L 686 275 L 704 305 L 711 340 L 712 370 L 710 395 L 699 415 L 679 425 L 662 420 L 649 395 L 639 360 L 634 315 L 629 285 Z"
                                     fill={getMuscleFill('Ombros', 'grad-delts-front')}
                                     fillOpacity={getMuscleOpacity('Ombros')}
                                     stroke={getMuscleStroke('Ombros')}
@@ -474,14 +480,14 @@ export function AnatomicalMuscleBody({
                             {/* Peitoral (Peito) */}
                             <G {...getSvgPressProps('Peito')}>
                                 <Path
-                                    d="M 487 285 L 390 295 L 340 320 L 315 360 L 330 415 L 370 435 L 487 435 Z"
+                                    d="M 482 278 L 460 274 L 430 260 L 390 258 L 360 262 L 340 285 L 335 315 L 342 350 L 358 380 L 378 395 L 405 405 L 435 405 L 460 398 L 475 390 L 482 385 Z"
                                     fill={getMuscleFill('Peito', 'grad-pec-front')}
                                     fillOpacity={getMuscleOpacity('Peito')}
                                     stroke={getMuscleStroke('Peito')}
                                     strokeWidth={getMuscleStrokeWidth('Peito')}
                                 />
                                 <Path
-                                    d="M 487 285 L 584 295 L 634 320 L 659 360 L 644 415 L 604 435 L 487 435 Z"
+                                    d="M 492 278 L 514 274 L 544 260 L 584 258 L 614 262 L 634 285 L 639 315 L 632 350 L 616 380 L 596 395 L 569 405 L 539 405 L 514 398 L 499 390 L 492 385 Z"
                                     fill={getMuscleFill('Peito', 'grad-pec-front')}
                                     fillOpacity={getMuscleOpacity('Peito')}
                                     stroke={getMuscleStroke('Peito')}
@@ -492,14 +498,14 @@ export function AnatomicalMuscleBody({
                             {/* Bíceps */}
                             <G {...getSvgPressProps('Bíceps')}>
                                 <Path
-                                    d="M 260 415 L 235 460 L 210 500 L 185 540 L 170 575 L 245 575 L 270 520 L 290 470 L 285 425 Z"
+                                    d="M 285 415 L 265 445 L 248 480 L 235 515 L 225 550 L 245 565 L 275 540 L 295 495 L 312 450 L 318 420 Z"
                                     fill={getMuscleFill('Bíceps', 'grad-biceps-front')}
                                     fillOpacity={getMuscleOpacity('Bíceps')}
                                     stroke={getMuscleStroke('Bíceps')}
                                     strokeWidth={getMuscleStrokeWidth('Bíceps')}
                                 />
                                 <Path
-                                    d="M 708 415 L 720 440 L 732 470 L 754 500 L 778 530 L 792 560 L 800 575 L 720 575 L 710 560 L 692 530 L 680 500 L 662 470 L 645 440 L 665 415 Z"
+                                    d="M 689 415 L 709 445 L 726 480 L 739 515 L 749 550 L 729 565 L 699 540 L 679 495 L 662 450 L 656 420 Z"
                                     fill={getMuscleFill('Bíceps', 'grad-biceps-front')}
                                     fillOpacity={getMuscleOpacity('Bíceps')}
                                     stroke={getMuscleStroke('Bíceps')}
@@ -525,10 +531,10 @@ export function AnatomicalMuscleBody({
                                 />
                             </G>
 
-                            {/* Abdômen & Oblíquos */}
+                            {/* Abdômen & Cintura / Oblíquos */}
                             <G {...getSvgPressProps('Abdômen')}>
                                 <Path
-                                    d="M 350 440 L 360 480 L 372 520 L 370 560 L 370 600 L 362 640 L 356 680 L 350 710 L 345 740 L 487 750 L 621 740 L 615 710 L 609 680 L 603 640 L 595 600 L 594 560 L 593 520 L 605 480 L 615 440 L 487 440 Z"
+                                    d="M 482 385 L 460 398 L 435 405 L 405 405 L 378 395 L 358 380 L 336 435 L 344 460 L 354 485 L 361 510 L 365 535 L 362 560 L 360 585 L 361 610 L 355 635 L 351 660 L 347 685 L 341 710 L 415 710 L 476 745 L 487 755 L 498 745 L 559 710 L 633 710 L 627 685 L 623 660 L 619 635 L 613 610 L 614 585 L 612 560 L 609 535 L 613 510 L 620 485 L 630 460 L 638 435 L 616 380 L 596 395 L 569 405 L 539 405 L 514 398 L 492 385 Z"
                                     fill={getMuscleFill('Abdômen', 'grad-abs-front')}
                                     fillOpacity={getMuscleOpacity('Abdômen')}
                                     stroke={getMuscleStroke('Abdômen')}
@@ -536,17 +542,17 @@ export function AnatomicalMuscleBody({
                                 />
                             </G>
 
-                            {/* Quadríceps (Coxas Completas - Do Quadril à Patela) */}
+                            {/* Quadríceps (Coxas Completas - Do Quadril à Patela com Curva do Joelho) */}
                             <G {...getSvgPressProps('Quadríceps')}>
                                 <Path
-                                    d="M 349 680 L 337 740 L 330 800 L 329 830 L 334 900 L 345 950 L 365 1000 L 369 1050 L 370 1095 L 452 1095 L 456 1050 L 459 1000 L 460 950 L 465 900 L 470 840 L 474 780 L 476 745 L 415 710 Z"
+                                    d="M 349 680 L 337 740 L 330 800 L 329 830 L 334 900 L 345 950 L 365 1000 L 369 1050 L 372 1070 L 385 1085 L 412 1075 L 440 1085 L 455 1070 L 459 1000 L 460 950 L 465 900 L 470 840 L 474 780 L 476 745 L 415 710 Z"
                                     fill={getMuscleFill('Quadríceps', 'grad-quads-front')}
                                     fillOpacity={getMuscleOpacity('Quadríceps')}
                                     stroke={getMuscleStroke('Quadríceps')}
                                     strokeWidth={getMuscleStrokeWidth('Quadríceps')}
                                 />
                                 <Path
-                                    d="M 616 680 L 629 740 L 635 800 L 637 830 L 632 900 L 620 950 L 601 1000 L 597 1050 L 596 1095 L 514 1095 L 510 1050 L 507 1000 L 506 950 L 501 900 L 496 840 L 492 780 L 490 745 L 551 710 Z"
+                                    d="M 616 680 L 629 740 L 635 800 L 637 830 L 632 900 L 620 950 L 601 1000 L 597 1050 L 594 1070 L 581 1085 L 554 1075 L 526 1085 L 511 1070 L 507 1000 L 506 950 L 501 900 L 496 840 L 492 780 L 490 745 L 551 710 Z"
                                     fill={getMuscleFill('Quadríceps', 'grad-quads-front')}
                                     fillOpacity={getMuscleOpacity('Quadríceps')}
                                     stroke={getMuscleStroke('Quadríceps')}
@@ -595,7 +601,7 @@ export function AnatomicalMuscleBody({
             >
                 {/* 1. Realistic 3D Muscle Base Image */}
                 <Image
-                    source={require('../../assets/anatomy_back_realistic.png')}
+                    source={require('../../assets/anatomy_back_optimized.png')}
                     style={[
                         {
                             width: '100%',
@@ -680,7 +686,7 @@ export function AnatomicalMuscleBody({
                             {/* Trapézio Dorsal Superior & Médio */}
                             <G {...getSvgPressProps('Trapézio')}>
                                 <Path
-                                    d="M 476 170 L 440 200 L 390 240 L 340 275 L 380 290 L 420 310 L 476 375 L 532 310 L 572 290 L 612 275 L 562 240 L 512 200 Z"
+                                    d="M 476 190 L 440 220 L 395 240 L 340 252 L 370 290 L 410 360 L 440 440 L 476 520 L 512 440 L 542 360 L 583 290 L 613 252 L 558 240 L 512 220 Z"
                                     fill={getMuscleFill('Trapézio', 'grad-traps-back')}
                                     fillOpacity={getMuscleOpacity('Trapézio')}
                                     stroke={getMuscleStroke('Trapézio')}
@@ -691,14 +697,14 @@ export function AnatomicalMuscleBody({
                             {/* Deltoides Posteriores (Ombros) */}
                             <G {...getSvgPressProps('Ombros')}>
                                 <Path
-                                    d="M 335 278 L 275 305 L 245 345 L 255 400 L 285 415 L 315 395 L 335 335 Z"
+                                    d="M 340 252 L 310 255 L 285 270 L 260 295 L 245 330 L 238 365 L 240 395 L 260 415 L 285 415 L 310 395 L 325 350 L 335 300 Z"
                                     fill={getMuscleFill('Ombros', 'grad-delts-back')}
                                     fillOpacity={getMuscleOpacity('Ombros')}
                                     stroke={getMuscleStroke('Ombros')}
                                     strokeWidth={getMuscleStrokeWidth('Ombros')}
                                 />
                                 <Path
-                                    d="M 617 278 L 677 305 L 707 345 L 697 400 L 667 415 L 637 395 L 617 335 Z"
+                                    d="M 613 252 L 643 255 L 668 270 L 693 295 L 708 330 L 715 365 L 713 395 L 693 415 L 668 415 L 643 395 L 628 350 L 618 300 Z"
                                     fill={getMuscleFill('Ombros', 'grad-delts-back')}
                                     fillOpacity={getMuscleOpacity('Ombros')}
                                     stroke={getMuscleStroke('Ombros')}
@@ -706,17 +712,17 @@ export function AnatomicalMuscleBody({
                                 />
                             </G>
 
-                            {/* Costas & Grandes Dorsais */}
+                            {/* Costas & Grandes Dorsais (Todas as Costas, Cintura Traseira e Crista Ilíaca) */}
                             <G {...getSvgPressProps('Costas')}>
                                 <Path
-                                    d="M 476 375 L 420 340 L 355 400 L 340 420 L 345 470 L 356 530 L 358 590 L 350 645 L 345 680 L 410 690 L 476 695 Z"
+                                    d="M 476 520 L 440 440 L 410 360 L 370 290 L 340 300 L 330 350 L 318 395 L 320 415 L 323 440 L 331 465 L 342 490 L 351 515 L 355 540 L 354 565 L 348 590 L 348 615 L 344 640 L 338 665 L 333 680 L 350 672 L 390 680 L 440 695 L 476 705 Z"
                                     fill={getMuscleFill('Costas', 'grad-back-lat')}
                                     fillOpacity={getMuscleOpacity('Costas')}
                                     stroke={getMuscleStroke('Costas')}
                                     strokeWidth={getMuscleStrokeWidth('Costas')}
                                 />
                                 <Path
-                                    d="M 476 375 L 532 340 L 597 400 L 612 420 L 607 470 L 596 530 L 594 590 L 602 645 L 607 680 L 542 690 L 476 695 Z"
+                                    d="M 476 520 L 512 440 L 542 360 L 583 290 L 613 300 L 623 350 L 635 395 L 633 415 L 630 440 L 622 465 L 611 490 L 602 515 L 598 540 L 599 565 L 605 590 L 605 615 L 609 640 L 615 665 L 620 680 L 603 672 L 563 680 L 513 695 L 476 705 Z"
                                     fill={getMuscleFill('Costas', 'grad-back-lat')}
                                     fillOpacity={getMuscleOpacity('Costas')}
                                     stroke={getMuscleStroke('Costas')}
@@ -727,14 +733,14 @@ export function AnatomicalMuscleBody({
                             {/* Tríceps (Braço Posterior) */}
                             <G {...getSvgPressProps('Tríceps')}>
                                 <Path
-                                    d="M 252 405 L 230 445 L 198 495 L 170 540 L 148 565 L 180 560 L 220 525 L 255 475 L 280 420 Z"
+                                    d="M 285 415 L 250 445 L 215 495 L 185 540 L 160 565 L 195 560 L 230 525 L 265 475 L 288 420 Z"
                                     fill={getMuscleFill('Tríceps', 'grad-triceps-back')}
                                     fillOpacity={getMuscleOpacity('Tríceps')}
                                     stroke={getMuscleStroke('Tríceps')}
                                     strokeWidth={getMuscleStrokeWidth('Tríceps')}
                                 />
                                 <Path
-                                    d="M 700 405 L 722 445 L 754 495 L 782 540 L 804 565 L 772 560 L 732 525 L 697 475 L 672 420 Z"
+                                    d="M 668 415 L 703 445 L 738 495 L 768 540 L 793 565 L 758 560 L 723 525 L 688 475 L 665 420 Z"
                                     fill={getMuscleFill('Tríceps', 'grad-triceps-back')}
                                     fillOpacity={getMuscleOpacity('Tríceps')}
                                     stroke={getMuscleStroke('Tríceps')}
@@ -760,17 +766,17 @@ export function AnatomicalMuscleBody({
                                 />
                             </G>
 
-                            {/* Glúteos */}
+                            {/* Glúteos (Glúteo Máximo, Glúteo Médio no Quadril e Contorno Subglúteo) */}
                             <G {...getSvgPressProps('Glúteos')}>
                                 <Path
-                                    d="M 468 700 L 410 690 L 350 686 L 330 730 L 318 780 L 317 820 L 318 860 L 350 842 L 380 834 L 410 828 L 440 818 L 468 805 Z"
+                                    d="M 472 708 L 440 695 L 390 680 L 350 672 L 330 685 L 320 715 L 314 750 L 312 780 L 315 810 L 318 840 L 335 850 L 360 845 L 390 835 L 420 830 L 450 820 L 470 808 Z"
                                     fill={getMuscleFill('Glúteos', 'grad-glutes-back')}
                                     fillOpacity={getMuscleOpacity('Glúteos')}
                                     stroke={getMuscleStroke('Glúteos')}
                                     strokeWidth={getMuscleStrokeWidth('Glúteos')}
                                 />
                                 <Path
-                                    d="M 479 700 L 538 690 L 598 686 L 618 730 L 630 780 L 631 820 L 630 860 L 598 842 L 568 834 L 538 828 L 508 818 L 479 805 Z"
+                                    d="M 480 708 L 513 695 L 563 680 L 603 672 L 623 685 L 633 715 L 639 750 L 641 780 L 638 810 L 635 840 L 618 850 L 593 845 L 563 835 L 533 830 L 503 820 L 483 808 Z"
                                     fill={getMuscleFill('Glúteos', 'grad-glutes-back')}
                                     fillOpacity={getMuscleOpacity('Glúteos')}
                                     stroke={getMuscleStroke('Glúteos')}
@@ -778,17 +784,17 @@ export function AnatomicalMuscleBody({
                                 />
                             </G>
 
-                            {/* Isquiotibiais (Posterior de Coxa Completo - Da Dobra Glútea ao Joelho) */}
+                            {/* Isquiotibiais (Posterior de Coxa Completo - Da Prega Glútea ao Joelho com Largura Lateral Total) */}
                             <G {...getSvgPressProps('Isquiotibiais')}>
                                 <Path
-                                    d="M 468 805 L 440 818 L 410 828 L 380 834 L 350 842 L 318 860 L 318 865 L 320 890 L 323 920 L 331 960 L 342 1000 L 357 1050 L 361 1095 L 459 1095 L 463 1050 L 464 1000 L 466 950 L 471 900 L 473 870 L 472 835 Z"
+                                    d="M 470 812 L 450 822 L 420 832 L 390 837 L 360 847 L 335 852 L 318 845 L 317 860 L 318 880 L 320 900 L 323 925 L 328 955 L 335 985 L 343 1015 L 352 1045 L 357 1070 L 361 1095 L 364 1115 L 375 1125 L 405 1095 L 440 1120 L 454 1105 L 459 1070 L 462 1030 L 464 990 L 466 950 L 469 910 L 471 870 L 472 835 Z"
                                     fill={getMuscleFill('Isquiotibiais', 'grad-hamstrings-back')}
                                     fillOpacity={getMuscleOpacity('Isquiotibiais')}
                                     stroke={getMuscleStroke('Isquiotibiais')}
                                     strokeWidth={getMuscleStrokeWidth('Isquiotibiais')}
                                 />
                                 <Path
-                                    d="M 479 805 L 508 818 L 538 828 L 568 834 L 598 842 L 630 860 L 630 865 L 628 890 L 624 920 L 617 960 L 606 1000 L 591 1050 L 587 1095 L 489 1095 L 485 1050 L 484 1000 L 482 950 L 478 900 L 475 870 L 475 835 Z"
+                                    d="M 483 812 L 503 822 L 533 832 L 563 837 L 593 847 L 618 852 L 635 845 L 636 860 L 635 880 L 633 900 L 630 925 L 625 955 L 618 985 L 610 1015 L 601 1045 L 596 1070 L 592 1095 L 589 1115 L 578 1125 L 548 1095 L 513 1120 L 499 1105 L 494 1070 L 491 1030 L 489 990 L 487 950 L 484 910 L 482 870 L 481 835 Z"
                                     fill={getMuscleFill('Isquiotibiais', 'grad-hamstrings-back')}
                                     fillOpacity={getMuscleOpacity('Isquiotibiais')}
                                     stroke={getMuscleStroke('Isquiotibiais')}

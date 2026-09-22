@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -292,7 +292,7 @@ export default function ExploreScreen() {
                                 <View style={{ alignItems: 'center', justifyContent: 'center', paddingVertical: 60 }}>
                                     <Ionicons name="search-outline" size={40} color={theme.colors.textMuted} />
                                     <Text style={{ color: theme.colors.textMuted, textAlign: 'center', marginTop: 12, fontFamily: FontFamily.sans }}>
-                                        Nenhum programa encontrado para "{searchQuery}"
+                                        Nenhum programa encontrado para “{searchQuery}”
                                     </Text>
                                 </View>
                             )}
@@ -404,7 +404,7 @@ export default function ExploreScreen() {
                                                 <Text style={{ color: theme.mode === 'dark' ? theme.colors.warning : '#7C4A03', fontSize: 10, fontFamily: FontFamily.sansBold, marginLeft: 2 }}>{coach.rating}</Text>
                                             </View>
                                         </View>
-                                        <Text style={{ color: theme.colors.textSecondary, fontSize: 11, fontFamily: FontFamily.sans, marginTop: 2, fontStyle: 'italic' }}>"{coach.specialty}"</Text>
+                                        <Text style={{ color: theme.colors.textSecondary, fontSize: 11, fontFamily: FontFamily.sans, marginTop: 2, fontStyle: 'italic' }}>“{coach.specialty}”</Text>
                                         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4, marginTop: 6 }}>
                                             {coach.tags.slice(0, 2).map((tag, idx) => (
                                                 <View key={idx} style={{ backgroundColor: theme.colors.backgroundTertiary, paddingHorizontal: 6, paddingVertical: 2, borderRadius: Radius.sm }}>
@@ -420,7 +420,7 @@ export default function ExploreScreen() {
                         <View style={{ alignItems: 'center', justifyContent: 'center', paddingVertical: 60 }}>
                             <Ionicons name="search-outline" size={40} color={theme.colors.textMuted} />
                             <Text style={{ color: theme.colors.textMuted, textAlign: 'center', marginTop: 12, fontFamily: FontFamily.sans }}>
-                                Nenhum treinador encontrado para "{searchQuery}"
+                                Nenhum treinador encontrado para “{searchQuery}”
                             </Text>
                         </View>
                     )}

@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import React, { useEffect, useState } from 'react';
 import {
     Animated,
@@ -219,7 +219,7 @@ export default function WebInstallBanner() {
                                 <Text style={styles.stepDesc}>
                                     Role a lista de ações para baixo e toque em{' '}
                                     <Text style={{ color: '#FFFFFF', fontFamily: FontFamily.sansBold }}>
-                                        "Adicionar à Tela de Início"
+                                        “Adicionar à Tela de Início”
                                     </Text>{' '}
                                     <Ionicons name="add-circle-outline" size={14} color="#A78BFA" />.
                                 </Text>
@@ -234,7 +234,7 @@ export default function WebInstallBanner() {
                             <View style={{ flex: 1 }}>
                                 <Text style={styles.stepTitle}>Confirmar e Usar</Text>
                                 <Text style={styles.stepDesc}>
-                                    Toque em <Text style={{ color: '#FFFFFF', fontFamily: FontFamily.sansBold }}>"Adicionar"</Text> no topo direito. O ícone do Strive aparecerá na tela do seu iPhone como um App!
+                                    Toque em <Text style={{ color: '#FFFFFF', fontFamily: FontFamily.sansBold }}>“Adicionar”</Text> no topo direito. O ícone do Strive aparecerá na tela do seu iPhone como um App!
                                 </Text>
                             </View>
                         </View>

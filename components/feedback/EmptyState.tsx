@@ -1,7 +1,7 @@
 import Palette from '../../constants/palette.json';
 import React from 'react';
 import { View, Text, StyleSheet, ViewStyle } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useTheme } from '../../context/ThemeContext';
 import { GradientButton } from '../ui/GradientButton';
 

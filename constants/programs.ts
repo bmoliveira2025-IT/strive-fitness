@@ -2,7 +2,7 @@ export const PROGRAMS = [
     {
         id: 'arm-pump',
         title: 'Arm Pump Extremo',
-        image: require('../assets/images/programs/arm-pump.png'),
+        image: require('../assets/images/programs/arm-pump.jpg'),
         downloads: '10.2k',
         rating: '5.0',
         tag: 'Braços',
@@ -15,7 +15,7 @@ export const PROGRAMS = [
     {
         id: 'full-body-1h',
         title: 'Full Body Mastery (1h+)',
-        image: require('../assets/images/programs/full-body-mastery.png'),
+        image: require('../assets/images/programs/full-body-mastery.jpg'),
         downloads: '5.4k',
         rating: '4.9',
         tag: 'Corpo Todo',
@@ -29,7 +29,7 @@ export const PROGRAMS = [
     {
         id: '2',
         title: "Strive's 4-Day Bodybuilding split",
-        image: require('../assets/images/programs/bodybuilding.png'),
+        image: require('../assets/images/programs/bodybuilding.jpg'),
         downloads: '94.060',
         rating: '4.4',
         tag: '4 Dias',
@@ -45,7 +45,7 @@ export const PROGRAMS = [
     {
         id: '5',
         title: '5-Day Split Plan',
-        image: require('../assets/images/programs/5-day-split.png'),
+        image: require('../assets/images/programs/5-day-split.jpg'),
         downloads: '15.390',
         rating: '4.3',
         tag: '5 Dias',
@@ -62,7 +62,7 @@ export const PROGRAMS = [
     {
         id: '1',
         title: 'Full Body Workout',
-        image: require('../assets/images/programs/full-body.png'),
+        image: require('../assets/images/programs/full-body.jpg'),
         downloads: '88.452',
         rating: '4.3',
         tag: null,
@@ -75,7 +75,7 @@ export const PROGRAMS = [
     {
         id: '4',
         title: 'JEFF NIPPARD - Hypertrophy',
-        image: require('../assets/images/programs/hypertrophy.png'),
+        image: require('../assets/images/programs/hypertrophy.jpg'),
         downloads: '12.756',
         rating: '4.6',
         badge: 'Top Picks',

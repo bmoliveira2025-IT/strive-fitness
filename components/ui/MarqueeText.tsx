@@ -19,6 +19,7 @@ import Animated, {
     withSequence,
     withTiming,
 } from 'react-native-reanimated';
+import { useReducedMotion } from '../../hooks/useReducedMotion';
 
 interface MarqueeTextProps {
     text: string;
@@ -39,6 +40,7 @@ export function MarqueeText({
     loopGap = 40,
 }: MarqueeTextProps) {
     const [containerWidth, setContainerWidth] = useState(0);
+    const reducedMotion = useReducedMotion();
     const [measuredTextWidth, setMeasuredTextWidth] = useState(0);
     const translateX = useSharedValue(0);
 
@@ -74,7 +76,7 @@ export function MarqueeText({
         cancelAnimation(translateX);
         translateX.value = 0;
 
-        if (!isOverflowing || !effectiveTextWidth) {
+        if (reducedMotion || !isOverflowing || !effectiveTextWidth) {
             return;
         }
 
@@ -108,7 +110,7 @@ export function MarqueeText({
         return () => {
             cancelAnimation(translateX);
         };
-    }, [isOverflowing, effectiveTextWidth, containerWidth, text, speed, pauseDuration]);
+    }, [isOverflowing, effectiveTextWidth, containerWidth, text, speed, pauseDuration, reducedMotion, translateX]);
 
     const animatedStyle = useAnimatedStyle(() => ({
         transform: [{ translateX: translateX.value }],

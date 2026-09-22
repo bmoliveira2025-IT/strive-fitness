@@ -1,5 +1,5 @@
 import Palette from '../constants/palette.json';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Modal, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
@@ -15,7 +15,6 @@ interface MeasurementItem {
     id: MeasurementField;
     label: string;
     icon: string;
-    iconSet: 'Ionicons' | 'MaterialCommunityIcons';
     unit: string;
 }
 
@@ -30,46 +29,46 @@ const GROUPS: MeasurementGroup[] = [
     {
         label: 'Composição Corporal',
         color: Palette.dark.success,
-        icon: 'scale-bathroom',
+        icon: 'scale-outline',
         items: [
-            { id: 'weight', label: 'Peso Corporal', icon: 'scale-bathroom', iconSet: 'MaterialCommunityIcons', unit: 'kg' },
-            { id: 'fatPercentage', label: 'Gordura Corporal', icon: 'percent', iconSet: 'MaterialCommunityIcons', unit: '%' },
-            { id: 'caloricIntake', label: 'Ingestão Calórica', icon: 'food-apple-outline', iconSet: 'MaterialCommunityIcons', unit: 'kcal' },
+            { id: 'weight', label: 'Peso Corporal', icon: 'scale-outline', unit: 'kg' },
+            { id: 'fatPercentage', label: 'Gordura Corporal', icon: 'analytics-outline', unit: '%' },
+            { id: 'caloricIntake', label: 'Ingestão Calórica', icon: 'nutrition-outline', unit: 'kcal' },
         ]
     },
     {
         label: 'Tronco Superior',
         color: Palette.dark.primary,
-        icon: 'human-male',
+        icon: 'body-outline',
         items: [
-            { id: 'neck', label: 'Pescoço', icon: 'human-male-height', iconSet: 'MaterialCommunityIcons', unit: 'cm' },
-            { id: 'shoulders', label: 'Ombros', icon: 'human-male-board', iconSet: 'MaterialCommunityIcons', unit: 'cm' },
-            { id: 'chest', label: 'Peito', icon: 'human-male', iconSet: 'MaterialCommunityIcons', unit: 'cm' },
-            { id: 'leftArm', label: 'Braço Esquerdo', icon: 'arm-flex', iconSet: 'MaterialCommunityIcons', unit: 'cm' },
-            { id: 'rightArm', label: 'Braço Direito', icon: 'arm-flex', iconSet: 'MaterialCommunityIcons', unit: 'cm' },
-            { id: 'leftForearm', label: 'Antebraço Esquerdo', icon: 'arm-flex-outline', iconSet: 'MaterialCommunityIcons', unit: 'cm' },
-            { id: 'rightForearm', label: 'Antebraço Direito', icon: 'arm-flex-outline', iconSet: 'MaterialCommunityIcons', unit: 'cm' },
+            { id: 'neck', label: 'Pescoço', icon: 'resize-outline', unit: 'cm' },
+            { id: 'shoulders', label: 'Ombros', icon: 'body-outline', unit: 'cm' },
+            { id: 'chest', label: 'Peito', icon: 'body-outline', unit: 'cm' },
+            { id: 'leftArm', label: 'Braço Esquerdo', icon: 'fitness-outline', unit: 'cm' },
+            { id: 'rightArm', label: 'Braço Direito', icon: 'fitness-outline', unit: 'cm' },
+            { id: 'leftForearm', label: 'Antebraço Esquerdo', icon: 'barbell-outline', unit: 'cm' },
+            { id: 'rightForearm', label: 'Antebraço Direito', icon: 'barbell-outline', unit: 'cm' },
         ]
     },
     {
         label: 'Core & Cintura',
         color: Palette.dark.warning,
-        icon: 'human-male-height-variant',
+        icon: 'resize-outline',
         items: [
-            { id: 'abdomen', label: 'Abdômen', icon: 'human-male-height-variant', iconSet: 'MaterialCommunityIcons', unit: 'cm' },
-            { id: 'waist', label: 'Cintura', icon: 'human-male-height-variant', iconSet: 'MaterialCommunityIcons', unit: 'cm' },
-            { id: 'hips', label: 'Quadril', icon: 'human-male-height-variant', iconSet: 'MaterialCommunityIcons', unit: 'cm' },
+            { id: 'abdomen', label: 'Abdômen', icon: 'resize-outline', unit: 'cm' },
+            { id: 'waist', label: 'Cintura', icon: 'resize-outline', unit: 'cm' },
+            { id: 'hips', label: 'Quadril', icon: 'resize-outline', unit: 'cm' },
         ]
     },
     {
         label: 'Membros Inferiores',
         color: Palette.dark.error,
-        icon: 'human',
+        icon: 'walk-outline',
         items: [
-            { id: 'leftThigh', label: 'Coxa Esquerda', icon: 'human', iconSet: 'MaterialCommunityIcons', unit: 'cm' },
-            { id: 'rightThigh', label: 'Coxa Direita', icon: 'human', iconSet: 'MaterialCommunityIcons', unit: 'cm' },
-            { id: 'leftCalf', label: 'Panturrilha Esquerda', icon: 'human', iconSet: 'MaterialCommunityIcons', unit: 'cm' },
-            { id: 'rightCalf', label: 'Panturrilha Direita', icon: 'human', iconSet: 'MaterialCommunityIcons', unit: 'cm' },
+            { id: 'leftThigh', label: 'Coxa Esquerda', icon: 'walk-outline', unit: 'cm' },
+            { id: 'rightThigh', label: 'Coxa Direita', icon: 'walk-outline', unit: 'cm' },
+            { id: 'leftCalf', label: 'Panturrilha Esquerda', icon: 'footsteps-outline', unit: 'cm' },
+            { id: 'rightCalf', label: 'Panturrilha Direita', icon: 'footsteps-outline', unit: 'cm' },
         ]
     },
 ];
@@ -170,8 +169,7 @@ export function ProgressMeasuresView() {
     };
 
     const RenderIcon = ({ item, color, size = 22 }: { item: MeasurementItem, color: string, size?: number }) => {
-        if (item.iconSet === 'Ionicons') return <Ionicons name={item.icon as any} size={size} color={color} />;
-        return <MaterialCommunityIcons name={item.icon as any} size={size} color={color} />;
+        return <Ionicons name={item.icon as any} size={size} color={color} />;
     };
 
     return (
@@ -182,7 +180,7 @@ export function ProgressMeasuresView() {
                 <Animated.View entering={FadeInDown.delay(100).duration(600)} style={{ paddingHorizontal: 24, marginBottom: 24 }}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
                         <View style={{ backgroundColor: theme.colors.primary + '20', width: 42, height: 42, borderRadius: 14, alignItems: 'center', justifyContent: 'center', marginRight: 14 }}>
-                            <MaterialCommunityIcons name="tape-measure" size={22} color={theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.primary} />
+                            <Ionicons name="resize-outline" size={22} color={theme.mode === 'light' ? theme.colors.primaryDark : theme.colors.primary} />
                         </View>
                         <View style={{ flex: 1 }}>
                             <Text style={{ color: theme.colors.text, fontSize: 20, fontFamily: 'Inter_700Bold', fontWeight: '700', letterSpacing: -0.5 }}>Suas Medidas</Text>
@@ -229,7 +227,7 @@ export function ProgressMeasuresView() {
                                     style={{ position: 'absolute', inset: 0 }}
                                 />
                                 <View style={{ width: 38, height: 38, borderRadius: 12, backgroundColor: group.color + '20', alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
-                                    <MaterialCommunityIcons name={group.icon as any} size={20} color={group.color} />
+                                    <Ionicons name={group.icon as any} size={20} color={group.color} />
                                 </View>
                                 <View style={{ flex: 1 }}>
                                     <Text style={{ color: theme.colors.text, fontSize: 14, fontFamily: 'Inter_700Bold', fontWeight: '700' }}>{group.label}</Text>

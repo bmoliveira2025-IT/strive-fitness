@@ -1,7 +1,7 @@
 import Palette from '../constants/palette.json';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect } from 'react';
-import { Platform, StyleSheet, Text, useColorScheme, View } from 'react-native';
+import { StyleSheet, Text, useColorScheme, View } from 'react-native';
 import Animated, {
     Easing,
     runOnJS,
@@ -11,12 +11,14 @@ import Animated, {
     withSpring,
     withTiming
 } from 'react-native-reanimated';
+import { useReducedMotion } from '../hooks/useReducedMotion';
 
 interface Props {
     onFinish: () => void;
 }
 
 export const AnimatedSplashScreen: React.FC<Props> = ({ onFinish }) => {
+    const reducedMotion = useReducedMotion();
     const colorScheme = useColorScheme();
     const isDark = colorScheme === 'dark';
 
@@ -35,6 +37,16 @@ export const AnimatedSplashScreen: React.FC<Props> = ({ onFinish }) => {
                 onFinish();
             }
         };
+
+        if (reducedMotion) {
+            textOpacity.value = 1;
+            textTranslateY.value = 0;
+            lineScaleX.value = 1;
+            dotScale.value = 1;
+            containerOpacity.value = 1;
+            const reducedTimer = setTimeout(complete, 120);
+            return () => clearTimeout(reducedTimer);
+        }
 
         // 1. Sleek text reveal (fade up)
         textOpacity.value = withDelay(100, withTiming(1, { duration: 800, easing: Easing.out(Easing.exp) }));
@@ -70,7 +82,7 @@ export const AnimatedSplashScreen: React.FC<Props> = ({ onFinish }) => {
             clearTimeout(exitTimer);
             clearTimeout(safetyTimer);
         };
-    }, []);
+    }, [containerOpacity, dotScale, lineScaleX, onFinish, reducedMotion, textOpacity, textTranslateY]);
 
     const textStyle = useAnimatedStyle(() => ({
         opacity: textOpacity.value,

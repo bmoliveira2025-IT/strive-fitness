@@ -9,6 +9,7 @@ import Animated, {
     withSequence,
     withTiming,
 } from 'react-native-reanimated';
+import { useReducedMotion } from '../../hooks/useReducedMotion';
 
 interface ModernLoadingProps {
     size?: number;
@@ -16,6 +17,7 @@ interface ModernLoadingProps {
 }
 
 export function ModernLoading({ size = 32, color = '#8B5CF6' }: ModernLoadingProps) {
+    const reducedMotion = useReducedMotion();
     const rotation = useSharedValue(0);
     const pulse = useSharedValue(0);
 
@@ -30,6 +32,11 @@ export function ModernLoading({ size = 32, color = '#8B5CF6' }: ModernLoadingPro
     const trackColor = `${normalizeHex(color)}40`; // 25% opacity
 
     useEffect(() => {
+        if (reducedMotion) {
+            rotation.value = 45;
+            pulse.value = 0;
+            return;
+        }
         rotation.value = withRepeat(
             withTiming(360, {
                 duration: 1200,
@@ -47,7 +54,7 @@ export function ModernLoading({ size = 32, color = '#8B5CF6' }: ModernLoadingPro
             -1,
             true
         );
-    }, []);
+    }, [pulse, reducedMotion, rotation]);
 
     const animatedStyle = useAnimatedStyle(() => {
         return {

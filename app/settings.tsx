@@ -1,7 +1,8 @@
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import Constants from 'expo-constants';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, AppState, Linking, Modal, NativeModules, Platform, ScrollView, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -593,7 +594,9 @@ export default function SettingsScreen() {
 
                 {/* Footer */}
                 <View style={{ alignItems: 'center', paddingVertical: 12 }}>
-                    <Text style={{ color: theme.colors.textMuted, fontSize: 11, fontFamily: 'Inter_600SemiBold', fontWeight: '600' }}>Versão 1.0.0 (Build 42)</Text>
+                    <Text style={{ color: theme.colors.textMuted, fontSize: 12, fontFamily: 'Inter_600SemiBold', fontWeight: '600' }}>
+                        Versão {Constants.expoConfig?.version ?? '—'} (Build {Constants.expoConfig?.android?.versionCode ?? '—'})
+                    </Text>
                     <Text style={{ color: theme.colors.textMuted, fontSize: 11, marginTop: 4 }}>Feito com ❤️ pelo time Strive</Text>
                 </View>
 

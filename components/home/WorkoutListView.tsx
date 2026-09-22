@@ -1,7 +1,6 @@
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
-import React from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SavedWorkout } from '../../context/SavedWorkoutsContext';
 import { useTheme } from '../../context/ThemeContext';
 import { WorkoutCard } from '../WorkoutCard';
@@ -99,9 +98,13 @@ export function WorkoutListView({
                 </View>
             </View>
 
-            {/* Workouts List */}
-            <View style={{ paddingHorizontal: 20 }}>
-                {workouts.slice(0, 3).map((workout, index) => (
+            {/* Workouts Horizontal Carousel */}
+            <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 6 }}
+            >
+                {workouts.map((workout, index) => (
                     <WorkoutCard
                         key={workout.id}
                         workout={workout}
@@ -109,46 +112,56 @@ export function WorkoutListView({
                         onDelete={() => onDeleteWorkout(workout.id)}
                         onToggleFavorite={() => onToggleFavorite(workout.id)}
                         onEdit={() => handleEditPlan(workout)}
-                        layout="horizontal"
+                        layout="vertical"
                         imageIndex={index + 1}
+                        style={{
+                            width: 220,
+                            minWidth: 220,
+                            maxWidth: 220,
+                            marginRight: 12,
+                        }}
                     />
                 ))}
 
-                {/* View All Button */}
-                {workouts.length > 3 && (
-                    <TouchableOpacity
-                        activeOpacity={0.75}
-                        onPress={() => router.push({ pathname: '/workout', params: { tab: 'library' } })}
+                {/* Add New Plan Card at the end */}
+                <TouchableOpacity
+                    activeOpacity={0.8}
+                    onPress={handleCreateNewPlan}
+                    style={{
+                        width: 140,
+                        minWidth: 140,
+                        borderRadius: Radius.lg,
+                        borderWidth: 1,
+                        borderStyle: 'dashed',
+                        borderColor: theme.colors.border,
+                        backgroundColor: theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.02)',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: 16,
+                        marginRight: 8,
+                    }}
+                >
+                    <View
                         style={{
-                            backgroundColor: theme.colors.backgroundTertiary,
-                            paddingVertical: 12,
-                            borderRadius: Radius.md,
-                            flexDirection: 'row',
+                            width: 40,
+                            height: 40,
+                            borderRadius: 20,
+                            backgroundColor: theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            gap: 6,
-                            marginTop: 8,
-                            borderColor: theme.colors.border,
-                            borderWidth: 1,
+                            marginBottom: 8,
                         }}
                     >
-                        <Text
-                            style={{
-                                color: theme.colors.text,
-                                fontSize: 13,
-                                fontFamily: FontFamily.sansSemiBold,
-                            }}
-                        >
-                            Ver todos os {workouts.length} planos
-                        </Text>
-                        <Ionicons
-                            name="arrow-forward"
-                            size={14}
-                            color={theme.colors.textSecondary}
-                        />
-                    </TouchableOpacity>
-                )}
-            </View>
+                        <Ionicons name="add" size={22} color={theme.colors.primary} />
+                    </View>
+                    <Text style={{ color: theme.colors.text, fontSize: 13, fontFamily: FontFamily.sansBold, textAlign: 'center' }}>
+                        Nova Ficha
+                    </Text>
+                    <Text style={{ color: theme.colors.textMuted, fontSize: 11, fontFamily: FontFamily.sans, textAlign: 'center', marginTop: 2 }}>
+                        Montar treino
+                    </Text>
+                </TouchableOpacity>
+            </ScrollView>
         </View>
     );
 }

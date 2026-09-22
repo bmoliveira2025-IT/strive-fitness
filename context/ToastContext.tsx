@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState, useCallback, ReactNode } fr
 import { StyleSheet, Text, View, TouchableOpacity, Dimensions, Platform } from 'react-native';
 import Animated, { FadeInUp, FadeOutUp, LinearTransition } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useTheme } from './ThemeContext';
 import { hapticSuccess, hapticError, hapticWarning, hapticLight } from '../utils/haptics';
 

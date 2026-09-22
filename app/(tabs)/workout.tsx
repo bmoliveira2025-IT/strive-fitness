@@ -1,16 +1,13 @@
 import Palette from '../../constants/palette.json';
-import { Ionicons } from '@expo/vector-icons';
-import { Audio, InterruptionModeAndroid, InterruptionModeIOS, ResizeMode, Video } from 'expo-av';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import * as Haptics from 'expo-haptics';
-import * as ImagePicker from 'expo-image-picker';
+import * as ImagePicker from '../../services/imagePicker';
 import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import { LinearGradient } from 'expo-linear-gradient';
-import * as Notifications from 'expo-notifications';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Alert, Dimensions, FlatList, ImageBackground, InteractionManager, KeyboardAvoidingView, Modal, Platform, ScrollView, Share, StyleSheet, Text, TextInput, TouchableOpacity, Vibration, View } from 'react-native';
-import Animated, { interpolate, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
+import React, { useEffect, useRef, useState } from 'react';
+import { Alert, FlatList, ImageBackground, InteractionManager, Modal, Platform, ScrollView, Share, Text, TextInput, TouchableOpacity, Vibration, View } from 'react-native';
 import { Image } from 'expo-image';
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -34,20 +31,13 @@ import { useWorkoutHistory } from '../../context/WorkoutHistoryContext';
 import { usePushNotifications } from '../../context/PushNotificationContext';
 import { useToast } from '../../context/ToastContext';
 import { generateWorkoutPlans } from '../../services/aiWorkoutService';
-
-const formatTimeInput = (value: string) => {
-    if (!value) return '0:00';
-    const clean = value.replace(/\D/g, '').padStart(4, '0');
-    const m = clean.slice(0, -2);
-    const s = clean.slice(-2);
-    return `${parseInt(m)}:${s}`;
-};
-
-const getRawTimeDigits = (value: string) => {
-    if (!value) return '';
-    const clean = value.replace(/\D/g, '');
-    return clean === '0' ? '' : clean;
-};
+import { configureWorkoutAudio, playWorkoutAudio, WorkoutSound } from '../../services/workoutAudio';
+import { WorkoutVideo } from '../../components/media/WorkoutVideo';
+import {
+    cancelWorkoutNotifications,
+    scheduleRestNotification,
+    setupTimerNotificationChannel,
+} from '../../services/notificationRuntime';
 
 const exercisesData = require('../../assets/exercises.json');
 const exercisesMap = new Map<string, any>(
@@ -131,25 +121,11 @@ export default function WorkoutScreen() {
             const configureSystem = async () => {
                 try {
                     // 1. Audio: Don't lower background music (Spotify/etc)
-                    await Audio.setAudioModeAsync({
-                        allowsRecordingIOS: false,
-                        staysActiveInBackground: true,
-                        interruptionModeIOS: InterruptionModeIOS.MixWithOthers,
-                        playsInSilentModeIOS: true,
-                        shouldDuckAndroid: true,
-                        interruptionModeAndroid: InterruptionModeAndroid.DuckOthers,
-                        playThroughEarpieceAndroid: false
-                    });
+                    await configureWorkoutAudio();
 
                     // 2. Android Channel: High Importance for Timer Sound
                     if (Platform.OS === 'android') {
-                        await Notifications.setNotificationChannelAsync('timer', {
-                            name: 'Timer de Descanso',
-                            importance: Notifications.AndroidImportance.MAX,
-                            vibrationPattern: [0, 250, 250, 250],
-                            lightColor: '#FF231F7C',
-                            sound: 'default'
-                        });
+                        await setupTimerNotificationChannel();
                     }
                 } catch (error) {
                     console.log("Error configuring Audio/Notifications:", error);
@@ -413,7 +389,7 @@ export default function WorkoutScreen() {
     const [showFinishModal, setShowFinishModal] = useState(false);
 
     // Audio Object
-    const soundObject = useRef<Audio.Sound | null>(null);
+    const soundObject = useRef<WorkoutSound | null>(null);
 
     const playWorkoutSound = async () => {
         try {
@@ -423,18 +399,13 @@ export default function WorkoutScreen() {
 
             // Unload previous sound if any
             if (soundObject.current) {
-                await soundObject.current.unloadAsync();
+                await soundObject.current.unload();
             }
 
-            const { sound } = await Audio.Sound.createAsync(
-                { uri: soundUrl },
-                {
-                    shouldPlay: true,
-                    volume: settings.volume === 'Alto' ? 1.0 : settings.volume === 'Médio' ? 0.6 : 0.3
-                }
+            soundObject.current = await playWorkoutAudio(
+                soundUrl,
+                settings.volume === 'Alto' ? 1.0 : settings.volume === 'Médio' ? 0.6 : 0.3
             );
-
-            soundObject.current = sound;
         } catch (error) {
             console.log('Error playing sound:', error);
         }
@@ -443,7 +414,7 @@ export default function WorkoutScreen() {
     useEffect(() => {
         return () => {
             if (soundObject.current) {
-                soundObject.current.unloadAsync();
+                soundObject.current.unload();
             }
         };
     }, []);
@@ -534,7 +505,7 @@ export default function WorkoutScreen() {
                 setRestingExerciseId(null);
                 setRestEndTime(null);
                 if (Platform.OS !== 'web') {
-                    Notifications.cancelAllScheduledNotificationsAsync().catch(err => console.log("Cleanup notification error:", err));
+                    cancelWorkoutNotifications().catch(err => console.log("Cleanup notification error:", err));
                 }
             }
         }
@@ -867,21 +838,7 @@ export default function WorkoutScreen() {
 
             // Schedule Notification (fires even when app is in background)
             try {
-                await Notifications.cancelAllScheduledNotificationsAsync();
-                await Notifications.scheduleNotificationAsync({
-                    content: {
-                        title: '⏱️ Descanso Finalizado!',
-                        body: 'Hora de voltar para a série!',
-                        sound: true,
-                    },
-                    trigger: {
-                        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
-                        seconds: restTime,
-                        repeats: false,
-                        // Android: link to the 'timer' channel (max importance, sound + vibration)
-                        ...(Platform.OS === 'android' ? { channelId: 'timer' } : {}),
-                    } as any,
-                });
+                await scheduleRestNotification(restTime);
             } catch (err) {
                 console.log('Error scheduling notification', err);
             }
@@ -941,7 +898,7 @@ export default function WorkoutScreen() {
         setRestTimeRemaining(0);
         setRestingExerciseId(null);
         setRestEndTime(null);
-        await Notifications.cancelAllScheduledNotificationsAsync();
+        await cancelWorkoutNotifications();
     };
 
     const addRestTime = async (seconds: number) => {
@@ -954,19 +911,7 @@ export default function WorkoutScreen() {
             setRestTimeRemaining(newRemaining);
 
             try {
-                await Notifications.cancelAllScheduledNotificationsAsync();
-                await Notifications.scheduleNotificationAsync({
-                    content: {
-                        title: "Descanso Finalizado! ⏱️",
-                        body: `Hora de voltar para a série!`,
-                        sound: true,
-                    },
-                    trigger: {
-                        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
-                        seconds: newRemaining,
-                        repeats: false,
-                    },
-                });
+                await scheduleRestNotification(newRemaining);
             } catch (err) {
                 console.log("Error rescheduling notification", err);
             }
@@ -1147,7 +1092,7 @@ export default function WorkoutScreen() {
             setRestingExerciseId(null);
             setRestEndTime(null);
             if (Platform.OS !== 'web') {
-                Notifications.cancelAllScheduledNotificationsAsync().catch(() => {});
+                cancelWorkoutNotifications().catch(() => {});
             }
         }
 
@@ -2562,7 +2507,7 @@ export default function WorkoutScreen() {
         // Cancel any pending rest notifications to prevent post-workout alerts
         try {
             if (Platform.OS !== 'web') {
-                await Notifications.cancelAllScheduledNotificationsAsync();
+                await cancelWorkoutNotifications();
             }
         } catch (err) {
             console.log("Error cancelling notifications on finish:", err);
@@ -2724,7 +2669,7 @@ export default function WorkoutScreen() {
         setIsResting(false);
         setRestEndTime(null);
         if (Platform.OS !== 'web') {
-            Notifications.cancelAllScheduledNotificationsAsync();
+            cancelWorkoutNotifications();
         }
 
         // Function to proceed with saving
@@ -3959,7 +3904,7 @@ export default function WorkoutScreen() {
                                         setRestingExerciseId(null);
                                         setRestEndTime(null);
                                         if (Platform.OS !== 'web') {
-                                            Notifications.cancelAllScheduledNotificationsAsync().catch(() => {});
+                                            cancelWorkoutNotifications().catch(() => {});
                                         }
                                         clearWorkout();
                                         useWorkoutStore.getState().clearWorkout();
@@ -4097,15 +4042,13 @@ export default function WorkoutScreen() {
 
                     <View className="flex-1 justify-center items-center">
                         {activeVideoUrl ? (
-                            <Video
-                                source={{ uri: activeVideoUrl }}
-                                rate={1.0}
+                            <WorkoutVideo
+                                sourceUrl={activeVideoUrl}
                                 volume={1.0}
-                                isMuted={false}
-                                resizeMode={ResizeMode.CONTAIN}
-                                shouldPlay
-                                isLooping
-                                useNativeControls
+                                muted={false}
+                                autoPlay
+                                loop
+                                controls
                                 style={{ width: '100%', height: '100%' }}
                             />
                         ) : (

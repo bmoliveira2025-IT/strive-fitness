@@ -1,5 +1,5 @@
 import Palette from '../../constants/palette.json';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import React, { useMemo } from 'react';
 import { Text, View } from 'react-native';
 import { Circle, Svg } from 'react-native-svg';

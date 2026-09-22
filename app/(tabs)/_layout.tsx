@@ -1,10 +1,10 @@
 import Palette from '../../constants/palette.json';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { Tabs } from 'expo-router';
 import { Platform, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../context/ThemeContext';
-import { FontFamily } from '../../constants/theme';
+import { Control, FontFamily } from '../../constants/theme';
 
 type TabIconProps = {
   name: keyof typeof Ionicons.glyphMap;
@@ -16,8 +16,9 @@ type TabIconProps = {
 
 const TabIcon = ({ name, focused, color, primaryColor, isDark }: TabIconProps) => (
   <View
+    accessible={false}
     style={{
-      width: 36,
+      width: Control.preferredTouchSize,
       height: 28,
       borderRadius: 14,
       alignItems: 'center',
@@ -49,7 +50,7 @@ export default function TabLayout() {
       screenOptions={{
         headerShown: false,
         lazy: true,
-        freezeOnBlur: false,
+        freezeOnBlur: true,
         sceneStyle: { backgroundColor: theme.colors.background },
         tabBarActiveTintColor: theme.colors.primary,
         tabBarInactiveTintColor: theme.colors.textMuted,
@@ -88,9 +89,9 @@ export default function TabLayout() {
         tabBarItemStyle: {
           justifyContent: 'flex-start',
           paddingTop: 6,
-          height: 48,
+          minHeight: Control.preferredTouchSize,
         },
-        tabBarAllowFontScaling: false,
+        tabBarAllowFontScaling: true,
       }}
     >
       <Tabs.Screen

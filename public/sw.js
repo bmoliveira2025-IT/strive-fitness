@@ -1,5 +1,5 @@
 // Strive Fitness PWA Service Worker
-const CACHE_NAME = 'strive-fitness-v17';
+const CACHE_NAME = 'strive-fitness-v18';
 const APP_SHELL = [
   '/',
   '/manifest.json',

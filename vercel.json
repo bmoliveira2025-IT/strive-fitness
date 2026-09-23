@@ -3,6 +3,18 @@
   "buildCommand": "npx expo export --platform web",
   "outputDirectory": "dist",
   "cleanUrls": true,
+  "redirects": [
+    {
+      "source": "/strive.apk",
+      "destination": "https://github.com/bmoliveira2025-IT/strive-fitness/releases/download/v1.0.19/strive1.0.19.apk",
+      "permanent": false
+    },
+    {
+      "source": "/strive1.0.19.apk",
+      "destination": "https://github.com/bmoliveira2025-IT/strive-fitness/releases/download/v1.0.19/strive1.0.19.apk",
+      "permanent": false
+    }
+  ],
   "headers": [
     {
       "source": "/(.*\\.apk)",

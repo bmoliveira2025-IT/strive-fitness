@@ -1,7 +1,7 @@
 {
   "name": "mobile_app",
   "main": "expo-router/entry",
-  "version": "1.0.17",
+  "version": "1.0.19",
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
@@ -10,7 +10,9 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "build": "node scripts/clean-web-dist.js && expo export --platform web && node scripts/prune-web-dist.js",
-    "build:apk": "npx eas-cli build -p android --profile preview"
+    "build:apk": "npx eas-cli build -p android --profile preview",
+    "generate:workout-catalog": "node scripts/build-workout-catalog.mjs --sql",
+    "test:workout-generation": "node --test tests/workoutGeneration.test.mjs tests/sessionFlow.test.mjs tests/tabLayout.test.mjs"
   },
   "dependencies": {
     "@expo-google-fonts/inter": "^0.4.2",
@@ -31,6 +33,7 @@
     "expo-constants": "~18.0.13",
     "expo-crypto": "~15.0.9",
     "expo-device": "~8.0.10",
+    "expo-file-system": "~19.0.22",
     "expo-font": "~14.0.10",
     "expo-gl": "~16.0.10",
     "expo-haptics": "~15.0.8",

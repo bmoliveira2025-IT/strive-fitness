@@ -11,6 +11,7 @@ import { useAuth } from '../context/AuthContext';
 import { usePushNotifications } from '../context/PushNotificationContext';
 import { useTheme } from '../context/ThemeContext';
 import { useUserStore } from '../store/useUserStore';
+import { lightSurface } from '../constants/lightSurface';
 
 const SectionLabel = React.memo(function SectionLabel({ title, theme }: { title: string; theme: any }) {
     return (
@@ -22,7 +23,7 @@ const SectionLabel = React.memo(function SectionLabel({ title, theme }: { title:
 
 const CardGroup = React.memo(function CardGroup({ children, theme }: { children: React.ReactNode; theme: any }) {
     return (
-    <View style={{ backgroundColor: theme.colors.card, borderRadius: 18, borderWidth: 1, borderColor: theme.colors.cardBorder, overflow: 'hidden', marginBottom: 22 }}>
+    <View style={{ ...lightSurface(theme.colors), overflow: 'hidden', marginBottom: 22 }}>
         {children}
     </View>
     );

@@ -3,8 +3,9 @@ const path = require('path');
 const https = require('https');
 
 const EXERCISES_PATH = path.join(__dirname, '../assets/exercises.json');
-const GEMINI_API_KEY = 'AIzaSyCZC0UdP9Po1nEgzt83lf6IaLdNeeCTUWc';
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
+if (!GEMINI_API_KEY) throw new Error('Set GEMINI_API_KEY in the environment before running this script.');
 
 // Load exercises
 const exercises = require(EXERCISES_PATH);

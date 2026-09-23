@@ -383,10 +383,8 @@ export function ProgressOverviewView({
             {/* ─── Today at a Glance ─── */}
             <View style={{ paddingHorizontal: 20, paddingTop: 8, paddingBottom: 4 }}>
                 <View style={{
-                    backgroundColor: theme.colors.card,
+                    backgroundColor: theme.colors.backgroundTertiary,
                     borderRadius: 20,
-                    borderWidth: 1,
-                    borderColor: todayStatus.trainedToday ? theme.colors.success + '40' : theme.colors.cardBorder,
                     padding: 18,
                 }}>
                         <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 14 }}>
@@ -470,9 +468,7 @@ export function ProgressOverviewView({
             <View style={{ paddingHorizontal: 20, paddingVertical: 16 }}>
                 <View
                     style={{
-                        backgroundColor: theme.colors.card,
-                        borderColor: theme.colors.cardBorder,
-                        borderWidth: 1,
+                        backgroundColor: theme.colors.backgroundTertiary,
                         borderRadius: 16
                     }}
                     className="flex-row p-1.5"
@@ -509,10 +505,8 @@ export function ProgressOverviewView({
                             key={idx}
                             style={{
                                 flex: 1,
-                                backgroundColor: theme.colors.card,
+                                backgroundColor: theme.colors.backgroundTertiary,
                                 borderRadius: 18,
-                                borderWidth: 1,
-                                borderColor: theme.colors.cardBorder,
                                 padding: 16,
                             }}
                         >
@@ -536,10 +530,8 @@ export function ProgressOverviewView({
                             key={idx}
                             style={{
                                 flex: 1,
-                                backgroundColor: theme.colors.card,
+                                backgroundColor: theme.colors.backgroundTertiary,
                                 borderRadius: 18,
-                                borderWidth: 1,
-                                borderColor: theme.colors.cardBorder,
                                 padding: 16,
                             }}
                         >
@@ -671,7 +663,7 @@ export function ProgressOverviewView({
             )}
 
             {/* ─── Training Heatmap Calendar ─── */}
-            <Animated.View entering={FadeInDown.delay(500).springify()} className="px-6 mb-8">
+            <Animated.View entering={FadeInDown.delay(500).springify()} style={{ paddingHorizontal: 20, marginBottom: 28 }}>
                 {/* Header fora do overflow:hidden para não cortar o título */}
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
                     <View style={{ flex: 1, marginRight: 12 }}>
@@ -686,7 +678,7 @@ export function ProgressOverviewView({
                         </Text>
                     </View>
                 </View>
-                <View style={{ backgroundColor: theme.colors.card, borderColor: theme.colors.cardBorder, borderWidth: 1.5, borderRadius: 22, padding: 16, overflow: 'hidden' }}>
+                <View style={{ backgroundColor: theme.colors.backgroundTertiary, borderRadius: 18, padding: 12, overflow: 'hidden' }}>
 
                     {/* Day headers */}
                     <View style={{ flexDirection: 'row', marginBottom: 8, paddingHorizontal: 2 }}>
@@ -743,11 +735,11 @@ export function ProgressOverviewView({
 
             {/* ─── Personal Records ─── */}
             {personalRecords.length > 0 && (
-                <Animated.View entering={FadeInDown.delay(600).springify()} className="px-6 mb-8">
+                <Animated.View entering={FadeInDown.delay(600).springify()} style={{ paddingHorizontal: 20, marginBottom: 28 }}>
                     <Text style={{ color: theme.colors.textSecondary }} className="text-[9px] font-bold uppercase tracking-widest mb-1">Seus Melhores</Text>
                     <Text style={{ color: theme.colors.text, paddingRight: 6 }} className="text-lg font-bold italic uppercase tracking-tighter mb-4">Recordes Pessoais</Text>
 
-                    <View style={{ backgroundColor: theme.colors.card, borderColor: theme.colors.cardBorder, borderWidth: 1.5, borderRadius: 22, overflow: 'hidden' }}>
+                    <View style={{ backgroundColor: theme.colors.backgroundTertiary, borderRadius: 18, overflow: 'hidden' }}>
                         {personalRecords.map((rec, index) => {
                             const medals = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣'];
                             const isLast = index === personalRecords.length - 1;
@@ -784,7 +776,7 @@ export function ProgressOverviewView({
             )}
 
             {/* ─── Volume Semanal — Custom Bar Chart ─── */}
-            <Animated.View entering={FadeInDown.delay(700).springify()} style={{ paddingHorizontal: 24, marginBottom: 32 }}>
+            <Animated.View entering={FadeInDown.delay(700).springify()} style={{ paddingHorizontal: 20, marginBottom: 28 }}>
 
                 {/* Header + trend pill */}
                 <View style={{ flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 16 }}>
@@ -820,8 +812,8 @@ export function ProgressOverviewView({
                 <View style={{ flexDirection: 'row', gap: 10, marginBottom: 16 }}>
                     {/* Esta Semana */}
                     <View style={{
-                        flex: 1, backgroundColor: theme.colors.card, borderRadius: 18,
-                        padding: 14, borderWidth: 1.5, borderColor: theme.colors.primary + '30',
+                        flex: 1, minWidth: 0, backgroundColor: theme.colors.backgroundTertiary, borderRadius: 16,
+                        padding: 12,
                     }}>
                         <View style={{
                             backgroundColor: theme.colors.primary + '20', width: 32, height: 32,
@@ -840,9 +832,8 @@ export function ProgressOverviewView({
 
                     {/* Variação */}
                     <View style={{
-                        flex: 1, backgroundColor: theme.colors.card, borderRadius: 18,
-                        padding: 14, borderWidth: 1.5,
-                        borderColor: weeklyVolumeStats.changePct >= 0 ? theme.colors.success + '30' : theme.colors.error + '30',
+                        flex: 1, minWidth: 0, backgroundColor: theme.colors.backgroundTertiary, borderRadius: 16,
+                        padding: 12,
                     }}>
                         <View style={{
                             backgroundColor: weeklyVolumeStats.changePct >= 0 ? theme.colors.success + '20' : theme.colors.error + '20',
@@ -868,8 +859,8 @@ export function ProgressOverviewView({
 
                     {/* Melhor Semana */}
                     <View style={{
-                        flex: 1, backgroundColor: theme.colors.card, borderRadius: 18,
-                        padding: 14, borderWidth: 1.5, borderColor: theme.colors.warning + '30',
+                        flex: 1, minWidth: 0, backgroundColor: theme.colors.backgroundTertiary, borderRadius: 16,
+                        padding: 12,
                     }}>
                         <View style={{
                             backgroundColor: theme.colors.warning + '20', width: 32, height: 32,
@@ -889,8 +880,7 @@ export function ProgressOverviewView({
 
                 {/* Bar chart card */}
                 <View style={{
-                    backgroundColor: theme.colors.card, borderRadius: 22,
-                    borderWidth: 1.5, borderColor: theme.colors.cardBorder, padding: 20,
+                    backgroundColor: theme.colors.backgroundTertiary, borderRadius: 18, padding: 16,
                 }}>
                     <View style={{ position: 'relative' }}>
                         {/* Average reference line */}

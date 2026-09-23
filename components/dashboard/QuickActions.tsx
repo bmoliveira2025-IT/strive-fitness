@@ -1,4 +1,3 @@
-import Palette from '../../constants/palette.json';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
 import React from 'react';
@@ -32,8 +31,8 @@ export function QuickActions() {
         {
             icon: 'sparkles-outline' as const,
             label: 'IA Coach',
-            description: 'Assistente',
-            onPress: () => router.push('/activities'),
+            description: 'Gerar plano semanal',
+            onPress: () => router.push({ pathname: '/workout', params: { tab: 'exercises', openAI: 'true' } }),
         },
     ];
 
@@ -62,20 +61,13 @@ export function QuickActions() {
                         style={{
                             width: '48%',
                             flexGrow: 1,
-                            backgroundColor: theme.colors.card,
-                            borderColor: theme.colors.cardBorder,
-                            borderWidth: 1,
+                            backgroundColor: theme.colors.backgroundTertiary,
                             borderRadius: Radius.lg,
                             paddingVertical: 12,
                             paddingHorizontal: 12,
                             flexDirection: 'row',
                             alignItems: 'center',
                             gap: 10,
-                            shadowColor: Palette.ink,
-                            shadowOffset: { width: 0, height: 2 },
-                            shadowOpacity: theme.mode === 'dark' ? 0.1 : 0.04,
-                            shadowRadius: 4,
-                            elevation: 1,
                         }}
                     >
                         <View

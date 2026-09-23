@@ -4,7 +4,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useMemo, useState } from 'react';
-import { Modal, Share, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Modal, Platform, ScrollView, Share, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ProgressExercisesView } from '../../components/ProgressExercisesView';
@@ -185,6 +185,14 @@ export default function ProgressScreen() {
                 </View>
             </View>
 
+            {Platform.OS === 'web' && <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexGrow: 0 }} contentContainerStyle={{ paddingHorizontal: 20, gap: 8, paddingBottom: 12 }}>
+                {TABS.map(tab => <TouchableOpacity key={tab.id} onPress={() => setSelectedTab(tab.id as any)}
+                    style={{ flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 38, paddingHorizontal: 12, borderRadius: 13, backgroundColor: selectedTab === tab.id ? theme.colors.primary : theme.colors.backgroundTertiary }}>
+                    <Ionicons name={tab.icon as any} size={15} color={selectedTab === tab.id ? theme.colors.onPrimary : theme.colors.textSecondary} />
+                    <Text style={{ color: selectedTab === tab.id ? theme.colors.onPrimary : theme.colors.textSecondary, fontSize: 11, fontWeight: '700' }}>{tab.label}</Text>
+                </TouchableOpacity>)}
+            </ScrollView>}
+
             {/* Content Area */}
             <View className="flex-1">
                 {selectedTab === 'overview' ? (
@@ -207,7 +215,7 @@ export default function ProgressScreen() {
             </View>
 
             {/* Collapsible floating section navigator — stays clear of the main tab bar */}
-            <View style={{ position: 'absolute', right: 14, bottom: Math.max(insets.bottom, 16) + 68, alignItems: 'flex-end', zIndex: 80 }} pointerEvents="box-none">
+            {Platform.OS !== 'web' && <View style={{ position: 'absolute', right: 14, bottom: Math.max(insets.bottom, 16) + 68, alignItems: 'flex-end', zIndex: 80 }} pointerEvents="box-none">
                 {showSectionMenu && (
                     <View style={{ gap: 9, alignItems: 'flex-end', marginBottom: 10 }}>
                         {[...TABS].reverse().map((tab, index) => {
@@ -273,7 +281,7 @@ export default function ProgressScreen() {
                         color={theme.mode === 'light' ? theme.colors.primaryLight : theme.colors.onPrimary}
                     />
                 </TouchableOpacity>
-            </View>
+            </View>}
 
             {/* Premium Weight Modal */}
             <Modal

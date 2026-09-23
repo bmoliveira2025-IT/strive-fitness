@@ -6,6 +6,7 @@ import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert, FlatList, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { tabScrollBottomPadding } from '../../constants/tabLayout';
 import { AchievementBadge } from '../../components/profile/AchievementBadge';
 import { EditProfileModal } from '../../components/profile/EditProfileModal';
 import { ProfileHeaderNew } from '../../components/profile/ProfileHeaderNew';
@@ -14,6 +15,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { useUserStore } from '../../store/useUserStore';
 import { useWorkoutHistory } from '../../context/WorkoutHistoryContext';
 import { buildAchievements, getGoalMotivation } from '../../utils/achievements';
+import { lightSurface } from '../../constants/lightSurface';
 
 // ── 2×2 Shortcut Card ────────────────────────────────────────────────────────
 const ShortcutCard = memo(function ShortcutCard({ icon, title, subtitle, onPress, color }: {
@@ -27,18 +29,10 @@ const ShortcutCard = memo(function ShortcutCard({ icon, title, subtitle, onPress
                 onPress={onPress}
                 activeOpacity={0.85}
                 style={{
-                    backgroundColor: theme.colors.card,
-                    borderColor: theme.colors.cardBorder,
-                    borderWidth: 1,
-                    borderRadius: 22,
-                    padding: 18,
-                    height: 148,
+                    ...lightSurface(theme.colors),
+                    padding: 16,
+                    minHeight: 132,
                     justifyContent: 'space-between',
-                    shadowColor: Palette.ink,
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: theme.mode === 'light' ? 0.05 : 0.1,
-                    shadowRadius: 8,
-                    elevation: 1,
                 }}
             >
                 <View style={{ backgroundColor: color + '18', width: 46, height: 46, borderRadius: 14, alignItems: 'center', justifyContent: 'center' }}>
@@ -61,11 +55,8 @@ const DataCell = memo(function DataCell({ icon, label, value, sub, color }: {
     return (
         <View style={{
             flex: 1,
-            backgroundColor: theme.colors.card,
-            borderRadius: 18,
+            ...lightSurface(theme.colors),
             padding: 14,
-            borderWidth: 1,
-            borderColor: theme.colors.cardBorder,
             alignItems: 'center',
         }}>
             <View style={{ backgroundColor: color + '18', width: 38, height: 38, borderRadius: 12, alignItems: 'center', justifyContent: 'center', marginBottom: 8 }}>
@@ -214,7 +205,7 @@ export default function ProfileScreen() {
 
             <ScrollView
                 style={{ flex: 1 }}
-                contentContainerStyle={{ paddingBottom: insets.bottom + 100 }}
+                contentContainerStyle={{ paddingBottom: tabScrollBottomPadding(Platform.OS, insets.bottom) }}
                 showsVerticalScrollIndicator={false}
                 removeClippedSubviews={true}
             >

@@ -5,6 +5,7 @@ import { Platform, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../context/ThemeContext';
 import { Control, FontFamily } from '../../constants/theme';
+import { TAB_BAR_CONTENT_HEIGHT, tabBarBottomPadding } from '../../constants/tabLayout';
 
 type TabIconProps = {
   name: keyof typeof Ionicons.glyphMap;
@@ -38,10 +39,8 @@ export default function TabLayout() {
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
   // Safe clearance for Android 3-button navigation (anchored items on top)
-  const bottomPadding = Platform.OS === 'android'
-    ? Math.max(insets.bottom, 50) + 22
-    : Math.max(insets.bottom, 16);
-  const tabHeight = 52 + bottomPadding;
+  const bottomPadding = tabBarBottomPadding(Platform.OS, insets.bottom);
+  const tabHeight = TAB_BAR_CONTENT_HEIGHT + bottomPadding;
   const isDark = theme.mode === 'dark';
   const primaryColor = theme.colors.primary;
 
@@ -106,7 +105,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="feed"
         options={{
-          title: 'Feed',
+          title: 'Comunidade',
           tabBarIcon: ({ color, focused }) => (
             <TabIcon name="chatbubbles" focused={focused} color={color} primaryColor={primaryColor} isDark={isDark} />
           ),

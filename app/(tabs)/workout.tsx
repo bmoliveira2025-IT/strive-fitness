@@ -11,6 +11,7 @@ import { Alert, FlatList, ImageBackground, InteractionManager, Modal, Platform, 
 import { Image } from 'expo-image';
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { TAB_BAR_CONTENT_HEIGHT, tabBarBottomPadding, tabScrollBottomPadding } from '../../constants/tabLayout';
 import { ActiveWorkoutBanner } from '../../components/ActiveWorkoutBanner';
 import { PRExplosionAnimation } from '../../components/animations/PRExplosionAnimation';
 import { CreatePlanView } from '../../components/CreatePlanView';
@@ -19,6 +20,7 @@ import ReplaceExerciseView from '../../components/ReplaceExerciseView';
 import { ModernLoading } from '../../components/ui/ModernLoading';
 import { GradientButton } from '../../components/ui/GradientButton';
 import { WorkoutCard } from '../../components/WorkoutCard';
+import { DockableActionButton } from '../../components/DockableActionButton';
 import { WorkoutFinishModal } from '../../components/WorkoutFinishModal';
 import { WorkoutPreviewModal } from '../../components/WorkoutPreviewModal';
 import { getDailyFitnessImage } from '../../utils/imageHelper';
@@ -30,7 +32,12 @@ import { useWorkoutStore } from '../../store/useWorkoutStore';
 import { useWorkoutHistory } from '../../context/WorkoutHistoryContext';
 import { usePushNotifications } from '../../context/PushNotificationContext';
 import { useToast } from '../../context/ToastContext';
-import { generateWorkoutPlans } from '../../services/aiWorkoutService';
+import { generateWeeklyWorkoutPlan, GeneratedWeeklyPlan } from '../../services/aiWorkoutService';
+import { allowedSplits, type Split, type WeeklyWorkoutRequest } from '../../lib/workoutGeneration';
+import { warmupSteps } from '../../lib/sessionFlow';
+import { useUserStore } from '../../store/useUserStore';
+import { useAuth } from '../../context/AuthContext';
+import { CommunityService } from '../../services/communityService';
 import { configureWorkoutAudio, playWorkoutAudio, WorkoutSound } from '../../services/workoutAudio';
 import { WorkoutVideo } from '../../components/media/WorkoutVideo';
 import {
@@ -89,6 +96,7 @@ export default function WorkoutScreen() {
     const {
         savedWorkouts,
         saveWorkout,
+        saveWorkoutWeek,
         updateWorkout,
         clearPlan,
         isCreatingPlan,
@@ -101,6 +109,9 @@ export default function WorkoutScreen() {
     const { addHistoryRecord, history } = useWorkoutHistory();
     const { onWorkoutCompleted } = usePushNotifications();
     const toast = useToast();
+    const { session } = useAuth();
+    const communityName = useUserStore(state => state.userName);
+    const communityProfile = useUserStore(state => state.profile);
     const router = useRouter();
     const { theme } = useTheme();
 
@@ -173,7 +184,6 @@ export default function WorkoutScreen() {
     const [showSetTypeModal, setShowSetTypeModal] = useState(false);
     const [selectedSetForType, setSelectedSetForType] = useState<{ exerciseId: string, setId: number } | null>(null);
     const [initialExerciseIds, setInitialExerciseIds] = useState<string[]>([]);
-    const [aiPlans, setAiPlans] = useState<any[]>([]);
     const [isLoadingSavedWorkout, setIsLoadingSavedWorkout] = useState(false); // Flag to prevent context sync
     const [showPRAnimation, setShowPRAnimation] = useState(false);
     const [isFinalizing, setIsFinalizing] = useState(false);
@@ -246,9 +256,21 @@ export default function WorkoutScreen() {
     // AI Assistant State
     const [aiObjective, setAiObjective] = useState('hypertrophy');
     const [aiLevel, setAiLevel] = useState('intermediate');
-    const [aiFocus, setAiFocus] = useState('full_body');
+    const [aiFocus, setAiFocus] = useState<WeeklyWorkoutRequest['priority_focus']>('balanced');
+    const [aiDays, setAiDays] = useState<WeeklyWorkoutRequest['days_per_week']>(3);
+    const [aiSplit, setAiSplit] = useState<Split>('ABC');
+    const [aiGender, setAiGender] = useState<WeeklyWorkoutRequest['gender']>('unspecified');
+    const [aiEquipment, setAiEquipment] = useState<string[]>([]);
+    const [aiGlutePriority, setAiGlutePriority] = useState(false);
+    const [aiError, setAiError] = useState<string | null>(null);
+    const profileGender = useUserStore(state => state.profile?.gender);
+    useEffect(() => {
+        if (profileGender === 'feminino') { setAiGender('female'); setAiGlutePriority(true); setAiFocus('legs'); }
+        else if (profileGender === 'masculino') setAiGender('male');
+    }, [profileGender]);
     const [isGeneratingAI, setIsGeneratingAI] = useState(false);
-    const [aiGeneratedWorkout, setAiGeneratedWorkout] = useState<any>(null);
+    const [aiGeneratedWorkout, setAiGeneratedWorkout] = useState<GeneratedWeeklyPlan | null>(null);
+    const [warmupDone, setWarmupDone] = useState(false);
 
     // Helper to format time input (e.g. "130" -> "1:30")
     const formatTimeInput = (val: string) => {
@@ -316,73 +338,27 @@ export default function WorkoutScreen() {
         return null;
     }, [getHistory, history]);
 
-    // AI Generation Logic
-    const generateAIWorkout = () => {
+    // Slot-based generation; the server only selects eligible catalog IDs.
+    const generateAIWorkout = async () => {
         setIsGeneratingAI(true);
-        setTimeout(() => {
-            let pool = [...exercisesData];
-
-            // Filter by Focus - Mapping to Portuguese names in dataset
-            let targetMuscles: string[] = [];
-            if (aiFocus === 'push') targetMuscles = ['Peito', 'Ombros', 'Tríceps'];
-            else if (aiFocus === 'pull') targetMuscles = ['Costas', 'Bíceps', 'Antebraços'];
-            else if (aiFocus === 'legs') targetMuscles = ['Quadríceps', 'Isquiotibiais', 'Panturrilhas', 'Glúteos'];
-            else targetMuscles = ['Peito', 'Costas', 'Ombros', 'Quadríceps', 'Isquiotibiais'];
-
-            const selectedExercises: any[] = [];
-            const count = aiLevel === 'beginner' ? 5 : (aiLevel === 'intermediate' ? 7 : 9);
-
-            // Create a pool filtered by target muscles to ensure variety within the focus
-            const focusPool = pool.filter(ex =>
-                ex.body_parts?.some((p: string) =>
-                    targetMuscles.map(m => m.toLowerCase()).includes(p.toLowerCase())
-                )
-            );
-
-            // 1. Pick one from each target muscle first for balance
-            targetMuscles.forEach(muscle => {
-                const options = focusPool.filter(ex => ex.body_parts?.some((p: string) => p.toLowerCase() === muscle.toLowerCase()));
-                if (options.length > 0) {
-                    const random = options[Math.floor(Math.random() * options.length)];
-                    if (!selectedExercises.find(e => e.id === random.id)) {
-                        selectedExercises.push({
-                            ...random,
-                            sets: Array(aiObjective === 'strength' ? 3 : 4).fill(null).map((_, idx) => ({ id: Date.now() + Math.random() + idx, kg: 0, reps: aiObjective === 'strength' ? 5 : 10, type: 'N' }))
-                        });
-                    }
-                }
+        setAiError(null);
+        try {
+            const workout = await generateWeeklyWorkoutPlan({
+                days_per_week: aiDays,
+                split: aiSplit,
+                priority_focus: aiFocus,
+                goal: aiObjective as WeeklyWorkoutRequest['goal'],
+                level: aiLevel as 'beginner' | 'intermediate' | 'advanced',
+                gender: aiGender,
+                equipment: aiEquipment,
+                glute_priority: aiGlutePriority,
             });
-
-            // 2. Fill the rest from the focusPool to maintain target discipline
-            let attempts = 0;
-            while (selectedExercises.length < count && focusPool.length > selectedExercises.length && attempts < 50) {
-                const random = focusPool[Math.floor(Math.random() * focusPool.length)];
-                if (!selectedExercises.find(e => e.id === random.id)) {
-                    selectedExercises.push({
-                        ...random,
-                        sets: Array(aiObjective === 'strength' ? 3 : 4).fill(null).map((_, idx) => ({ id: Date.now() + Math.random() + idx, kg: 0, reps: aiObjective === 'strength' ? 5 : 10, type: 'N' }))
-                    });
-                }
-                attempts++;
-            }
-
-            // 3. Fallback to general pool only if absolutely necessary
-            while (selectedExercises.length < count && pool.length > selectedExercises.length) {
-                const random = pool[Math.floor(Math.random() * pool.length)];
-                if (!selectedExercises.find(e => e.id === random.id)) {
-                    selectedExercises.push({
-                        ...random,
-                        sets: Array(aiObjective === 'strength' ? 3 : 4).fill(null).map((_, idx) => ({ id: Date.now() + Math.random() + idx, kg: 0, reps: aiObjective === 'strength' ? 5 : 10, type: 'N' }))
-                    });
-                }
-            }
-
-            setAiGeneratedWorkout({
-                name: `Treino IA: ${aiFocus === 'full_body' ? 'Corpo Todo' : (aiFocus === 'push' ? 'Empurrar' : aiFocus === 'pull' ? 'Puxar' : 'Pernas')}`,
-                exercises: selectedExercises.slice(0, count)
-            });
+            setAiGeneratedWorkout(workout);
+        } catch (error) {
+            setAiError(error instanceof Error ? error.message : 'Não foi possível montar o treino.');
+        } finally {
             setIsGeneratingAI(false);
-        }, 1500);
+        }
     };
 
     // Workout Finish Modal State
@@ -707,15 +683,6 @@ export default function WorkoutScreen() {
             }
         }
     }, [exercises.length, getExercisePreviousData]); // Run when exercises count changes or on mount
-
-    // Load AI plans on mount (non-blocking)
-    useEffect(() => {
-        const task = InteractionManager.runAfterInteractions(async () => {
-            const plans = await generateWorkoutPlans();
-            setAiPlans(plans);
-        });
-        return () => task.cancel();
-    }, []);
 
     // Sync local duration with global start time
     useEffect(() => {
@@ -1271,6 +1238,7 @@ export default function WorkoutScreen() {
 
         // Clear any existing exercises and workout data
         clearWorkout();
+        setWarmupDone(false);
 
         const planExercises = workout.exercises.map((ex: any, exIndex: number) => {
             const isCardioItem = isCardio(ex);
@@ -1459,6 +1427,7 @@ export default function WorkoutScreen() {
 
         return (
             <View style={{ opacity: isDragging ? 0.5 : 1, paddingHorizontal: 4, marginBottom: 10 }}>
+                {isCardioExercise && <Text style={{ color: theme.colors.text, fontSize: 15, fontWeight: '700', marginBottom: 8 }}>3 · Finalizar · cardio opcional</Text>}
                 <View style={{
                     backgroundColor: isCompleted
                         ? theme.colors.successMuted
@@ -1982,11 +1951,13 @@ export default function WorkoutScreen() {
                                     </View>
                                 )}
 
-                                <View style={{ height: 57 + Math.max(insets.bottom, 6) + 18 + 96 }} />
+                                <View style={{ height: tabScrollBottomPadding(Platform.OS, insets.bottom, true) }} />
                             </ScrollView>
 
-                            {/* Floating Action Button */}
-                            <TouchableOpacity
+                            <DockableActionButton
+                                label="Iniciar treino vazio"
+                                icon="play"
+                                bottom={Platform.OS === 'web' ? 12 : TAB_BAR_CONTENT_HEIGHT + tabBarBottomPadding(Platform.OS, insets.bottom) + 12}
                                 onPress={() => {
                                     clearWorkout();
                                     setExercises([]);
@@ -1995,20 +1966,7 @@ export default function WorkoutScreen() {
                                     startWorkout();
                                     setDuration(0);
                                 }}
-                                style={{
-                                    bottom: (Platform.OS === 'android' ? Math.max(insets.bottom, 48) + 60 : Math.max(insets.bottom, 14) + 60) + 16,
-                                    backgroundColor: theme.mode === 'dark' ? '#223713' : theme.colors.primaryDark,
-                                    borderWidth: 1,
-                                    borderColor: theme.mode === 'dark' ? theme.colors.primary + '30' : theme.colors.primaryDark + '35',
-                                    boxShadow: '0px 8px 16px rgba(0,0,0,0.1)',
-                                    elevation: 6
-                                }}
-                                className="absolute right-6 flex-row items-center py-3 px-6 rounded-full"
-                                activeOpacity={0.9}
-                            >
-                                <Ionicons name="play" size={20} color={theme.mode === 'dark' ? theme.colors.primary : theme.colors.onImage} />
-                                <Text style={{ color: theme.mode === 'dark' ? theme.colors.primary : theme.colors.onImage }} className="font-bold text-base ml-2">Iniciar um Treino Vazio</Text>
-                            </TouchableOpacity>
+                            />
                         </View>
                     ) : (
                         <ScrollView
@@ -2231,9 +2189,10 @@ export default function WorkoutScreen() {
                                                 <Text style={{ color: theme.colors.onImage, fontFamily: "Inter_700Bold", fontSize: 11, letterSpacing: 1 }} className="uppercase mb-2.5">Objetivo</Text>
                                                 <View className="gap-2.5">
                                                     {[
-                                                        { id: 'hypertrophy', label: 'Hipertrofia' },
+                                                        { id: 'hypertrophy', label: 'Ganhar massa' },
                                                         { id: 'strength', label: 'Força' },
-                                                        { id: 'weight_loss', label: 'Emagrecer' }
+                                                        { id: 'weight_loss', label: 'Perder peso' },
+                                                        { id: 'definition', label: 'Definição' },
                                                     ].map(obj => {
                                                         const isSelected = aiObjective === obj.id;
                                                         return (
@@ -2264,19 +2223,18 @@ export default function WorkoutScreen() {
                                             </View>
 
                                             <View className="flex-1">
-                                                <Text style={{ color: theme.colors.onImage, fontFamily: "Inter_700Bold", fontSize: 11, letterSpacing: 1 }} className="uppercase mb-2.5">Foco</Text>
+                                                <Text style={{ color: theme.colors.onImage, fontFamily: "Inter_700Bold", fontSize: 11, letterSpacing: 1 }} className="uppercase mb-2.5">Prioridade</Text>
                                                 <View className="gap-2.5">
                                                     {[
-                                                        { id: 'full_body', label: 'Corpo Todo' },
-                                                        { id: 'push', label: 'Empurrar' },
-                                                        { id: 'pull', label: 'Puxar' },
+                                                        { id: 'balanced', label: 'Equilibrado' },
+                                                        { id: 'upper', label: 'Superiores' },
                                                         { id: 'legs', label: 'Pernas' }
                                                     ].map(f => {
                                                         const isSelected = aiFocus === f.id;
                                                         return (
                                                             <TouchableOpacity
                                                                 key={f.id}
-                                                                onPress={() => setAiFocus(f.id)}
+                                                                onPress={() => setAiFocus(f.id as WeeklyWorkoutRequest['priority_focus'])}
                                                                 style={{
                                                                     backgroundColor: isSelected ? theme.colors.primary : theme.colors.surfaceElevated,
                                                                     borderColor: isSelected ? theme.colors.primary : theme.colors.border,
@@ -2300,6 +2258,83 @@ export default function WorkoutScreen() {
                                                 </View>
                                             </View>
                                         </View>
+
+                                        <Text style={{ color: theme.colors.onImage, fontFamily: 'Inter_700Bold', fontSize: 11, letterSpacing: 1, marginBottom: 8 }}>MODELO INICIAL</Text>
+                                        <View style={{ flexDirection: 'row', gap: 8, marginBottom: 16 }}>
+                                            {[
+                                                { id: 'male', label: 'Homens' }, { id: 'female', label: 'Mulheres' },
+                                                { id: 'unspecified', label: 'Personalizado' },
+                                            ].map(item => (
+                                                <TouchableOpacity key={item.id} onPress={() => {
+                                                    setAiGender(item.id as WeeklyWorkoutRequest['gender']);
+                                                    if (item.id === 'female') { setAiFocus('legs'); setAiGlutePriority(true); }
+                                                    else { setAiFocus('balanced'); setAiGlutePriority(false); }
+                                                }} style={{ flex: 1, paddingVertical: 10, borderRadius: 10, alignItems: 'center', backgroundColor: aiGender === item.id ? theme.colors.primary : theme.colors.surfaceElevated }}>
+                                                    <Text style={{ color: aiGender === item.id ? theme.colors.onPrimary : theme.colors.text, fontSize: 11, fontFamily: 'Inter_600SemiBold' }}>{item.label}</Text>
+                                                </TouchableOpacity>
+                                            ))}
+                                        </View>
+                                        <Text style={{ color: theme.colors.onImage, fontFamily: 'Inter_700Bold', fontSize: 11, letterSpacing: 1, marginBottom: 8 }}>DIAS POR SEMANA</Text>
+                                        <View style={{ flexDirection: 'row', gap: 7, marginBottom: 14 }}>
+                                            {([2, 3, 4, 5, 6] as const).map(days => (
+                                                <TouchableOpacity key={days} onPress={() => { setAiDays(days); setAiSplit(allowedSplits[days][0]); }}
+                                                    style={{ flex: 1, paddingVertical: 10, borderRadius: 10, alignItems: 'center', backgroundColor: aiDays === days ? theme.colors.primary : theme.colors.surfaceElevated }}>
+                                                    <Text style={{ color: aiDays === days ? theme.colors.onPrimary : theme.colors.text, fontWeight: '700' }}>{days}x</Text>
+                                                </TouchableOpacity>
+                                            ))}
+                                        </View>
+                                        <Text style={{ color: theme.colors.onImage, fontFamily: 'Inter_700Bold', fontSize: 11, letterSpacing: 1, marginBottom: 8 }}>DIVISÃO DO TREINO</Text>
+                                        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
+                                            {allowedSplits[aiDays].map(split => (
+                                                <TouchableOpacity key={split} onPress={() => setAiSplit(split)}
+                                                    style={{ paddingHorizontal: 16, paddingVertical: 10, borderRadius: 10, backgroundColor: aiSplit === split ? theme.colors.primary : theme.colors.surfaceElevated }}>
+                                                    <Text style={{ color: aiSplit === split ? theme.colors.onPrimary : theme.colors.text, fontWeight: '700' }}>{split === 'full_body' ? 'Corpo todo' : aiDays === 6 ? 'ABC 2x' : split}</Text>
+                                                </TouchableOpacity>
+                                            ))}
+                                        </View>
+                                        <Text style={{ color: theme.colors.onImage, fontSize: 11, marginBottom: 16 }}>Cada letra será um treino separado. Você pode ajustar as prioridades antes de gerar.</Text>
+
+                                        <Text style={{ color: theme.colors.onImage, fontFamily: 'Inter_700Bold', fontSize: 11, letterSpacing: 1, marginBottom: 8 }}>NÍVEL</Text>
+                                        <View style={{ flexDirection: 'row', gap: 8, marginBottom: 16 }}>
+                                            {[
+                                                { id: 'beginner', label: 'Iniciante' },
+                                                { id: 'intermediate', label: 'Intermediário' },
+                                                { id: 'advanced', label: 'Avançado' },
+                                            ].map(level => (
+                                                <TouchableOpacity key={level.id} onPress={() => setAiLevel(level.id)}
+                                                    style={{ flex: 1, paddingVertical: 10, borderRadius: 10, alignItems: 'center', backgroundColor: aiLevel === level.id ? theme.colors.primary : theme.colors.surfaceElevated }}>
+                                                    <Text style={{ color: aiLevel === level.id ? theme.colors.onPrimary : theme.colors.text, fontSize: 11, fontFamily: 'Inter_600SemiBold' }}>{level.label}</Text>
+                                                </TouchableOpacity>
+                                            ))}
+                                        </View>
+
+                                        <Text style={{ color: theme.colors.onImage, fontFamily: 'Inter_700Bold', fontSize: 11, letterSpacing: 1, marginBottom: 8 }}>EQUIPAMENTOS DISPONÍVEIS</Text>
+                                        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 7, marginBottom: 8 }}>
+                                            {[
+                                                { id: '', label: 'Academia completa' },
+                                                { id: 'Body weight', label: 'Peso corporal' },
+                                                { id: 'Dumbbell', label: 'Halteres' },
+                                                { id: 'Barbell', label: 'Barra' },
+                                                { id: 'Cable', label: 'Polia' },
+                                                { id: 'Leverage machine', label: 'Máquinas' },
+                                            ].map(option => {
+                                                const selected = option.id ? aiEquipment.includes(option.id) : aiEquipment.length === 0;
+                                                return (
+                                                    <TouchableOpacity key={option.label} onPress={() => setAiEquipment(prev => option.id
+                                                        ? selected ? prev.filter(id => id !== option.id) : [...prev, option.id]
+                                                        : [])}
+                                                        style={{ borderRadius: 10, paddingHorizontal: 10, paddingVertical: 8, backgroundColor: selected ? theme.colors.primary : theme.colors.surfaceElevated }}>
+                                                        <Text style={{ color: selected ? theme.colors.onPrimary : theme.colors.text, fontSize: 11 }}>{option.label}</Text>
+                                                    </TouchableOpacity>
+                                                );
+                                            })}
+                                        </View>
+                                        {(aiFocus === 'legs' || aiGender === 'female') && (
+                                            <TouchableOpacity onPress={() => setAiGlutePriority(value => !value)} style={{ paddingVertical: 10, marginBottom: 6 }}>
+                                                <Text style={{ color: theme.colors.onImage, fontSize: 12 }}>{aiGlutePriority ? '☑' : '□'} Priorizar glúteos</Text>
+                                            </TouchableOpacity>
+                                        )}
+                                        {aiError && <Text style={{ color: theme.colors.error, fontSize: 12, marginBottom: 10 }}>{aiError}</Text>}
 
                                         <GradientButton
                                             onPress={generateAIWorkout}
@@ -2326,7 +2361,7 @@ export default function WorkoutScreen() {
                                             ) : (
                                                 <>
                                                     <Ionicons name="sparkles" size={18} color={theme.colors.onPrimary} />
-                                                    <Text style={{ color: theme.colors.onPrimary }} className="font-bold text-lg ml-2">Gerar treino</Text>
+                                                    <Text style={{ color: theme.colors.onPrimary }} className="font-bold text-lg ml-2">Gerar plano semanal</Text>
                                                 </>
                                             )}
                                         </GradientButton>
@@ -2339,9 +2374,15 @@ export default function WorkoutScreen() {
                                                 <Text style={{ color: theme.colors.primary }} className="text-xs font-bold">Ajustar Filtros</Text>
                                             </TouchableOpacity>
                                         </View>
+                                        <Text style={{ color: theme.colors.onImage, fontSize: 11, marginBottom: 12 }}>
+                                            {aiGeneratedWorkout.source === 'catalog_fallback' ? 'Montado com o catálogo Strive' : 'Selecionado pela IA e validado pelo catálogo Strive'}
+                                        </Text>
 
+                                        <Text style={{ color: theme.colors.onImage, fontSize: 14, fontWeight: '700', marginBottom: 12 }}>{aiGeneratedWorkout.name}</Text>
                                         <View className="mb-6">
-                                            {aiGeneratedWorkout.exercises.map((ex: any) => (
+                                            {aiGeneratedWorkout.sessions.map(day => <View key={day.sessionId} style={{ marginBottom: 16 }}>
+                                                <Text style={{ color: theme.colors.onImage, fontSize: 13, fontWeight: '700', marginBottom: 8 }}>{day.name}</Text>
+                                            {day.exercises.map((ex: any) => (
                                                 <TouchableOpacity
                                                     key={ex.id}
                                                     onPress={() => {
@@ -2372,18 +2413,14 @@ export default function WorkoutScreen() {
                                                     <Ionicons name="information-circle-outline" size={20} color={theme.colors.primary} />
                                                 </TouchableOpacity>
                                             ))}
+                                            </View>)}
                                         </View>
 
                                         <GradientButton
                                             onPress={() => {
                                                 if (aiGeneratedWorkout) {
-                                                    saveWorkout(
-                                                        aiGeneratedWorkout.name || 'Treino IA',
-                                                        aiGeneratedWorkout.exercises || [],
-                                                        'IA',
-                                                        true
-                                                    );
-                                                    handleLoadWorkout(aiGeneratedWorkout);
+                                                    saveWorkoutWeek(aiGeneratedWorkout);
+                                                    handleLoadWorkout(aiGeneratedWorkout.sessions[0]);
                                                     setAiGeneratedWorkout(null);
                                                 }
                                             }}
@@ -2403,7 +2440,7 @@ export default function WorkoutScreen() {
                                                 justifyContent: 'center'
                                             }}
                                         >
-                                            <Text className="text-black font-bold text-lg">Carregar Treino</Text>
+                                            <Text className="text-black font-bold text-lg">Salvar plano e iniciar</Text>
                                         </GradientButton>
                                     </View>
                                 )}
@@ -2445,7 +2482,7 @@ export default function WorkoutScreen() {
                                 </TouchableOpacity>
                             </View>
 
-                            <View style={{ height: 110 }} />
+                            <View style={{ height: tabScrollBottomPadding(Platform.OS, insets.bottom) }} />
                         </ScrollView>
                     )
                 }
@@ -2606,6 +2643,30 @@ export default function WorkoutScreen() {
         // Commit point: only now is it safe to remove the recoverable session.
         contextFinishWorkout();
         toast.success('Treino finalizado e salvo com sucesso!');
+
+        // Social publishing is a post-commit side effect and never rolls back workout history.
+        const firstMuscle = historyExercises.flatMap(ex => ex.body_parts || []).find(Boolean) || '';
+        const workoutPost = async () => {
+            let imageUrl: string | undefined;
+            if (session?.user?.id && options?.media?.[0]) {
+                try { imageUrl = await CommunityService.uploadPostImage(options.media[0], session.user.id); }
+                catch (error) { console.warn('Workout photo upload failed; using anatomical illustration:', error); }
+            }
+            await CommunityService.createPost({
+            userId: session?.user?.id || communityProfile?.id || 'local-user',
+            userName: communityName || session?.user?.user_metadata?.full_name || 'Atleta Strive',
+            userAvatar: communityProfile?.photoUri || undefined,
+            category: 'Treinos',
+            workoutTag: workoutName,
+            content: `Treino concluído! ${workoutName} · ${Math.max(1, Math.round(duration / 60))} min · ${historyExercises.length} exercícios. Mais um passo na minha evolução! 💪`,
+            imageUrl,
+            workoutStats: {
+                durationMinutes: Math.max(1, Math.round(duration / 60)), exercisesCount: historyExercises.length,
+                volumeKg: totalVolume, exerciseNames: historyExercises.map(ex => ex.name).slice(0, 8), muscleGroup: firstMuscle,
+            },
+            });
+        };
+        void workoutPost().catch(error => console.warn('Workout saved, but community post failed:', error));
 
         // Clear params to prevent re-loading due to savedWorkouts update triggering useEffect
         router.setParams({ loadWorkoutId: undefined, _t: undefined });
@@ -2903,6 +2964,14 @@ export default function WorkoutScreen() {
                 initialNumToRender={6}
                 ListHeaderComponent={
                     <>
+                        {exercises.length > 0 && <View style={{ backgroundColor: theme.colors.card, borderColor: theme.colors.cardBorder, borderWidth: 1, borderRadius: 16, padding: 16, marginBottom: 16 }}>
+                            <Text style={{ color: theme.colors.text, fontSize: 16, fontWeight: '700', marginBottom: 8 }}>1 · Preparar · aquecimento</Text>
+                            {warmupSteps(exercises).map(step => <Text key={step} style={{ color: theme.colors.textSecondary, fontSize: 12, marginBottom: 5 }}>• {step}</Text>)}
+                            <TouchableOpacity onPress={() => setWarmupDone(value => !value)} style={{ marginTop: 8, paddingVertical: 7 }}>
+                                <Text style={{ color: theme.colors.primary, fontWeight: '700' }}>{warmupDone ? '✓ Preparação concluída' : 'Marcar preparação como concluída'}</Text>
+                            </TouchableOpacity>
+                        </View>}
+                        {exercises.some(ex => !ex.body_parts?.some(part => part.toLowerCase() === 'cardio')) && <Text style={{ color: theme.colors.text, fontSize: 16, fontWeight: '700', marginBottom: 10 }}>2 · Treinar · força</Text>}
                         {showWorkoutNotes && (
                             <View style={{ backgroundColor: theme.colors.card, borderColor: theme.colors.cardBorder, marginBottom: 16, borderRadius: 12, borderWidth: 1, padding: 16, position: 'relative' }}>
                                 <TextInput
@@ -2983,34 +3052,15 @@ export default function WorkoutScreen() {
                 renderItem={renderExerciseItem}
             />
 
-            {/* ─── FAB: Adicionar Exercício ─── */}
+            {/* ─── Ação lateral reutilizável ─── */}
             {exercises.length > 0 && !showSmartInput && (
-                <GradientButton
+                <DockableActionButton
+                    label="Adicionar exercício"
+                    icon="add"
+                    initiallyMinimized
+                    bottom={insets.bottom + 24}
                     onPress={() => setShowAddExerciseModal(true)}
-                    style={{
-                        position: 'absolute',
-                        bottom: insets.bottom + 24,
-                        right: 20,
-                        width: 52,
-                        height: 52,
-                        borderRadius: 18,
-                        shadowColor: Palette.ink,
-                        shadowOffset: { width: 0, height: 4 },
-                        shadowOpacity: 0.1,
-                        shadowRadius: 8,
-                        elevation: 8,
-                        zIndex: 100,
-                    }}
-                    gradientStyle={{
-                        width: '100%',
-                        height: '100%',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                    }}
-                    activeOpacity={0.85}
-                >
-                    <Ionicons name="add" size={28} color={theme.colors.onPrimary} />
-                </GradientButton>
+                />
             )}
 
             {/* Smart Input Modal (Weight, Reps, Time, Distance) */}

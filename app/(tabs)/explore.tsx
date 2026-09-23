@@ -32,7 +32,7 @@ export default function ExploreScreen() {
         return null;
     }, [params.categoryId, params.categoryName]);
 
-    const [userRatings, setUserRatings] = useState<Record<string, number>>({});
+    const [audienceFilter, setAudienceFilter] = useState<'Todos' | 'Homens' | 'Mulheres'>('Todos');
 
     const setActiveTab = (tab: string) => {
         router.setParams({ tab });
@@ -73,23 +73,17 @@ export default function ExploreScreen() {
         }
     }, [params.previewProgramId]);
 
-    const handleRate = (id: string, rate: number) => {
-        setUserRatings(prev => ({ ...prev, [id]: rate }));
-    };
-
     const renderProgramCard = ({ item }: { item: any }) => {
-        const currentRating = userRatings[item.id] || 0;
-
         return (
             <TouchableOpacity
                 activeOpacity={0.85}
                 onPress={() => handleOpenPreview(item)}
-                style={{ width: 175, marginRight: 14 }}
+                style={{ width: searchQuery.trim() ? '100%' : 218, marginRight: 14 }}
             >
                 <View
                     style={{
                         width: '100%',
-                        height: 220,
+                        height: 166,
                         borderRadius: Radius.lg,
                         overflow: 'hidden',
                         backgroundColor: theme.colors.card,
@@ -98,87 +92,36 @@ export default function ExploreScreen() {
                         position: 'relative',
                     }}
                 >
-                    <Image
-                        source={item.image}
-                        style={StyleSheet.absoluteFillObject}
-                        contentFit="cover"
-                        transition={200}
-                    />
-
-                    {/* Dark Gradient Overlay for text readability */}
                     <LinearGradient
-                        colors={['rgba(13,15,18,0.2)', 'rgba(13,15,18,0.75)']}
+                        colors={[item.accent + '32', theme.colors.card]}
                         style={{ position: 'absolute', inset: 0 }}
                     />
-
-                    {/* Top Pins / Badges */}
-                    <View style={{ position: 'absolute', top: 10, left: 10, right: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                        {item.badge ? (
-                            <View style={{ backgroundColor: theme.colors.text, paddingHorizontal: 8, paddingVertical: 3, borderRadius: Radius.full }}>
-                                <Text style={{ fontSize: 9, fontFamily: FontFamily.sansBold, color: theme.colors.background, textTransform: 'uppercase' }}>
-                                    {item.badge}
-                                </Text>
+                    <View style={{ padding: 16, flex: 1, justifyContent: 'space-between' }}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <View style={{ width: 48, height: 48, borderRadius: 15, alignItems: 'center', justifyContent: 'center', backgroundColor: item.accent + '30' }}>
+                                <Ionicons name={item.icon} size={25} color={item.accent} />
                             </View>
-                        ) : <View />}
-
-                        <View style={{ backgroundColor: 'rgba(13,15,18,0.6)', padding: 6, borderRadius: Radius.sm }}>
-                            <Ionicons name={item.isBookmarked ? "bookmark" : "bookmark-outline"} size={14} color={theme.colors.onImage} />
+                            <Text style={{ color: theme.colors.textSecondary, fontSize: 10, fontFamily: FontFamily.sansBold }}>{item.audience}</Text>
                         </View>
-                    </View>
-
-                    {/* Centered / Bottom Tag */}
-                    <View style={{ position: 'absolute', inset: 0, alignItems: 'center', justifyContent: 'center', padding: 12 }}>
-                        {item.tag && (
-                            <View style={{ backgroundColor: theme.colors.primary, paddingHorizontal: 10, paddingVertical: 4, borderRadius: Radius.sm }}>
-                                <Text style={{ color: theme.colors.onPrimary, fontSize: 10, fontFamily: FontFamily.sansBold, textTransform: 'uppercase' }}>{item.tag}</Text>
-                            </View>
-                        )}
+                        <View>
+                            <Text style={{ color: theme.colors.text, fontSize: 14, fontFamily: FontFamily.displaySemiBold }} numberOfLines={2}>{item.title}</Text>
+                            <Text style={{ color: theme.colors.textMuted, fontSize: 11, marginTop: 5 }}>{item.days.length} treinos/semana · {item.request.split === 'full_body' ? 'Corpo todo' : item.request.split}</Text>
+                        </View>
                     </View>
                 </View>
 
                 <View style={{ marginTop: 8, paddingHorizontal: 2 }}>
-                    <Text style={{ color: theme.colors.text, fontSize: 14, fontFamily: FontFamily.displaySemiBold }} numberOfLines={1}>
-                        {item.title}
-                    </Text>
-                    <Text style={{ color: theme.colors.textMuted, fontSize: 11, fontFamily: FontFamily.sans, marginTop: 1 }}>
-                        {item.downloads} Downloads
-                    </Text>
-
-                    {/* Rating Section */}
-                    <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
-                        <View style={{ flexDirection: 'row' }}>
-                            {[1, 2, 3, 4, 5].map((star) => (
-                                <TouchableOpacity
-                                    key={star}
-                                    onPress={() => handleRate(item.id, star)}
-                                    hitSlop={5}
-                                >
-                                    <Ionicons
-                                        name={star <= (currentRating || parseFloat(item.rating)) ? "star" : "star-outline"}
-                                        size={12}
-                                        color={star <= currentRating ? theme.colors.warning : theme.colors.textMuted}
-                                        style={{ marginRight: 2 }}
-                                    />
-                                </TouchableOpacity>
-                            ))}
-                        </View>
-                        <Text style={{ color: theme.colors.textSecondary, fontSize: 11, fontFamily: FontFamily.sansMedium, marginLeft: 4 }}>
-                            {currentRating > 0 ? currentRating.toFixed(1) : item.rating}
-                        </Text>
-                    </View>
+                    <Text style={{ color: theme.colors.textMuted, fontSize: 11, lineHeight: 16 }} numberOfLines={2}>{item.description}</Text>
                 </View>
             </TouchableOpacity>
         );
     };
 
     const filteredPrograms = useMemo(() => {
-        if (!searchQuery.trim() || activeTab !== 'Programas') return PROGRAMS;
-        const query = searchQuery.toLowerCase();
-        return PROGRAMS.filter(p =>
-            p.title.toLowerCase().includes(query) ||
-            (p.tag && p.tag.toLowerCase().includes(query))
-        );
-    }, [searchQuery, activeTab]);
+        const query = activeTab === 'Programas' ? searchQuery.toLowerCase().trim() : '';
+        return PROGRAMS.filter(p => (audienceFilter === 'Todos' || p.audience === audienceFilter || p.audience === 'Todos') &&
+            (!query || `${p.title} ${p.goalLabel} ${p.description}`.toLowerCase().includes(query)));
+    }, [searchQuery, activeTab, audienceFilter]);
 
     const filteredCoaches = useMemo(() => {
         if (!searchQuery.trim() || activeTab !== 'Treinadores') return COACHES;
@@ -186,7 +129,8 @@ export default function ExploreScreen() {
         return COACHES.filter(c =>
             c.name.toLowerCase().includes(query) ||
             c.specialty.toLowerCase().includes(query) ||
-            c.tags.some(t => t.toLowerCase().includes(query))
+            c.tags.some(t => t.toLowerCase().includes(query)) ||
+            c.lessons.some(lesson => lesson.title.toLowerCase().includes(query))
         );
     }, [searchQuery, activeTab]);
 
@@ -212,7 +156,7 @@ export default function ExploreScreen() {
                     <TextInput
                         value={searchQuery}
                         onChangeText={setSearchQuery}
-                        placeholder={activeTab === 'Exercícios' ? "Pesquisar exercícios..." : "Pesquisar programas..."}
+                        placeholder={activeTab === 'Exercícios' ? 'Pesquisar exercícios...' : activeTab === 'Treinadores' ? 'Pesquisar guias e temas...' : 'Pesquisar programas...'}
                         placeholderTextColor={theme.colors.textMuted}
                         style={{ color: theme.colors.text, flex: 1, marginLeft: 10, fontSize: 14, fontFamily: FontFamily.sans }}
                     />
@@ -275,6 +219,17 @@ export default function ExploreScreen() {
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={{ paddingBottom: 66 + Math.max(insets.bottom, 10) + 44 }}
                 >
+                    <View style={{ paddingHorizontal: 20, marginBottom: 16 }}>
+                        <Text style={{ color: theme.colors.text, fontSize: 19, fontFamily: FontFamily.display, marginBottom: 4 }}>Planos semanais prontos</Text>
+                        <Text style={{ color: theme.colors.textSecondary, fontSize: 12, marginBottom: 12 }}>Escolha um modelo e veja cada treino antes de começar.</Text>
+                        <View style={{ flexDirection: 'row', gap: 8 }}>
+                            {(['Todos', 'Homens', 'Mulheres'] as const).map(audience => (
+                                <TouchableOpacity key={audience} onPress={() => setAudienceFilter(audience)} style={{ paddingHorizontal: 14, paddingVertical: 9, borderRadius: Radius.full, backgroundColor: audienceFilter === audience ? theme.colors.primary : theme.colors.card }}>
+                                    <Text style={{ color: audienceFilter === audience ? theme.colors.onPrimary : theme.colors.text, fontSize: 12, fontFamily: FontFamily.sansSemiBold }}>{audience}</Text>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+                    </View>
                     {searchQuery.trim() ? (
                         <View style={{ paddingHorizontal: 20 }}>
                             <Text style={{ color: theme.colors.textSecondary, fontSize: 12, fontFamily: FontFamily.caption, letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 12 }}>
@@ -299,14 +254,14 @@ export default function ExploreScreen() {
                         </View>
                     ) : (
                         <>
-                            {/* Popular Programs */}
+                            {/* Ready-to-use weekly programs */}
                             <View style={{ marginBottom: 24 }}>
                                 <Text style={{ color: theme.colors.text, fontSize: 18, fontFamily: FontFamily.display, paddingHorizontal: 20, marginBottom: 14 }}>
-                                    Programas Populares
+                                    Ganho de massa e pernas
                                 </Text>
                                 <FlatList
                                     horizontal
-                                    data={PROGRAMS.slice(0, 3)}
+                                    data={filteredPrograms.filter(program => program.request.goal === 'hypertrophy')}
                                     renderItem={renderProgramCard}
                                     keyExtractor={item => item.id}
                                     contentContainerStyle={{ paddingLeft: 20 }}
@@ -314,14 +269,14 @@ export default function ExploreScreen() {
                                 />
                             </View>
 
-                            {/* Recommended For You */}
+                            {/* Goal-specific programs */}
                             <View style={{ marginBottom: 16 }}>
                                 <Text style={{ color: theme.colors.text, fontSize: 18, fontFamily: FontFamily.display, paddingHorizontal: 20, marginBottom: 14 }}>
-                                    Recomendados para Você
+                                    Definição e perda de peso
                                 </Text>
                                 <FlatList
                                     horizontal
-                                    data={PROGRAMS.slice(3)}
+                                    data={filteredPrograms.filter(program => program.request.goal !== 'hypertrophy')}
                                     renderItem={renderProgramCard}
                                     keyExtractor={item => item.id}
                                     contentContainerStyle={{ paddingLeft: 20 }}
@@ -355,9 +310,10 @@ export default function ExploreScreen() {
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={{ paddingBottom: 66 + Math.max(insets.bottom, 10) + 44 }}
                 >
-                    <Text style={{ color: theme.colors.text, fontSize: 18, fontFamily: FontFamily.display, marginBottom: 14 }}>
-                        Nossos Treinadores
+                    <Text style={{ color: theme.colors.text, fontSize: 19, fontFamily: FontFamily.display, marginBottom: 4 }}>
+                        Guias de treino
                     </Text>
+                    <Text style={{ color: theme.colors.textSecondary, fontSize: 12, lineHeight: 18, marginBottom: 18 }}>Escolha um tema, leia orientações práticas e encontre programas relacionados. Os perfis abaixo são editoriais, não treinadores disponíveis para atendimento.</Text>
 
                     {filteredCoaches.length > 0 ? (
                         filteredCoaches.map((coach) => (
@@ -366,16 +322,14 @@ export default function ExploreScreen() {
                                 activeOpacity={0.85}
                                 onPress={() => setSelectedCoach(coach)}
                                 style={{
-                                    backgroundColor: theme.colors.card,
-                                    borderColor: theme.colors.cardBorder,
-                                    borderWidth: 1,
+                                    backgroundColor: theme.colors.backgroundTertiary,
                                     borderRadius: Radius.lg,
                                     overflow: 'hidden',
-                                    marginBottom: 14,
+                                    marginBottom: 10,
                                 }}
                             >
                                 <View style={{ flexDirection: 'row', alignItems: 'center', padding: 14 }}>
-                                    <View style={{ width: 72, height: 72, borderRadius: Radius.md, overflow: 'hidden', marginRight: 14, backgroundColor: theme.colors.backgroundTertiary }}>
+                                    <View style={{ width: 56, height: 56, borderRadius: Radius.md, overflow: 'hidden', marginRight: 14, backgroundColor: theme.colors.background }}>
                                         <Image
                                             source={coach.image}
                                             style={{ width: '100%', height: '100%' }}
@@ -388,23 +342,9 @@ export default function ExploreScreen() {
                                                 <Text style={{ color: theme.colors.text, fontSize: 15, fontFamily: FontFamily.displaySemiBold }}>{coach.name}</Text>
                                                 <Text style={{ color: theme.colors.primary, fontSize: 10, fontFamily: FontFamily.sansBold, textTransform: 'uppercase', letterSpacing: 0.5 }}>{coach.role}</Text>
                                             </View>
-                                            <View
-                                                style={{
-                                                    backgroundColor: theme.mode === 'dark' ? theme.colors.warning + '18' : '#FFF7E6',
-                                                    borderColor: theme.mode === 'dark' ? theme.colors.warning + '35' : theme.colors.warning + '30',
-                                                    borderWidth: 1,
-                                                    flexDirection: 'row',
-                                                    alignItems: 'center',
-                                                    paddingHorizontal: 6,
-                                                    paddingVertical: 2,
-                                                    borderRadius: Radius.sm,
-                                                }}
-                                            >
-                                                <Ionicons name="star" size={11} color={theme.colors.warning} />
-                                                <Text style={{ color: theme.mode === 'dark' ? theme.colors.warning : '#7C4A03', fontSize: 10, fontFamily: FontFamily.sansBold, marginLeft: 2 }}>{coach.rating}</Text>
-                                            </View>
+                                            <Ionicons name="chevron-forward" size={18} color={theme.colors.textMuted} />
                                         </View>
-                                        <Text style={{ color: theme.colors.textSecondary, fontSize: 11, fontFamily: FontFamily.sans, marginTop: 2, fontStyle: 'italic' }}>“{coach.specialty}”</Text>
+                                        <Text style={{ color: theme.colors.textSecondary, fontSize: 11, fontFamily: FontFamily.sans, marginTop: 2 }}>{coach.specialty} · {coach.lessons.length} guias</Text>
                                         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4, marginTop: 6 }}>
                                             {coach.tags.slice(0, 2).map((tag, idx) => (
                                                 <View key={idx} style={{ backgroundColor: theme.colors.backgroundTertiary, paddingHorizontal: 6, paddingVertical: 2, borderRadius: Radius.sm }}>
@@ -445,8 +385,8 @@ export default function ExploreScreen() {
                     >
                         {selectedCoach && (
                             <ScrollView showsVerticalScrollIndicator={false}>
-                                {/* Header with Image */}
-                                <View style={{ height: 260, position: 'relative' }}>
+                                {/* Compact editorial profile header */}
+                                <View style={{ height: 155, position: 'relative' }}>
                                     <Image
                                         source={selectedCoach.image}
                                         style={{ width: '100%', height: '100%' }}
@@ -471,21 +411,7 @@ export default function ExploreScreen() {
 
                                 {/* Content */}
                                 <View style={{ padding: 20, paddingBottom: Math.max(insets.bottom, 20) + 20 }}>
-                                    {/* Stats Row */}
-                                    <View style={{ borderBottomColor: theme.colors.border, borderBottomWidth: 1, flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 14, marginBottom: 20 }}>
-                                        <View style={{ alignItems: 'center' }}>
-                                            <Text style={{ color: theme.colors.text, fontSize: 18, fontFamily: FontFamily.display }}>{selectedCoach.rating}</Text>
-                                            <Text style={{ color: theme.colors.textMuted, fontSize: 9, fontFamily: FontFamily.caption, textTransform: 'uppercase', letterSpacing: 0.5 }}>Rating</Text>
-                                        </View>
-                                        <View style={{ alignItems: 'center' }}>
-                                            <Text style={{ color: theme.colors.text, fontSize: 18, fontFamily: FontFamily.display }}>{selectedCoach.students}</Text>
-                                            <Text style={{ color: theme.colors.textMuted, fontSize: 9, fontFamily: FontFamily.caption, textTransform: 'uppercase', letterSpacing: 0.5 }}>Alunos</Text>
-                                        </View>
-                                        <View style={{ alignItems: 'center' }}>
-                                            <Text style={{ color: theme.colors.text, fontSize: 18, fontFamily: FontFamily.display }}>{selectedCoach.lessons.length}</Text>
-                                            <Text style={{ color: theme.colors.textMuted, fontSize: 9, fontFamily: FontFamily.caption, textTransform: 'uppercase', letterSpacing: 0.5 }}>Aulas</Text>
-                                        </View>
-                                    </View>
+                                        <Text style={{ color: theme.colors.textSecondary, fontSize: 12, marginBottom: 20 }}>{selectedCoach.lessons.length} guias de leitura disponíveis · perfil editorial</Text>
 
                                     {/* Specialty & Bio */}
                                     <View style={{ marginBottom: 24 }}>
@@ -497,7 +423,7 @@ export default function ExploreScreen() {
                                     {/* Lessons/Classes */}
                                     <View style={{ marginBottom: 24 }}>
                                         <Text style={{ color: theme.colors.text, fontSize: 16, fontFamily: FontFamily.display, marginBottom: 12 }}>
-                                            Aulas & Guias
+                                            Guias práticos
                                         </Text>
 
                                         {selectedCoach.lessons.map((lesson) => (
@@ -506,9 +432,7 @@ export default function ExploreScreen() {
                                                 activeOpacity={0.8}
                                                 onPress={() => handleOpenLesson(lesson)}
                                                 style={{
-                                                    backgroundColor: theme.colors.card,
-                                                    borderColor: theme.colors.cardBorder,
-                                                    borderWidth: 1,
+                                                    backgroundColor: theme.colors.backgroundTertiary,
                                                     borderRadius: Radius.md,
                                                     padding: 12,
                                                     marginBottom: 8,
@@ -519,7 +443,7 @@ export default function ExploreScreen() {
                                             >
                                                 <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
                                                     <View style={{ width: 34, height: 34, borderRadius: Radius.sm, backgroundColor: theme.colors.backgroundTertiary, alignItems: 'center', justifyContent: 'center', marginRight: 10 }}>
-                                                        <Ionicons name="play" size={14} color={theme.colors.primary} />
+                                                        <Ionicons name="book-outline" size={16} color={theme.colors.primary} />
                                                     </View>
                                                     <View style={{ flex: 1 }}>
                                                         <Text style={{ color: theme.colors.text, fontSize: 13, fontFamily: FontFamily.sansSemiBold }} numberOfLines={1}>{lesson.title}</Text>
@@ -530,6 +454,15 @@ export default function ExploreScreen() {
                                             </TouchableOpacity>
                                         ))}
                                     </View>
+                                    {selectedCoach.recommendedPrograms && <View style={{ marginBottom: 16 }}>
+                                        <Text style={{ color: theme.colors.text, fontSize: 16, fontFamily: FontFamily.display, marginBottom: 10 }}>Programas relacionados</Text>
+                                        {PROGRAMS.filter(program => selectedCoach.recommendedPrograms?.includes(program.id)).map(program =>
+                                            <TouchableOpacity key={program.id} onPress={() => handleOpenPreview(program)} style={{ flexDirection: 'row', alignItems: 'center', minHeight: 54, borderBottomWidth: 1, borderBottomColor: theme.colors.divider }}>
+                                                <Ionicons name={program.icon} size={18} color={program.accent} />
+                                                <Text style={{ flex: 1, color: theme.colors.text, fontSize: 13, fontWeight: '700', marginLeft: 10 }}>{program.title}</Text>
+                                                <Ionicons name="chevron-forward" size={16} color={theme.colors.textMuted} />
+                                            </TouchableOpacity>)}
+                                    </View>}
                                 </View>
                             </ScrollView>
                         )}

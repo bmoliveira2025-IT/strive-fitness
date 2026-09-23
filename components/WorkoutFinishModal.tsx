@@ -3,7 +3,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import * as ImagePicker from '../services/imagePicker';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useMemo, useState } from 'react';
-import { Image, Modal, ScrollView, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Image, Modal, Platform, ScrollView, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Animated, { FadeInDown, ZoomIn } from 'react-native-reanimated';
 import { useTheme } from '../context/ThemeContext';
 import { PostWorkoutSurvey, useWorkoutHistory } from '../context/WorkoutHistoryContext';
@@ -76,26 +76,33 @@ export function WorkoutFinishModal({
         return currentStreak;
     }, [history, visible]);
 
-    const handlePickImage = async () => {
+    const handlePickImage = async (source: 'camera' | 'library') => {
         try {
-            const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
-            if (permissionResult.granted === false) {
-                alert("É necessário permitir o acesso à câmera para registrar seu treino!");
-                return;
+            if (Platform.OS !== 'web') {
+                const permission = source === 'camera'
+                    ? await ImagePicker.requestCameraPermissionsAsync()
+                    : await ImagePicker.requestMediaLibraryPermissionsAsync();
+                if (!permission.granted) {
+                    Alert.alert('Permissão necessária', 'Permita o acesso à câmera ou às fotos para registrar este treino.');
+                    return;
+                }
             }
-
-            const result = await ImagePicker.launchCameraAsync({
-                mediaTypes: ImagePicker.MediaTypeOptions.Images,
-                allowsEditing: true,
-                aspect: [4, 5],
+            const options = {
+                mediaTypes: ['images'] as ['images'],
+                allowsEditing: false,
                 quality: 0.8,
-            });
+            };
+            // Web library selection must stay in the original click gesture.
+            const result = source === 'camera' && Platform.OS !== 'web'
+                ? await ImagePicker.launchCameraAsync(options)
+                : await ImagePicker.launchImageLibraryAsync(options);
 
-            if (!result.canceled && result.assets[0].uri) {
+            if (!result.canceled && result.assets[0]?.uri) {
                 setMedia([result.assets[0].uri]);
             }
         } catch (error) {
-            console.log("Error launching camera:", error);
+            console.warn('Error selecting workout photo:', error);
+            Alert.alert('Não foi possível abrir as fotos', 'Tente novamente ou confira as permissões do aplicativo.');
         }
     };
 
@@ -261,28 +268,15 @@ export function WorkoutFinishModal({
                                     <Text className="text-white font-bold text-center">Foto Registrada</Text>
                                 </View>
                             </View>
-                        ) : (
-                            <TouchableOpacity
-                                onPress={handlePickImage}
-                                style={{ backgroundColor: theme.colors.card, borderRadius: 20 }}
-                                className="p-6 border border-zinc-500/10 shadow-sm items-center justify-center border-dashed border-2"
-                            >
-                                <View style={{ borderRadius: 32, overflow: 'hidden', marginBottom: 16, shadowColor: Palette.ink, shadowOpacity: 0.1, shadowRadius: 8, elevation: 5 }}>
-                                    <LinearGradient
-                                        colors={['#1E3A8A', theme.colors.background]}
-                                        start={{ x: 0, y: 0 }}
-                                        end={{ x: 1, y: 1 }}
-                                        style={{ width: 64, height: 64, alignItems: 'center', justifyContent: 'center' }}
-                                    >
-                                        <Ionicons name="camera" size={32} color="white" />
-                                    </LinearGradient>
-                                </View>
-                                <Text style={{ color: theme.colors.text }} className="font-bold text-lg mb-1">Tirar Foto do Treino</Text>
-                                <Text style={{ color: theme.colors.textMuted }} className="text-xs text-center px-8">
-                                    Registre seu shape ou o equipamento usado para o feed.
-                                </Text>
+                        ) : null}
+                        <View style={{ flexDirection: 'row', gap: 10, marginTop: 10 }}>
+                            {Platform.OS !== 'web' && <TouchableOpacity onPress={() => handlePickImage('camera')} style={{ flex: 1, minHeight: 46, borderRadius: 14, backgroundColor: theme.colors.backgroundTertiary, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 7 }}>
+                                <Ionicons name="camera-outline" size={19} color={theme.colors.primary} /><Text style={{ color: theme.colors.text, fontSize: 12, fontWeight: '700' }}>Câmera</Text>
+                            </TouchableOpacity>}
+                            <TouchableOpacity onPress={() => handlePickImage('library')} style={{ flex: 1, minHeight: 46, borderRadius: 14, backgroundColor: theme.colors.backgroundTertiary, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 7 }}>
+                                <Ionicons name="images-outline" size={19} color={theme.colors.primary} /><Text style={{ color: theme.colors.text, fontSize: 12, fontWeight: '700' }}>{media.length ? 'Trocar foto' : 'Escolher foto'}</Text>
                             </TouchableOpacity>
-                        )}
+                        </View>
                     </Animated.View>
 
                     {/* Survey Section */}

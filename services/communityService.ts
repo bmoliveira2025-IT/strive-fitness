@@ -1,5 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../lib/supabase';
+import { File } from 'expo-file-system';
+import { Platform } from 'react-native';
 
 export interface CommunityComment {
     id: string;
@@ -25,8 +27,11 @@ export interface CommunityPost {
         calories?: number;
         exercisesCount?: number;
         volumeKg?: number;
+        exerciseNames?: string[];
+        muscleGroup?: string;
     };
     imageUrl?: string;
+    localOnly?: boolean;
     likesCount: number;
     dislikesCount?: number;
     commentsCount: number;
@@ -381,6 +386,81 @@ export const generateDailySimulatedPosts = (): CommunityPost[] => {
 };
 
 export const CommunityService = {
+    removeOwnPostImage: async (imageUrl: string, userId: string): Promise<void> => {
+        const marker = '/storage/v1/object/public/community-posts/';
+        const path = imageUrl.split(marker)[1]?.split('?')[0];
+        if (!path || !decodeURIComponent(path).startsWith(`${userId}/`)) return;
+        const { error } = await supabase.storage.from('community-posts').remove([decodeURIComponent(path)]);
+        if (error) throw error;
+    },
+    getPostsPage: async (category: string | undefined, page: number, pageSize = 12): Promise<CommunityPost[]> => {
+        const start = Math.max(0, page) * pageSize;
+        const likedIds = await CommunityService.getMyLikedPostIds();
+        try {
+            let query = supabase.from('community_posts').select('*')
+                .eq('is_fictitious', false).order('created_at', { ascending: false })
+                .range(start, start + pageSize - 1);
+            if (category && category !== 'Todos') query = query.eq('category', category);
+            const { data, error } = await query;
+            if (error) throw error;
+            const pagePosts = (data || []).map((item: any): CommunityPost => ({
+                id: item.id, userId: item.user_id, userName: item.user_name || 'Atleta Strive',
+                userAvatar: item.user_avatar || undefined, userBadge: item.user_badge || undefined,
+                content: item.content || '', category: item.category || 'Geral',
+                workoutTag: item.workout_tag || undefined, workoutStats: item.workout_stats || undefined,
+                imageUrl: item.image_url || undefined, likesCount: item.likes_count || 0,
+                commentsCount: item.comments_count || 0, isFictitious: false,
+                createdAt: item.created_at, isLikedByMe: likedIds.includes(item.id),
+            }));
+            if (start === 0) {
+                const raw = await AsyncStorage.getItem(COMMUNITY_POSTS_CACHE_KEY).catch(() => null);
+                const cached: CommunityPost[] = raw ? JSON.parse(raw) : [];
+                const localOnly = cached.filter(post => post.id.startsWith('post-') && !post.isFictitious &&
+                    (!category || category === 'Todos' || post.category === category));
+                const seen = new Set(localOnly.map(post => post.id));
+                const merged = [...localOnly, ...pagePosts.filter(post => !seen.has(post.id))]
+                    .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt));
+                await AsyncStorage.setItem(COMMUNITY_POSTS_CACHE_KEY, JSON.stringify(merged)).catch(() => {});
+                return merged;
+            }
+            return pagePosts;
+        } catch {
+            const raw = await AsyncStorage.getItem(COMMUNITY_POSTS_CACHE_KEY).catch(() => null);
+            const cached: CommunityPost[] = raw ? JSON.parse(raw) : [];
+            return cached.filter(post => !post.isFictitious && (!category || category === 'Todos' || post.category === category))
+                .slice(start, start + pageSize);
+        }
+    },
+    uploadPostImage: async (uri: string, userId: string, mimeType?: string): Promise<string> => {
+        const bytes = Platform.OS === 'web' ? await (await fetch(uri)).arrayBuffer() : await new File(uri).arrayBuffer();
+        if (bytes.byteLength > 5 * 1024 * 1024) throw new Error('A foto deve ter no máximo 5 MB.');
+        const inferred = mimeType || (uri.toLowerCase().split('?')[0].endsWith('.png') ? 'image/png' : uri.toLowerCase().split('?')[0].endsWith('.webp') ? 'image/webp' : 'image/jpeg');
+        const extension = inferred === 'image/png' ? 'png' : inferred === 'image/webp' ? 'webp' : 'jpg';
+        if (!['image/jpeg', 'image/png', 'image/webp'].includes(inferred)) throw new Error('Escolha uma foto JPEG, PNG ou WebP.');
+        const path = `${userId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${extension}`;
+        const { error } = await supabase.storage.from('community-posts').upload(path, bytes, { contentType: inferred, upsert: false });
+        if (error) throw error;
+        return supabase.storage.from('community-posts').getPublicUrl(path).data.publicUrl;
+    },
+    // Lightweight home preview: real posts only, without generated personas.
+    getRecentRealPosts: async (limit = 2): Promise<CommunityPost[]> => {
+        const take = Math.max(1, Math.min(limit, 5));
+        try {
+            const { data, error } = await supabase.from('community_posts').select('*')
+                .order('created_at', { ascending: false }).limit(take + 5);
+            if (!error && data) return data.filter((item: any) => !item.is_fictitious).slice(0, take).map((item: any) => ({
+                id: item.id, userId: item.user_id, userName: item.user_name || 'Atleta Strive',
+                content: item.content || '', category: item.category || 'Geral',
+                likesCount: item.likes_count || 0, commentsCount: item.comments_count || 0,
+                createdAt: item.created_at, isFictitious: false,
+            }));
+        } catch { /* Use only real cached posts when offline. */ }
+        try {
+            const cached = await AsyncStorage.getItem(COMMUNITY_POSTS_CACHE_KEY);
+            return cached ? (JSON.parse(cached) as CommunityPost[]).filter(post => !post.isFictitious && !post.id.startsWith('daily-'))
+                .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt)).slice(0, take) : [];
+        } catch { return []; }
+    },
     // Get list of my liked post IDs
     getMyLikedPostIds: async (): Promise<string[]> => {
         try {
@@ -516,6 +596,9 @@ export const CommunityService = {
         workoutTag?: string;
         workoutStats?: CommunityPost['workoutStats'];
         userBadge?: string;
+        imageUrl?: string;
+        localOnly?: boolean;
+        requireRemote?: boolean;
     }): Promise<CommunityPost> => {
         const newPost: CommunityPost = {
             id: 'post-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9),
@@ -527,6 +610,8 @@ export const CommunityService = {
             category: postData.category || 'Geral',
             workoutTag: postData.workoutTag,
             workoutStats: postData.workoutStats,
+            imageUrl: postData.imageUrl,
+            localOnly: !!postData.localOnly,
             likesCount: 0,
             commentsCount: 0,
             isLikedByMe: false,
@@ -535,7 +620,7 @@ export const CommunityService = {
         };
 
         // Try to save to Supabase
-        try {
+        if (!postData.localOnly) try {
             const { data, error } = await supabase
                 .from('community_posts')
                 .insert({
@@ -547,6 +632,7 @@ export const CommunityService = {
                     category: newPost.category,
                     workout_tag: newPost.workoutTag,
                     workout_stats: newPost.workoutStats,
+                    image_url: newPost.imageUrl,
                     likes_count: 0,
                     comments_count: 0,
                     is_fictitious: false,
@@ -554,10 +640,11 @@ export const CommunityService = {
                 .select()
                 .single();
 
-            if (!error && data) {
-                newPost.id = data.id;
-            }
+            if (error) throw error;
+            if (data) newPost.id = data.id;
         } catch (e) {
+            if (postData.requireRemote) throw e;
+            newPost.localOnly = true;
             console.warn('Supabase createPost error (saving locally):', e);
         }
 
@@ -572,6 +659,44 @@ export const CommunityService = {
         }
 
         return newPost;
+    },
+
+    updatePost: async (post: CommunityPost, userId: string, content: string, imageUrl: string | null): Promise<CommunityPost> => {
+        if (post.userId !== userId) throw new Error('Você só pode editar suas próprias publicações.');
+        const updated = { ...post, content, imageUrl: imageUrl || undefined };
+        if (!post.localOnly && !post.id.startsWith('post-')) {
+            const { data: auth } = await supabase.auth.getUser();
+            if (auth.user?.id !== userId) throw new Error('Entre na sua conta para editar esta publicação.');
+            const { data, error } = await supabase.rpc('edit_own_community_post', {
+                p_id: post.id, p_content: content, p_image_url: imageUrl,
+            });
+            if (error) throw error;
+            if (data !== post.id) throw new Error('A publicação não foi alterada no servidor.');
+        }
+        const raw = await AsyncStorage.getItem(COMMUNITY_POSTS_CACHE_KEY).catch(() => null);
+        const cached: CommunityPost[] = raw ? JSON.parse(raw) : [];
+        await AsyncStorage.setItem(COMMUNITY_POSTS_CACHE_KEY, JSON.stringify(cached.map(item => item.id === post.id ? updated : item)));
+        if (post.imageUrl && post.imageUrl !== imageUrl && !post.localOnly) {
+            CommunityService.removeOwnPostImage(post.imageUrl, userId).catch(error => console.warn('Old post image cleanup failed:', error));
+        }
+        return updated;
+    },
+
+    deletePost: async (post: CommunityPost, userId: string): Promise<void> => {
+        if (post.userId !== userId) throw new Error('Você só pode excluir suas próprias publicações.');
+        if (!post.localOnly && !post.id.startsWith('post-')) {
+            const { data: auth } = await supabase.auth.getUser();
+            if (auth.user?.id !== userId) throw new Error('Entre na sua conta para excluir esta publicação.');
+            const { data, error } = await supabase.rpc('delete_own_community_post', { p_id: post.id });
+            if (error) throw error;
+            if (data !== post.id) throw new Error('A publicação não foi excluída no servidor.');
+        }
+        const raw = await AsyncStorage.getItem(COMMUNITY_POSTS_CACHE_KEY).catch(() => null);
+        const cached: CommunityPost[] = raw ? JSON.parse(raw) : [];
+        await AsyncStorage.setItem(COMMUNITY_POSTS_CACHE_KEY, JSON.stringify(cached.filter(item => item.id !== post.id)));
+        if (post.imageUrl && !post.localOnly) {
+            CommunityService.removeOwnPostImage(post.imageUrl, userId).catch(error => console.warn('Deleted post image cleanup failed:', error));
+        }
     },
 
     // Toggle like on a post

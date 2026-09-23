@@ -9,7 +9,7 @@ import { useMuscleTracker } from '../../context/MuscleTrackerContext';
 import { useSavedWorkouts } from '../../context/SavedWorkoutsContext';
 import { useTheme } from '../../context/ThemeContext';
 import { useWorkoutHistory } from '../../context/WorkoutHistoryContext';
-import { clearAIPlansCache, generateWorkoutPlans } from '../../services/aiWorkoutService';
+import { generatePersonalizedWorkout } from '../../services/aiWorkoutService';
 import { recommendationEngine } from '../../utils/recommendationEngine';
 import { ActivityIndicator } from 'react-native';
 
@@ -163,27 +163,15 @@ export function SmartCoach() {
 
         setIsGeneratingAI(true);
         try {
-            const focusMuscles = focusNames.split(' + ');
-            // Clear cache before generating
-            await clearAIPlansCache();
-            const result = await generateWorkoutPlans(focusNames, focusMuscles);
-
-            if (result && result.length > 0) {
-                let workout = result[0];
-                const searchTerms = focusNames.toLowerCase().split(' + ');
-
-                const bestMatch = result.find(p =>
-                    p.exercises.length > 0 &&
-                    searchTerms.some(term => p.name.toLowerCase().includes(term))
-                );
-
-                if (bestMatch) workout = bestMatch;
-
-                if (!workout.exercises || workout.exercises.length === 0) {
-                    setIsGeneratingAI(false);
-                    return;
-                }
-
+            const lower = focusNames.toLowerCase();
+            const focus = /coxa|quadr|gl[uú]te|panturr|isqui/.test(lower) ? 'legs'
+                : /peito|ombro|tr[ií]ceps/.test(lower) ? 'push'
+                : /costas|b[ií]ceps/.test(lower) ? 'pull' : 'full_body';
+            const workout = await generatePersonalizedWorkout({
+                focus, goal: 'hypertrophy', level: 'intermediate', gender: 'unspecified',
+                equipment: [], glute_priority: false,
+            });
+            if (workout.exercises.length > 0) {
                 saveWorkout(focusNames, workout.exercises, 'IA', true);
                 router.push({ pathname: '/workout', params: { _t: Date.now().toString(), returnTo: '/' } });
             }

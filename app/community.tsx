@@ -1,8 +1,5 @@
-import Palette from '../constants/palette.json';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Image } from 'expo-image';
-import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
@@ -30,14 +27,18 @@ import {
     CommunityComment,
     CommunityPost,
     CommunityService,
-    FICTITIOUS_PERSONAS,
 } from '../services/communityService';
 import { gamificationService } from '../services/gamificationService';
 import { useUserStore } from '../store/useUserStore';
+import { tabScrollBottomPadding } from '../constants/tabLayout';
+import { useRouter } from 'expo-router';
+import * as ImagePicker from '../services/imagePicker';
+import { MUSCLE_IMAGES } from '../constants/muscleImages';
 
 const CATEGORIES = [
     { key: 'Todos', label: 'Todos' },
     { key: 'Treinos', label: '🔥 Treinos' },
+    { key: 'Geral', label: '💬 Conversas' },
     { key: 'Dicas & Séries', label: '💡 Dicas & Séries' },
     { key: 'Mobilidade', label: '🤸 Mobilidade' },
     { key: 'Motivação', label: '⚡ Motivação' },
@@ -82,16 +83,44 @@ function formatRelativeTime(dateString: string): string {
     }
 }
 
-export default function CommunityScreen() {
+function PostPhoto({ uri }: { uri: string }) {
     const { theme } = useTheme();
+    const [width, setWidth] = useState(0);
+    const [ratio, setRatio] = useState(1);
+    const height = width ? Math.min(520, Math.max(180, width / ratio)) : 280;
+
+    return <View onLayout={event => {
+        const next = event.nativeEvent.layout.width;
+        if (Math.abs(next - width) > 1) setWidth(next);
+    }} style={{ width: '100%', borderRadius: 14, overflow: 'hidden', backgroundColor: theme.colors.backgroundTertiary, marginBottom: 14 }}>
+        <Image source={{ uri }} contentFit="contain" cachePolicy="memory-disk"
+            onLoad={event => {
+                const { width: imageWidth, height: imageHeight } = event.source;
+                if (imageWidth > 0 && imageHeight > 0) {
+                    const next = imageWidth / imageHeight;
+                    if (Math.abs(next - ratio) > 0.01) setRatio(next);
+                }
+            }}
+            style={{ width: '100%', height }} accessibilityLabel="Foto completa da publicação" />
+    </View>;
+}
+
+export default function CommunityScreen() {
     const router = useRouter();
+    const { theme } = useTheme();
     const insets = useSafeAreaInsets();
-    const { session, isOfflineGuest } = useAuth();
+    const { session } = useAuth();
     const { userName, profile } = useUserStore();
     const toast = useToast();
 
     const [selectedCategory, setSelectedCategory] = useState<string>('Todos');
     const [posts, setPosts] = useState<CommunityPost[]>([]);
+    const [page, setPage] = useState(0);
+    const [hasMore, setHasMore] = useState(true);
+    const [loadingMore, setLoadingMore] = useState(false);
+    const [postImageUri, setPostImageUri] = useState<string | null>(null);
+    const [postImageMimeType, setPostImageMimeType] = useState<string | undefined>();
+    const [postError, setPostError] = useState('');
     const [loading, setLoading] = useState<boolean>(true);
     const [refreshing, setRefreshing] = useState<boolean>(false);
 
@@ -102,6 +131,16 @@ export default function CommunityScreen() {
     const [selectedWorkoutTag, setSelectedWorkoutTag] = useState<string>('');
     const [customWorkoutTag, setCustomWorkoutTag] = useState('');
     const [isPublishing, setIsPublishing] = useState(false);
+    const [postMenuId, setPostMenuId] = useState<string | null>(null);
+    const [editingPost, setEditingPost] = useState<CommunityPost | null>(null);
+    const [editContent, setEditContent] = useState('');
+    const [editImageUri, setEditImageUri] = useState<string | null>(null);
+    const [editImageMimeType, setEditImageMimeType] = useState<string | undefined>();
+    const [removeEditImage, setRemoveEditImage] = useState(false);
+    const [editError, setEditError] = useState('');
+    const [editSaving, setEditSaving] = useState(false);
+    const [deleteTarget, setDeleteTarget] = useState<CommunityPost | null>(null);
+    const [deleting, setDeleting] = useState(false);
 
     // Modal state for comments
     const [activeCommentsPost, setActiveCommentsPost] = useState<CommunityPost | null>(null);
@@ -114,10 +153,10 @@ export default function CommunityScreen() {
     const loadPosts = useCallback(async (isRefresh = false) => {
         if (!isRefresh) setLoading(true);
         try {
-            const data = await CommunityService.getPosts(
-                selectedCategory === 'Todos' ? undefined : selectedCategory
-            );
+            const data = await CommunityService.getPostsPage(selectedCategory, 0);
             setPosts(data);
+            setPage(0);
+            setHasMore(data.length === 12);
         } catch (err) {
             console.warn('Error fetching community posts:', err);
         } finally {
@@ -125,6 +164,41 @@ export default function CommunityScreen() {
             setRefreshing(false);
         }
     }, [selectedCategory]);
+
+    const loadMorePosts = useCallback(async () => {
+        if (loading || loadingMore || !hasMore) return;
+        setLoadingMore(true);
+        try {
+            const next = page + 1;
+            const batch = await CommunityService.getPostsPage(selectedCategory, next);
+            setPosts(current => {
+                const seen = new Set(current.map(post => post.id));
+                return [...current, ...batch.filter(post => !seen.has(post.id))];
+            });
+            setPage(next);
+            setHasMore(batch.length === 12);
+        } finally { setLoadingMore(false); }
+    }, [hasMore, loading, loadingMore, page, selectedCategory]);
+
+    const pickPostPhoto = async () => {
+        setPostError('');
+        try {
+            // On web, open the picker directly in the click gesture. Awaiting permissions
+            // first loses browser user activation and the file chooser never opens.
+            if (Platform.OS !== 'web') {
+                const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+                if (!permission.granted) { Alert.alert('Permissão necessária', 'Permita o acesso às fotos para anexar uma imagem.'); return; }
+            }
+            const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], allowsEditing: false, quality: 0.8 });
+            if (!result.canceled && result.assets[0]?.uri) {
+                setPostImageUri(result.assets[0].uri);
+                setPostImageMimeType(result.assets[0].mimeType);
+            }
+        } catch (error) {
+            console.warn('Photo picker failed:', error);
+            Alert.alert('Não foi possível abrir as fotos', 'Tente novamente ou confira as permissões do aplicativo.');
+        }
+    };
 
     useEffect(() => {
         loadPosts();
@@ -219,8 +293,8 @@ export default function CommunityScreen() {
 
     // Publish Post
     const handlePublishPost = async () => {
-        if (!postContent.trim()) {
-            Alert.alert('Atenção', 'Escreva algo para compartilhar com a comunidade!');
+        if (!postContent.trim() && !postImageUri) {
+            Alert.alert('Atenção', 'Escreva uma mensagem ou escolha uma foto.');
             return;
         }
 
@@ -230,37 +304,103 @@ export default function CommunityScreen() {
 
         const finalWorkoutTag = customWorkoutTag.trim() || selectedWorkoutTag || undefined;
 
+        if (postImageUri && !session?.user?.id) {
+            setPostError('Entre na sua conta para enviar a foto à comunidade. Sua mensagem e a foto selecionada permanecem aqui.');
+            return;
+        }
+
         setIsPublishing(true);
+        setPostError('');
         try {
+            const imageUrl = postImageUri ? await CommunityService.uploadPostImage(postImageUri, session!.user.id, postImageMimeType) : undefined;
             const created = await CommunityService.createPost({
                 userId: currentUserId,
                 userName: currentUserName,
                 userAvatar: currentUserAvatar,
-                content: postContent.trim(),
+                content: postContent.trim() || 'Compartilhando um momento do meu treino 📸',
+                imageUrl,
+                requireRemote: true,
                 category: postCategory,
                 workoutTag: finalWorkoutTag,
                 userBadge: 'Membro da Comunidade',
             });
 
             setPosts((prev) => [created, ...prev]);
+            setSelectedCategory('Todos');
             setIsCreateModalOpen(false);
             setPostContent('');
+            setPostImageUri(null);
+            setPostImageMimeType(undefined);
             setSelectedWorkoutTag('');
             setCustomWorkoutTag('');
             gamificationService.incrementCommunityPost();
             toast.success('Publicação compartilhada com sucesso! (+80 pts no ranking)');
         } catch (e) {
-            Alert.alert('Erro', 'Ocorreu um erro ao publicar seu post.');
+            const message = e instanceof Error ? e.message : String(e);
+            console.warn('Community photo/post publish failed:', e);
+            setPostError(/bucket not found|NoSuchBucket/i.test(message)
+                ? 'O armazenamento de fotos da comunidade ainda não foi configurado no servidor. Sua foto e mensagem continuam aqui; tente novamente após a atualização do servidor.'
+                : `Não foi possível publicar: ${message}. Seu rascunho foi preservado para tentar novamente.`);
         } finally {
             setIsPublishing(false);
         }
     };
 
+    const ownerId = session?.user?.id || profile?.id || 'local-user';
+    const openEditPost = (post: CommunityPost) => {
+        setPostMenuId(null);
+        setEditingPost(post);
+        setEditContent(post.content);
+        setEditImageUri(null);
+        setEditImageMimeType(undefined);
+        setRemoveEditImage(false);
+        setEditError('');
+    };
+    const pickEditPhoto = async () => {
+        try {
+            if (Platform.OS !== 'web') {
+                const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+                if (!permission.granted) { setEditError('Permita acesso às fotos nas configurações do aparelho.'); return; }
+            }
+            const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], allowsEditing: false, quality: 0.8 });
+            if (!result.canceled && result.assets[0]?.uri) {
+                setEditImageUri(result.assets[0].uri);
+                setEditImageMimeType(result.assets[0].mimeType);
+                setRemoveEditImage(false);
+                setEditError('');
+            }
+        } catch (error) { setEditError(error instanceof Error ? error.message : 'Não foi possível abrir a galeria.'); }
+    };
+    const saveEditedPost = async () => {
+        if (!editingPost || editSaving || !editContent.trim()) { setEditError('Escreva uma mensagem para a publicação.'); return; }
+        setEditSaving(true);
+        setEditError('');
+        try {
+            const imageUrl = editImageUri
+                ? await CommunityService.uploadPostImage(editImageUri, ownerId, editImageMimeType)
+                : removeEditImage ? null : editingPost.imageUrl || null;
+            const updated = await CommunityService.updatePost(editingPost, ownerId, editContent.trim(), imageUrl);
+            setPosts(current => current.map(post => post.id === updated.id ? updated : post));
+            setEditingPost(null);
+            toast.success('Publicação atualizada.');
+        } catch (error) { setEditError(error instanceof Error ? error.message : 'Não foi possível salvar a edição.'); }
+        finally { setEditSaving(false); }
+    };
+    const confirmDeletePost = async () => {
+        if (!deleteTarget || deleting) return;
+        setDeleting(true);
+        try {
+            await CommunityService.deletePost(deleteTarget, ownerId);
+            setPosts(current => current.filter(post => post.id !== deleteTarget.id));
+            setDeleteTarget(null);
+            toast.success('Publicação excluída.');
+        } catch (error) { setEditError(error instanceof Error ? error.message : 'Não foi possível excluir.'); }
+        finally { setDeleting(false); }
+    };
+
     // Render Post Card
     const renderPostItem = ({ item, index }: { item: CommunityPost; index: number }) => {
-        const isAuthorMe =
-            (session?.user?.id && item.userId === session.user.id) ||
-            (profile?.id && item.userId === profile.id);
+        const isAuthorMe = !item.isFictitious && item.userId === ownerId;
 
         const categoryBadgeColor =
             item.category === 'Treinos'
@@ -277,31 +417,16 @@ export default function CommunityScreen() {
 
         return (
             <Animated.View
-                entering={FadeInUp.delay(index * 60).duration(350)}
+                entering={FadeInUp.delay(Math.min(index, 5) * 40).duration(220)}
                 style={{
-                    backgroundColor: theme.mode === 'dark' ? '#12151C' : theme.colors.card,
+                    backgroundColor: theme.colors.backgroundTertiary,
                     borderRadius: Radius.lg,
-                    borderWidth: 1,
-                    borderColor:
-                        theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)',
                     marginHorizontal: 16,
                     marginBottom: 16,
                     overflow: 'hidden',
-                    shadowColor: Palette.ink,
-                    shadowOffset: { width: 0, height: 4 },
-                    shadowOpacity: theme.mode === 'dark' ? 0.1 : 0.05,
-                    shadowRadius: 8,
-                    elevation: 3,
                 }}
             >
-                <LinearGradient
-                    colors={
-                        theme.mode === 'dark'
-                            ? ['rgba(25, 29, 40, 0.7)', 'rgba(16, 18, 26, 0.95)']
-                            : ['rgba(250, 250, 252, 0.9)', 'rgba(255, 255, 255, 0.98)']
-                    }
-                    style={{ padding: 16 }}
-                >
+                <View style={{ padding: 16 }}>
                     {/* Author Header */}
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
                         <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
@@ -394,7 +519,8 @@ export default function CommunityScreen() {
                             </View>
                         </View>
 
-                        {/* Category Tag */}
+                        {/* Category and owner actions */}
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
                         <View
                             style={{
                                 backgroundColor: categoryBadgeColor + '18',
@@ -415,7 +541,15 @@ export default function CommunityScreen() {
                                 {item.category}
                             </Text>
                         </View>
+                        {isAuthorMe && <TouchableOpacity onPress={() => setPostMenuId(current => current === item.id ? null : item.id)} accessibilityLabel="Opções da publicação" style={{ width: 32, height: 32, alignItems: 'center', justifyContent: 'center' }}>
+                            <Ionicons name="ellipsis-horizontal" size={19} color={theme.colors.textSecondary} />
+                        </TouchableOpacity>}
+                        </View>
                     </View>
+                    {postMenuId === item.id && <View style={{ flexDirection: 'row', gap: 8, justifyContent: 'flex-end', marginBottom: 12 }}>
+                        <TouchableOpacity onPress={() => openEditPost(item)} style={{ flexDirection: 'row', gap: 5, alignItems: 'center', paddingHorizontal: 12, minHeight: 36, backgroundColor: theme.colors.backgroundTertiary, borderRadius: 11 }}><Ionicons name="create-outline" size={16} color={theme.colors.text} /><Text style={{ color: theme.colors.text, fontSize: 12, fontWeight: '700' }}>Editar</Text></TouchableOpacity>
+                        <TouchableOpacity onPress={() => { setPostMenuId(null); setEditError(''); setDeleteTarget(item); }} style={{ flexDirection: 'row', gap: 5, alignItems: 'center', paddingHorizontal: 12, minHeight: 36, backgroundColor: theme.colors.error + '18', borderRadius: 11 }}><Ionicons name="trash-outline" size={16} color={theme.colors.error} /><Text style={{ color: theme.colors.error, fontSize: 12, fontWeight: '700' }}>Excluir</Text></TouchableOpacity>
+                    </View>}
 
                     {/* Workout Attachment Tag */}
                     {item.workoutTag && (
@@ -497,6 +631,31 @@ export default function CommunityScreen() {
                     >
                         {item.content}
                     </Text>
+                    {item.workoutStats?.exerciseNames?.length ? (() => {
+                        const group = item.workoutStats?.muscleGroup || '';
+                        const anatomy = group === 'Quadris' ? MUSCLE_IMAGES['Glúteos']
+                            : MUSCLE_IMAGES[group as keyof typeof MUSCLE_IMAGES];
+                        return <View style={{ backgroundColor: theme.colors.backgroundTertiary, borderRadius: 16, overflow: 'hidden', marginBottom: 14 }}>
+                            <View style={{ flexDirection: 'row', minHeight: 126 }}>
+                                <View style={{ width: 108, backgroundColor: theme.colors.background, alignItems: 'center', justifyContent: 'center' }}>
+                                    {anatomy ? <Image source={anatomy} contentFit="contain" cachePolicy="memory-disk" style={{ width: '100%', height: '100%' }} />
+                                        : <Ionicons name="barbell-outline" size={35} color={theme.colors.primary} />}
+                                </View>
+                                <View style={{ flex: 1, padding: 12, justifyContent: 'center' }}>
+                                    <Text style={{ color: theme.colors.primary, fontSize: 10, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.6 }}>Treino concluído</Text>
+                                    <Text style={{ color: theme.colors.text, fontSize: 14, fontWeight: '700', marginTop: 3 }} numberOfLines={2}>{item.workoutTag || 'Minha sessão'}</Text>
+                                    <Text style={{ color: theme.colors.textSecondary, fontSize: 11, marginTop: 6 }}>{item.workoutStats?.durationMinutes || 0} min · {item.workoutStats?.exerciseNames?.length} exercícios</Text>
+                                    {group ? <Text style={{ color: theme.colors.textMuted, fontSize: 10, marginTop: 3 }}>Foco: {group}</Text> : null}
+                                </View>
+                            </View>
+                            <View style={{ paddingHorizontal: 13, paddingVertical: 11, borderTopWidth: 1, borderTopColor: theme.colors.divider }}>
+                                <Text style={{ color: theme.colors.textSecondary, fontSize: 11, fontWeight: '700', marginBottom: 5 }}>EXERCÍCIOS REALIZADOS</Text>
+                                <Text style={{ color: theme.colors.text, fontSize: 12, lineHeight: 19 }}>{item.workoutStats?.exerciseNames?.join(' · ')}</Text>
+                            </View>
+                        </View>;
+                    })() : null}
+                    {item.imageUrl ? <PostPhoto uri={item.imageUrl} /> : null}
+                    {item.localOnly && <Text style={{ color: theme.colors.warning, fontSize: 11, marginBottom: 10 }}>Salvo neste aparelho · não enviado à comunidade</Text>}
 
                     {/* Actions Bar */}
                     <View
@@ -568,7 +727,7 @@ export default function CommunityScreen() {
                             </Text>
                         </TouchableOpacity>
                     </View>
-                </LinearGradient>
+                </View>
             </Animated.View>
         );
     };
@@ -591,24 +750,6 @@ export default function CommunityScreen() {
             >
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16 }}>
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <TouchableOpacity
-                            onPress={() => router.back()}
-                            activeOpacity={0.7}
-                            style={{
-                                backgroundColor: theme.colors.card,
-                                width: 40,
-                                height: 40,
-                                borderRadius: 12,
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                borderColor: theme.colors.cardBorder,
-                                borderWidth: 1,
-                                marginRight: 12,
-                            }}
-                        >
-                            <Ionicons name="chevron-back" size={22} color={theme.colors.text} />
-                        </TouchableOpacity>
-
                         <View>
                             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                                 <Text
@@ -638,7 +779,7 @@ export default function CommunityScreen() {
                                     fontSize: 11,
                                 }}
                             >
-                                {FICTITIOUS_PERSONAS.length + 1} atletas ativos diariamente
+                                Treinos, dúvidas e conquistas em um só lugar
                             </Text>
                         </View>
                     </View>
@@ -742,9 +883,15 @@ export default function CommunityScreen() {
             ) : (
                 <FlatList
                     data={posts}
+                    onEndReached={loadMorePosts}
+                    onEndReachedThreshold={0.5}
+                    initialNumToRender={6}
+                    maxToRenderPerBatch={6}
+                    windowSize={5}
+                    ListFooterComponent={loadingMore ? <ActivityIndicator color={theme.colors.primary} style={{ marginVertical: 16 }} /> : null}
                     keyExtractor={(item) => item.id}
                     renderItem={renderPostItem}
-                    contentContainerStyle={{ paddingTop: 16, paddingBottom: insets.bottom + 60 }}
+                    contentContainerStyle={{ paddingTop: 12, paddingBottom: tabScrollBottomPadding(Platform.OS, insets.bottom) }}
                     showsVerticalScrollIndicator={false}
                     refreshControl={
                         <RefreshControl
@@ -812,7 +959,7 @@ export default function CommunityScreen() {
                                     Nova Publicação
                                 </Text>
                                 <Text style={{ color: theme.colors.textMuted, fontSize: 12, fontFamily: FontFamily.sans }}>
-                                    Compartilhe sua rotina, dicas ou conquistas
+                                    Sua publicação ficará visível na Comunidade
                                 </Text>
                             </View>
 
@@ -955,10 +1102,23 @@ export default function CommunityScreen() {
                                 }}
                             />
 
+                            <TouchableOpacity onPress={pickPostPhoto} style={{ flexDirection: 'row', alignItems: 'center', gap: 9, paddingVertical: 12, marginBottom: 10 }}>
+                                <Ionicons name="image-outline" size={21} color={theme.colors.primary} />
+                                <Text style={{ color: theme.colors.primary, fontWeight: '700' }}>{postImageUri ? 'Trocar foto' : 'Adicionar foto'}</Text>
+                            </TouchableOpacity>
+                            {postImageUri && <View style={{ marginBottom: 16 }}>
+                                <Image source={{ uri: postImageUri }} contentFit="contain" style={{ width: '100%', height: 180, borderRadius: 14, backgroundColor: theme.colors.backgroundTertiary }} />
+                                <TouchableOpacity onPress={() => { setPostImageUri(null); setPostImageMimeType(undefined); }} style={{ paddingVertical: 8 }}><Text style={{ color: theme.colors.error }}>Remover foto</Text></TouchableOpacity>
+                            </View>}
+                            {postError ? <View style={{ marginBottom: 12, padding: 12, borderRadius: 12, backgroundColor: theme.colors.warning + '18' }}>
+                                <Text style={{ color: theme.colors.text, fontSize: 12, lineHeight: 18 }}>{postError}</Text>
+                                {!session?.user?.id && postImageUri ? <TouchableOpacity onPress={() => { setIsCreateModalOpen(false); router.push('/(auth)/login'); }} style={{ paddingTop: 9 }}><Text style={{ color: theme.colors.primary, fontWeight: '700' }}>Entrar na conta</Text></TouchableOpacity> : null}
+                            </View> : null}
+
                             {/* Publish Action Button */}
                             <TouchableOpacity
                                 onPress={handlePublishPost}
-                                disabled={isPublishing || !postContent.trim()}
+                                disabled={isPublishing || (!postContent.trim() && !postImageUri)}
                                 activeOpacity={0.8}
                                 style={{
                                     backgroundColor: postContent.trim() ? theme.colors.primary : theme.colors.textMuted + '40',
@@ -984,6 +1144,42 @@ export default function CommunityScreen() {
                         </ScrollView>
                     </View>
                 </KeyboardAvoidingView>
+            </Modal>
+
+            <Modal visible={!!editingPost} animationType="slide" transparent onRequestClose={() => setEditingPost(null)}>
+                <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.65)' }}>
+                    <View style={{ backgroundColor: theme.colors.background, borderTopLeftRadius: 22, borderTopRightRadius: 22, padding: 20, paddingBottom: insets.bottom + 20, maxHeight: '88%' }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+                            <Text style={{ color: theme.colors.text, fontSize: 18, fontWeight: '700' }}>Editar publicação</Text>
+                            <TouchableOpacity onPress={() => setEditingPost(null)} style={{ width: 40, height: 40, alignItems: 'center', justifyContent: 'center' }}><Ionicons name="close" size={22} color={theme.colors.text} /></TouchableOpacity>
+                        </View>
+                        <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
+                            <TextInput value={editContent} onChangeText={setEditContent} multiline placeholder="Escreva sua mensagem" placeholderTextColor={theme.colors.textMuted}
+                                style={{ minHeight: 110, textAlignVertical: 'top', color: theme.colors.text, backgroundColor: theme.colors.backgroundTertiary, borderRadius: 14, padding: 14, fontSize: 14 }} />
+                            {(editImageUri || (!removeEditImage && editingPost?.imageUrl)) && <View style={{ marginTop: 14 }}>
+                                <PostPhoto uri={editImageUri || editingPost!.imageUrl!} />
+                                <TouchableOpacity onPress={() => { setEditImageUri(null); setRemoveEditImage(true); }} style={{ paddingVertical: 8 }}><Text style={{ color: theme.colors.error, fontWeight: '700' }}>Remover foto</Text></TouchableOpacity>
+                            </View>}
+                            <TouchableOpacity onPress={pickEditPhoto} style={{ flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 48, marginTop: 8 }}><Ionicons name="image-outline" size={20} color={theme.colors.primary} /><Text style={{ color: theme.colors.primary, fontWeight: '700' }}>{editingPost?.imageUrl || editImageUri ? 'Trocar foto' : 'Adicionar foto'}</Text></TouchableOpacity>
+                            {editError ? <Text style={{ color: theme.colors.error, fontSize: 12, lineHeight: 18, marginBottom: 10 }}>{editError}</Text> : null}
+                            <TouchableOpacity onPress={saveEditedPost} disabled={editSaving} style={{ backgroundColor: theme.colors.primary, borderRadius: 14, minHeight: 48, alignItems: 'center', justifyContent: 'center', marginTop: 10 }}><Text style={{ color: theme.colors.onPrimary, fontWeight: '700' }}>{editSaving ? 'Salvando...' : 'Salvar alterações'}</Text></TouchableOpacity>
+                        </ScrollView>
+                    </View>
+                </KeyboardAvoidingView>
+            </Modal>
+
+            <Modal visible={!!deleteTarget} animationType="fade" transparent onRequestClose={() => setDeleteTarget(null)}>
+                <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.65)', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+                    <View style={{ width: '100%', maxWidth: 380, backgroundColor: theme.colors.background, borderRadius: 20, padding: 20 }}>
+                        <Text style={{ color: theme.colors.text, fontSize: 18, fontWeight: '700' }}>Excluir publicação?</Text>
+                        <Text style={{ color: theme.colors.textSecondary, fontSize: 13, lineHeight: 19, marginTop: 8 }}>Esta ação remove o post da comunidade e não pode ser desfeita.</Text>
+                        {editError ? <Text style={{ color: theme.colors.error, fontSize: 12, marginTop: 10 }}>{editError}</Text> : null}
+                        <View style={{ flexDirection: 'row', gap: 10, marginTop: 20 }}>
+                            <TouchableOpacity onPress={() => setDeleteTarget(null)} style={{ flex: 1, minHeight: 46, borderRadius: 13, backgroundColor: theme.colors.backgroundTertiary, alignItems: 'center', justifyContent: 'center' }}><Text style={{ color: theme.colors.text, fontWeight: '700' }}>Cancelar</Text></TouchableOpacity>
+                            <TouchableOpacity onPress={confirmDeletePost} disabled={deleting} style={{ flex: 1, minHeight: 46, borderRadius: 13, backgroundColor: theme.colors.error, alignItems: 'center', justifyContent: 'center' }}><Text style={{ color: '#fff', fontWeight: '700' }}>{deleting ? 'Excluindo...' : 'Excluir'}</Text></TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
             </Modal>
 
             {/* Modal de Comentários */}

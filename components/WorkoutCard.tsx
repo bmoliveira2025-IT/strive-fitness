@@ -6,6 +6,7 @@ import { SavedWorkout } from '../context/SavedWorkoutsContext';
 import { useTheme } from '../context/ThemeContext';
 import { getDailyFitnessImage } from '../utils/imageHelper';
 import { FontFamily, Radius } from '../constants/theme';
+import { lightSurface } from '../constants/lightSurface';
 
 interface WorkoutCardProps {
     workout: SavedWorkout;
@@ -81,10 +82,7 @@ export function WorkoutCard({
             <TouchableOpacity
                 onPress={onPress}
                 style={[{
-                    backgroundColor: theme.colors.card,
-                    borderColor: theme.colors.cardBorder,
-                    borderRadius: Radius.lg,
-                    borderWidth: 1,
+                    ...lightSurface(theme.colors),
                     overflow: 'hidden',
                     flex: 1,
                     minWidth: '47%',
@@ -151,9 +149,7 @@ export function WorkoutCard({
                     borderRadius: Radius.lg,
                     overflow: 'hidden',
                     minHeight: 96,
-                    backgroundColor: theme.colors.card,
-                    borderColor: theme.colors.cardBorder,
-                    borderWidth: 1,
+                    backgroundColor: theme.colors.backgroundTertiary,
                     flexDirection: 'row',
                     padding: 10,
                 }}

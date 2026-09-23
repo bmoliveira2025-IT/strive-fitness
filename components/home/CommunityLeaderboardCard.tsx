@@ -36,7 +36,7 @@ export function CommunityLeaderboardCard() {
     const currentUserId = session?.user?.id || profile?.id || 'local-user';
     const weeklyTarget = profile?.onboardingData?.daysPerWeek || 3;
 
-    // 1. Calculate user points based on real workouts, streak, achievements & forum activity
+    // 1. Calculate user points based on workouts, streaks, achievements and community activity
     const pointsBreakdown: PointsBreakdown = useMemo(() => {
         return gamificationService.calculatePoints(
             history,
@@ -428,7 +428,7 @@ export function CommunityLeaderboardCard() {
                             </TouchableOpacity>
 
                             <TouchableOpacity
-                                onPress={() => router.push('/community')}
+                                onPress={() => router.push('/(tabs)/feed')}
                                 style={{
                                     flex: 1,
                                     flexDirection: 'row',
@@ -442,7 +442,7 @@ export function CommunityLeaderboardCard() {
                             >
                                 <Ionicons name="chatbubble" size={11} color={theme.colors.info} />
                                 <Text style={{ color: theme.colors.textSecondary, fontSize: 9, fontFamily: FontFamily.sansBold }}>
-                                    +80 Fórum
+                                    +80 Comunidade
                                 </Text>
                             </TouchableOpacity>
                         </View>
@@ -473,7 +473,7 @@ export function CommunityLeaderboardCard() {
                             Ranking oficial em tempo real
                         </Text>
                         <TouchableOpacity
-                            onPress={() => router.push('/community')}
+                            onPress={() => router.push('/(tabs)/feed')}
                             activeOpacity={0.7}
                             style={{
                                 flexDirection: 'row',
@@ -484,7 +484,7 @@ export function CommunityLeaderboardCard() {
                             }}
                         >
                             <Text style={{ color: theme.colors.primary, fontSize: 12, fontFamily: FontFamily.sansSemiBold }}>
-                                Ir para o Fórum
+                                Ir para a Comunidade
                             </Text>
                             <Ionicons name="chevron-forward" size={14} color={theme.colors.primary} />
                         </TouchableOpacity>

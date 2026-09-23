@@ -12,6 +12,7 @@ import { useWorkoutStore } from "../../store/useWorkoutStore";
 import { StatusChip } from "../feedback/StatusChip";
 import { VitalsCheckInModal } from "./VitalsCheckInModal";
 import { FontFamily, Radius } from "../../constants/theme";
+import { nextWorkoutInRoutine } from '../../lib/sessionFlow';
 
 export function HeroCard() {
   const { theme } = useTheme();
@@ -40,19 +41,8 @@ export function HeroCard() {
 
   // Pick best next workout
   const nextWorkout = useMemo(() => {
-    if (!savedWorkouts.length) return null;
-    const favorite = savedWorkouts.find((w) => w.isFavorite);
-    if (favorite) return favorite;
-
-    const withLastDone = savedWorkouts.filter((w) => w.lastDone);
-    if (withLastDone.length) {
-      return withLastDone.sort(
-        (a, b) =>
-          new Date(b.lastDone!).getTime() - new Date(a.lastDone!).getTime(),
-      )[0];
-    }
-    return savedWorkouts[0];
-  }, [savedWorkouts]);
+    return nextWorkoutInRoutine(savedWorkouts, history);
+  }, [savedWorkouts, history]);
 
   const { title, subtitle, actionText, icon, chipType, chipLabel, exerciseList, estimatedMin } = useMemo(() => {
     if (isWorkoutActive) {
@@ -70,31 +60,26 @@ export function HeroCard() {
         estimatedMin: 0,
       };
     }
-    if (hasTrainedToday) {
-      return {
-        title: "Meta Diária Cumprida!",
-        subtitle: "Excelente consistência! Mantenha a hidratação e recuperação muscular ativa.",
-        actionText: "Ver Progresso & Estatísticas",
-        icon: "checkmark-circle" as const,
-        chipType: "completed" as const,
-        chipLabel: "Concluído Hoje",
-        exerciseList: [],
-        estimatedMin: 0,
-      };
-    }
     if (nextWorkout) {
       const count = nextWorkout.exercises?.length ?? 0;
       const min = Math.max(30, count * 5 + 10);
       const exNames = (nextWorkout.exercises || []).slice(0, 3).map((e: any) => e.name || e.exercise?.name).filter(Boolean);
       return {
         title: nextWorkout.name,
-        subtitle: `${count} exercícios • ~${min} min • ${nextWorkout.category || "Foco do dia"}`,
-        actionText: "Iniciar Este Treino",
+        subtitle: `${hasTrainedToday ? 'Treino de hoje concluído • ' : ''}${count} exercícios • ~${min} min${nextWorkout.routineName ? ` • ${nextWorkout.routineName}` : ''}`,
+        actionText: hasTrainedToday ? 'Ver próximo treino' : 'Ver treino de hoje',
         icon: "play" as const,
-        chipType: "pending" as const,
-        chipLabel: nextWorkout.isFavorite ? "Treino Favorito" : "Treino Sugerido",
+        chipType: hasTrainedToday ? 'completed' as const : 'pending' as const,
+        chipLabel: hasTrainedToday ? 'Hoje concluído' : nextWorkout.routineId ? 'Próximo da sequência' : 'Treino de hoje',
         exerciseList: exNames,
         estimatedMin: min,
+      };
+    }
+    if (hasTrainedToday) {
+      return {
+        title: 'Treino de hoje concluído', subtitle: 'Veja sua evolução ou planeje a próxima sessão.',
+        actionText: 'Ver progresso', icon: 'checkmark-circle' as const,
+        chipType: 'completed' as const, chipLabel: 'Concluído hoje', exerciseList: [], estimatedMin: 0,
       };
     }
     const hour = new Date().getHours();
@@ -117,11 +102,6 @@ export function HeroCard() {
       return;
     }
 
-    if (hasTrainedToday) {
-      router.navigate("/(tabs)/progress");
-      return;
-    }
-
     if (nextWorkout) {
       router.push({
         pathname: "/preview",
@@ -129,6 +109,8 @@ export function HeroCard() {
       });
       return;
     }
+
+    if (hasTrainedToday) { router.navigate('/(tabs)/progress'); return; }
 
     if (savedWorkouts.length > 0) {
       router.navigate("/(tabs)/workout");

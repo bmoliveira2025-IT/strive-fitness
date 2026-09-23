@@ -72,7 +72,7 @@ function StackContent() {
       router.prefetch('/settings');
       router.prefetch('/preview');
       router.prefetch('/activities');
-      router.prefetch('/community');
+      router.prefetch('/(tabs)/feed');
     });
     return () => task.cancel();
   }, [router]);
@@ -105,6 +105,7 @@ function StackContent() {
             <Stack.Screen name="achievements" />
             <Stack.Screen name="streak" />
             <Stack.Screen name="muscle-tracking" />
+            <Stack.Screen name="muscle-analysis" options={{ headerShown: false }} />
             <Stack.Screen name="muscle-coach-details" />
             <Stack.Screen name="asymmetry-analysis" />
             <Stack.Screen name="asymmetry-history" />

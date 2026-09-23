@@ -1,261 +1,54 @@
-import Palette from '../../constants/palette.json';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { LinearGradient } from "expo-linear-gradient";
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { StatusBar } from "expo-status-bar";
-import React, { useState } from "react";
-import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { COACHES } from "../../constants/coaches";
-import { useTheme } from "../../context/ThemeContext";
-import { GradientButton } from "../../components/ui/GradientButton";
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import React from 'react';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { COACHES } from '../../constants/coaches';
+import { useTheme } from '../../context/ThemeContext';
 
 export default function LessonScreen() {
-  const { id, coachId } = useLocalSearchParams<{
-    id: string;
-    coachId: string;
-  }>();
+  const { id, coachId } = useLocalSearchParams<{ id: string; coachId: string }>();
   const router = useRouter();
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
-  const [isPlaying, setIsPlaying] = useState(false);
+  const coach = COACHES.find(item => item.id === coachId);
+  const lesson = coach?.lessons.find(item => item.id === id);
 
-  const coach = COACHES.find((c) => c.id === coachId);
-  const lesson = coach?.lessons.find((l) => l.id === id);
+  if (!coach || !lesson) return <View style={{ flex: 1, backgroundColor: theme.colors.background, alignItems: 'center', justifyContent: 'center' }}>
+    <Text style={{ color: theme.colors.text }}>Guia não encontrado.</Text>
+    <TouchableOpacity onPress={() => router.back()} style={{ padding: 16 }}><Text style={{ color: theme.colors.primary }}>Voltar</Text></TouchableOpacity>
+  </View>;
 
-  if (!coach || !lesson) {
-    return (
-      <View
-        style={{ backgroundColor: "transparent" }}
-        className="flex-1 justify-center items-center"
-      >
-        <Text style={{ color: theme.colors.text }}>Aula não encontrada</Text>
+  return <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
+    <StatusBar style={theme.mode === 'light' ? 'dark' : 'light'} />
+    <Stack.Screen options={{ headerShown: false }} />
+    <ScrollView contentContainerStyle={{ paddingTop: insets.top + 12, paddingHorizontal: 20, paddingBottom: insets.bottom + 32 }} showsVerticalScrollIndicator={false}>
+      <TouchableOpacity onPress={() => router.back()} accessibilityLabel="Voltar aos guias" style={{ width: 44, height: 44, alignItems: 'center', justifyContent: 'center', marginBottom: 20 }}>
+        <Ionicons name="arrow-back" size={24} color={theme.colors.text} />
+      </TouchableOpacity>
+      <Text style={{ color: theme.colors.primary, fontSize: 11, fontWeight: '700', letterSpacing: 1, textTransform: 'uppercase' }}>Guia prático · {lesson.level}</Text>
+      <Text style={{ color: theme.colors.text, fontSize: 27, fontWeight: '700', marginTop: 8, lineHeight: 33 }}>{lesson.title}</Text>
+      <Text style={{ color: theme.colors.textSecondary, fontSize: 14, lineHeight: 21, marginTop: 12 }}>{lesson.summary}</Text>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 7, marginTop: 16, paddingBottom: 22, borderBottomWidth: 1, borderBottomColor: theme.colors.divider }}>
+        <Ionicons name="book-outline" size={16} color={theme.colors.primary} />
+        <Text style={{ color: theme.colors.textSecondary, fontSize: 12 }}>{lesson.duration} · {coach.specialty}</Text>
       </View>
-    );
-  }
-
-  return (
-    <View style={{ backgroundColor: "transparent" }} className="flex-1">
-      <StatusBar style="light" />
-      <Stack.Screen options={{ headerShown: false }} />
-
-      {/* Video Player Placeholder */}
-      <View className="relative w-full aspect-video bg-black">
-        <Image
-          source={coach.image}
-          className="w-full h-full opacity-60"
-          blurRadius={isPlaying ? 0 : 5}
-        />
-
-        <LinearGradient
-          colors={["rgba(0,0,0,0.5)", "transparent", "rgba(0,0,0,0.8)"]}
-          className="absolute inset-0"
-        />
-
-        <TouchableOpacity
-          onPress={() => router.back()}
-          style={{ top: insets.top + 10 }}
-          className="absolute left-5 w-10 h-10 rounded-full bg-black/40 items-center justify-center z-10"
-        >
-          <Ionicons name="chevron-back" size={24} color="white" />
-        </TouchableOpacity>
-
-        <View className="absolute inset-0 items-center justify-center">
-          <TouchableOpacity
-            onPress={() => setIsPlaying(!isPlaying)}
-            className="w-20 h-20 rounded-full bg-primary/90 items-center justify-center shadow-xl"
-          >
-            <Ionicons
-              name={isPlaying ? "pause" : "play"}
-              size={40}
-              color="black"
-            />
-          </TouchableOpacity>
+      <Text style={{ color: theme.colors.text, fontSize: 18, fontWeight: '700', marginTop: 26, marginBottom: 14 }}>Como aplicar</Text>
+      {lesson.steps.map((step, index) => <View key={index} style={{ flexDirection: 'row', gap: 13, alignItems: 'flex-start', paddingVertical: 13, borderBottomWidth: 1, borderBottomColor: theme.colors.divider }}>
+        <View style={{ width: 28, height: 28, borderRadius: 9, backgroundColor: theme.colors.primary + '20', alignItems: 'center', justifyContent: 'center' }}>
+          <Text style={{ color: theme.colors.primary, fontWeight: '700', fontSize: 12 }}>{index + 1}</Text>
         </View>
-
-        {/* Progress Bar Mock */}
-        <View className="absolute bottom-0 left-0 right-0 h-1 bg-backgroundTertiary">
-          <View className="h-full bg-primary w-1/3" />
-        </View>
-
-        <View className="absolute bottom-4 left-6 right-6 flex-row justify-between items-center">
-          <Text className="text-white text-[10px] font-bold">
-            04:20 / {lesson.duration}
-          </Text>
-          <Ionicons name="expand" size={16} color="white" />
-        </View>
-      </View>
-
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        <View className="p-6">
-          <View className="flex-row items-center mb-2">
-            <View className="bg-primary/20 px-2 py-0.5 rounded-md mr-2">
-              <Text className="text-primary text-[10px] font-bold uppercase">
-                {lesson.level}
-              </Text>
-            </View>
-            <Text
-              style={{ color: theme.colors.textMuted }}
-              className="text-xs font-medium"
-            >
-              {lesson.duration}
-            </Text>
-          </View>
-
-          <Text
-            style={{ color: theme.colors.text }}
-            className="text-2xl font-bold mb-4"
-          >
-            {lesson.title}
-          </Text>
-
-          {/* Coach Mini-Card */}
-          <TouchableOpacity
-            onPress={() => router.back()}
-            style={{
-              backgroundColor: theme.colors.card,
-              borderColor: theme.colors.cardBorder,
-              borderRadius: 20,
-            }}
-            className="flex-row items-center p-4 border mb-8"
-          >
-            <Image
-              source={coach.image}
-              className="w-12 h-12 rounded-2xl mr-4"
-            />
-            <View className="flex-1">
-              <Text style={{ color: theme.colors.text }} className="font-bold">
-                {coach.name}
-              </Text>
-              <Text
-                style={{ color: theme.colors.textMuted }}
-                className="text-xs"
-              >
-                {coach.role}
-              </Text>
-            </View>
-            <View className="bg-primary px-4 py-2 rounded-xl">
-              <Text className="text-black text-xs font-bold uppercase">
-                Seguir
-              </Text>
-            </View>
-          </TouchableOpacity>
-
-          {/* Description */}
-          <View className="mb-10">
-            <Text
-              style={{ color: theme.colors.text }}
-              className="text-lg font-bold mb-3"
-            >
-              Sobre esta aula
-            </Text>
-            <Text
-              style={{ color: theme.colors.textSecondary }}
-              className="text-sm leading-6"
-            >
-              Nesta aula, o coach {coach.name} mergulha nos detalhes técnicos de{" "}
-              {lesson.title.toLowerCase()}. Você aprenderá a otimizar sua
-              execução, evitar erros comuns e maximizar seus resultados através
-              da ciência do treinamento.
-            </Text>
-          </View>
-
-          {/* Next Lessons */}
-          <View className="mb-10">
-            <Text
-              style={{ color: theme.colors.text }}
-              className="text-lg font-bold mb-4"
-            >
-              Próximas aulas de {coach.name.split(" ")[0]}
-            </Text>
-            {coach.lessons
-              .filter((l) => l.id !== id)
-              .map((other) => (
-                <TouchableOpacity
-                  key={other.id}
-                  onPress={() =>
-                    router.push({
-                      pathname: "/lesson/[id]",
-                      params: { id: other.id, coachId: coach.id },
-                    })
-                  }
-                  style={{
-                    backgroundColor: theme.colors.card,
-                    borderColor: theme.colors.cardBorder,
-                  }}
-                  className="flex-row items-center p-4 rounded-2xl border mb-3"
-                >
-                  <View className="w-12 h-12 rounded-xl bg-backgroundTertiary items-center justify-center mr-4">
-                    <Ionicons
-                      name="play"
-                      size={20}
-                      color={theme.colors.primary}
-                    />
-                  </View>
-                  <View className="flex-1">
-                    <Text
-                      style={{ color: theme.colors.text }}
-                      className="font-bold text-sm mb-1"
-                    >
-                      {other.title}
-                    </Text>
-                    <View className="flex-row items-center">
-                      <Text
-                        style={{ color: theme.colors.textMuted }}
-                        className="text-[10px] font-medium"
-                      >
-                        {other.duration}
-                      </Text>
-                      <View className="w-1 h-1 rounded-full bg-zinc-400 mx-2" />
-                      <Text
-                        style={{ color: theme.colors.primary }}
-                        className="text-[10px] font-bold uppercase"
-                      >
-                        {other.level}
-                      </Text>
-                    </View>
-                  </View>
-                  <Ionicons
-                    name="chevron-forward"
-                    size={16}
-                    color={theme.colors.textMuted}
-                  />
-                </TouchableOpacity>
-              ))}
-          </View>
-        </View>
-      </ScrollView>
-
-      {/* Bottom Action */}
-      <View
-        style={{
-          backgroundColor: theme.colors.background,
-          borderTopColor: theme.colors.border,
-        }}
-        className="p-6 border-t"
-      >
-        <GradientButton
-          style={{
-            borderRadius: 16,
-            shadowColor: Palette.ink,
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.1,
-            shadowRadius: 8,
-            elevation: 4
-          }}
-          gradientStyle={{
-            width: '100%',
-            height: 56,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}
-        >
-          <Text className="text-onPrimary font-bold text-base">
-            Baixar Aula (Offline)
-          </Text>
-        </GradientButton>
-      </View>
-    </View>
-  );
+        <Text style={{ color: theme.colors.text, fontSize: 14, lineHeight: 21, flex: 1 }}>{step}</Text>
+      </View>)}
+      <Text style={{ color: theme.colors.textSecondary, fontSize: 12, lineHeight: 18, marginTop: 20 }}>Conteúdo educativo geral. Ajuste o treino às suas condições e procure orientação profissional se sentir dor ou tiver restrições de saúde.</Text>
+      <Text style={{ color: theme.colors.text, fontSize: 18, fontWeight: '700', marginTop: 32, marginBottom: 10 }}>Continue aprendendo</Text>
+      {coach.lessons.filter(item => item.id !== id).map(item => <TouchableOpacity key={item.id} onPress={() => router.push({ pathname: '/lesson/[id]', params: { id: item.id, coachId: coach.id } })}
+        style={{ minHeight: 58, paddingVertical: 11, flexDirection: 'row', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: theme.colors.divider }}>
+        <View style={{ width: 34, height: 34, borderRadius: 11, backgroundColor: theme.colors.backgroundTertiary, alignItems: 'center', justifyContent: 'center', marginRight: 11 }}><Ionicons name="book-outline" size={17} color={theme.colors.primary} /></View>
+        <View style={{ flex: 1 }}><Text style={{ color: theme.colors.text, fontSize: 13, fontWeight: '700' }}>{item.title}</Text><Text style={{ color: theme.colors.textMuted, fontSize: 11, marginTop: 2 }}>{item.level}</Text></View>
+        <Ionicons name="chevron-forward" size={16} color={theme.colors.textMuted} />
+      </TouchableOpacity>)}
+    </ScrollView>
+  </View>;
 }

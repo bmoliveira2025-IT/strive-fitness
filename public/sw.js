@@ -1,5 +1,5 @@
 // Strive Fitness PWA Service Worker
-const CACHE_NAME = 'strive-fitness-v16';
+const CACHE_NAME = 'strive-fitness-v17';
 const APP_SHELL = [
   '/',
   '/manifest.json',
@@ -30,6 +30,9 @@ self.addEventListener('fetch', (event) => {
 
   const requestUrl = new URL(event.request.url);
   if (requestUrl.origin !== self.location.origin) return;
+  // Metro's development bundles reuse URLs while their contents change.
+  // Never serve those bundles from the offline cache.
+  if (requestUrl.searchParams.get('dev') === 'true' || requestUrl.pathname.endsWith('.bundle')) return;
 
   if (event.request.mode === 'navigate') {
     event.respondWith(

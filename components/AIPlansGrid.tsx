@@ -3,7 +3,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import React, { useEffect, useState } from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { useSavedWorkouts } from '../context/SavedWorkoutsContext';
-import { clearAIPlansCache, generateWorkoutPlans } from '../services/aiWorkoutService';
+import { generatePersonalizedWorkout } from '../services/aiWorkoutService';
 import { Skeleton } from './ui/Skeleton';
 
 interface AIPlansGridProps {
@@ -23,8 +23,15 @@ export function AIPlansGrid({ onPlanStart }: AIPlansGridProps) {
     const loadPlans = async () => {
         try {
             setLoading(true);
-            const generatedPlans = await generateWorkoutPlans();
-            setPlans(generatedPlans.slice(0, 4)); // Ensure only 4 plans
+            const focuses = ['full_body', 'upper', 'legs', 'pull'] as const;
+            const generatedPlans = await Promise.all(focuses.map(async (focus, index) => {
+                const workout = await generatePersonalizedWorkout({
+                    focus, goal: 'hypertrophy', level: 'intermediate', gender: 'unspecified',
+                    equipment: [], glute_priority: false,
+                }, { useModel: false });
+                return { ...workout, id: `catalog-plan-${index}`, description: 'Plano montado com exercícios do catálogo Strive', duration: '45 min', difficulty: 'Intermediário' };
+            }));
+            setPlans(generatedPlans);
         } catch (error) {
             console.error('Error loading AI plans:', error);
         } finally {
@@ -34,7 +41,6 @@ export function AIPlansGrid({ onPlanStart }: AIPlansGridProps) {
 
     const handleRefresh = async () => {
         setRefreshing(true);
-        clearAIPlansCache();
         await loadPlans();
         setRefreshing(false);
     };
@@ -108,7 +114,7 @@ export function AIPlansGrid({ onPlanStart }: AIPlansGridProps) {
                                     </Text>
                                 </View>
                                 <View className="bg-primary rounded-full px-2 py-0.5">
-                                    <Text className="text-white text-xs font-bold">IA</Text>
+                                    <Text className="text-white text-xs font-bold">Strive</Text>
                                 </View>
                             </View>
 

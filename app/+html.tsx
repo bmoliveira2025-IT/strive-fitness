@@ -36,9 +36,22 @@ export default function Root({ children }: PropsWithChildren) {
                         __html: `
               if ('serviceWorker' in navigator) {
                 window.addEventListener('load', function() {
-                  navigator.serviceWorker.register('/sw.js').catch(function(err) {
-                    console.log('SW registration error:', err);
-                  });
+                  if (['localhost', '127.0.0.1'].includes(window.location.hostname)) {
+                    navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                      return Promise.all(registrations.filter(function(registration) {
+                        return registration.scope.startsWith(window.location.origin + '/');
+                      }).map(function(registration) { return registration.unregister(); }));
+                    }).then(function() {
+                      if (navigator.serviceWorker.controller && !sessionStorage.getItem('strive-sw-reloaded')) {
+                        sessionStorage.setItem('strive-sw-reloaded', '1');
+                        window.location.reload();
+                      }
+                    }).catch(function(err) { console.log('SW cleanup error:', err); });
+                  } else {
+                    navigator.serviceWorker.register('/sw.js').catch(function(err) {
+                      console.log('SW registration error:', err);
+                    });
+                  }
                 });
               }
             `,

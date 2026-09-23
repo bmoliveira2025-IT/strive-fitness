@@ -9,6 +9,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFavorites } from '../context/FavoritesContext';
 import { useTheme } from '../context/ThemeContext';
 import { ExerciseDetailContent } from './ExerciseDetailContent';
+import { DockableActionButton } from './DockableActionButton';
 
 // Import exercise data
 const exercisesData = require('../assets/exercises.json');
@@ -515,34 +516,7 @@ export function LibraryView({
 
             {/* Batch Action Button (Floating) */}
             {allowMultiSelect && selectedIds.size > 0 && (
-                <View style={{
-                    position: 'absolute',
-                    bottom: insets.bottom + 16,
-                    left: 16,
-                    right: 16,
-                }}>
-                    <TouchableOpacity
-                        onPress={handleBatchAdd}
-                        style={{
-                            backgroundColor: theme.colors.primary,
-                            paddingVertical: 16,
-                            borderRadius: 20,
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            shadowColor: theme.colors.primary,
-                            shadowOffset: { width: 0, height: 4 },
-                            shadowOpacity: 0.1,
-                            shadowRadius: 8,
-                            elevation: 6
-                        }}
-                    >
-                        <Text style={{ color: theme.colors.onPrimary, fontSize: 18, fontFamily: 'Inter_700Bold', fontWeight: 'bold', marginRight: 8 }}>
-                            Adicionar ({selectedIds.size})
-                        </Text>
-                        <Ionicons name="arrow-forward" size={24} color={theme.colors.onPrimary} />
-                    </TouchableOpacity>
-                </View>
+                <DockableActionButton label={`Adicionar (${selectedIds.size})`} icon="arrow-forward" onPress={handleBatchAdd} bottom={insets.bottom + 16} />
             )}
 
             {/* Nested Detail Modal for "Info" */}

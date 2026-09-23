@@ -25,11 +25,17 @@ export interface SavedWorkout {
     isFavorite?: boolean;
     category?: string;
     isAIGenerated?: boolean;
+    routineId?: string;
+    routineName?: string;
+    sessionLabel?: string;
+    sessionIndex?: number;
+    daysPerWeek?: number;
 }
 
 type SavedWorkoutsContextType = {
     savedWorkouts: SavedWorkout[];
     saveWorkout: (name: string, exercises: SavedExercise[], category?: string, isAIGenerated?: boolean) => void;
+    saveWorkoutWeek: (plan: { name: string; daysPerWeek: number; sessions: { name: string; label: string; exercises: SavedExercise[] }[] }) => void;
     deleteWorkout: (id: string) => void;
     updateWorkout: (id: string, updates: Partial<SavedWorkout>) => void;
     updateLastDone: (id: string) => void;
@@ -122,6 +128,19 @@ export function SavedWorkoutsProvider({ children }: { children: ReactNode }) {
         ));
     };
 
+    const saveWorkoutWeek: SavedWorkoutsContextType['saveWorkoutWeek'] = plan => {
+        const routineId = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+        const createdAt = new Date().toISOString();
+        const workouts: SavedWorkout[] = plan.sessions.map((session, sessionIndex) => ({
+            id: `${routineId}-${sessionIndex + 1}`, name: session.name, exercises: session.exercises,
+            frequency: `${plan.daysPerWeek}x/semana`, lastDone: 'Nunca', createdAt,
+            isFavorite: false, category: 'IA', isAIGenerated: true,
+            routineId, routineName: plan.name, sessionLabel: session.label, sessionIndex,
+            daysPerWeek: plan.daysPerWeek,
+        }));
+        setSavedWorkouts(prev => [...workouts, ...prev]);
+    };
+
     const commitWorkoutCompletion = async (id: string, exercises?: SavedExercise[]) => {
         const nextWorkouts = savedWorkouts.map(workout => workout.id === id
             ? { ...workout, lastDone: 'Agora', ...(exercises ? { exercises } : {}) }
@@ -163,6 +182,7 @@ export function SavedWorkoutsProvider({ children }: { children: ReactNode }) {
         <SavedWorkoutsContext.Provider value={{
             savedWorkouts,
             saveWorkout,
+            saveWorkoutWeek,
             deleteWorkout,
             updateWorkout,
             updateLastDone,

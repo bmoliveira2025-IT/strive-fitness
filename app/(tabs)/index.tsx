@@ -1,14 +1,16 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useMemo, useState } from 'react';
-import { ScrollView, View } from 'react-native';
+import { Platform, ScrollView, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ActivityFeed } from '../../components/home/ActivityFeed';
+import { tabScrollBottomPadding } from '../../constants/tabLayout';
+import { AchievementsPreview } from '../../components/home/AchievementsPreview';
+import { CommunityPreview } from '../../components/home/CommunityPreview';
 import { CardioSummaryWidget } from '../../components/home/CardioSummaryWidget';
-import { CommunityLeaderboardCard } from '../../components/home/CommunityLeaderboardCard';
-import { DailyInsightCard } from '../../components/home/DailyInsightCard';
+import { PlanMotivationPreview } from '../../components/home/PlanMotivationPreview';
 import { HomeHeader } from '../../components/home/HomeHeader';
+import { HomeAnatomySpotlight } from '../../components/home/HomeAnatomySpotlight';
 import { RecentPRCard } from '../../components/home/RecentPRCard';
 import { WeeklyProgressTracker } from '../../components/home/WeeklyProgressTracker';
 import { WorkoutListView } from '../../components/home/WorkoutListView';
@@ -16,7 +18,6 @@ import { NotificationModal } from '../../components/NotificationModal';
 import { QuestionnaireModal } from '../../components/QuestionnaireModal';
 import { VisualOnboardingModal } from '../../components/onboarding/VisualOnboardingModal';
 import { HeroCard } from '../../components/dashboard/HeroCard';
-import { MuscleGroupHeatmapWidget } from '../../components/dashboard/MuscleGroupHeatmapWidget';
 import { QuickActions } from '../../components/dashboard/QuickActions';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useAuth } from '../../context/AuthContext';
@@ -27,6 +28,7 @@ import { useUserStore } from '../../store/useUserStore';
 import { useWorkoutHistory } from '../../context/WorkoutHistoryContext';
 import { useStreak } from '../../hooks/useStreak';
 import { useWeeklyStats } from '../../hooks/useWeeklyStats';
+import { useReducedMotion } from '../../hooks/useReducedMotion';
 
 const exercisesData = require('../../assets/exercises.json');
 
@@ -65,6 +67,12 @@ function getDefaultPlanForGoal(goal?: string): { name: string; exercises: any[];
 export default function Home() {
     const { theme } = useTheme();
     const insets = useSafeAreaInsets();
+    const reducedMotion = useReducedMotion();
+    const [extrasReady, setExtrasReady] = useState(false);
+    useEffect(() => {
+        const timer = setTimeout(() => setExtrasReady(true), 450);
+        return () => clearTimeout(timer);
+    }, []);
     const { session } = useAuth();
     const { savedWorkouts, deleteWorkout, toggleWorkoutFavorite, saveWorkout } = useSavedWorkouts();
     const { history } = useWorkoutHistory();
@@ -268,64 +276,55 @@ export default function Home() {
 
             <ScrollView
                 className="flex-1"
-                contentContainerStyle={{ paddingBottom: Math.max(insets.bottom, 16) + 75 }}
+                contentContainerStyle={{ paddingBottom: tabScrollBottomPadding(Platform.OS, insets.bottom) }}
                 showsVerticalScrollIndicator={false}
-                removeClippedSubviews
             >
                 {/* ══════════════ ZONA 1: HOJE & AÇÃO IMEDIATA ══════════════ */}
-                <Animated.View entering={FadeInDown.delay(50).duration(500)}>
+                <Animated.View entering={reducedMotion ? undefined : FadeInDown.delay(40).duration(320)}>
                     <HeroCard />
                 </Animated.View>
 
-                {/* ══════════════ ZONA 2: FISIOLOGIA & PERFORMANCE ══════════════ */}
-                <Animated.View entering={FadeInDown.delay(120).duration(500)}>
+                {/* Anatomia sempre visível: identidade e evolução do Strive. */}
+                <Animated.View entering={reducedMotion ? undefined : FadeInDown.delay(90).duration(360)} style={{ paddingHorizontal: 20, marginBottom: 22 }}>
+                    <HomeAnatomySpotlight />
+                </Animated.View>
+
+                <View>
                     <WeeklyProgressTracker
                         streak={streak}
                         weekCount={stats.current.count}
                         weekVolume={stats.current.volumeFormatted}
                     />
-                </Animated.View>
+                </View>
 
-                <Animated.View entering={FadeInDown.delay(180).duration(500)} style={{ paddingHorizontal: 20, marginBottom: 20 }}>
-                    <MuscleGroupHeatmapWidget />
-                </Animated.View>
-
-                {/* ══════════════ ZONA 3: TREINOS, PLANOS & FERRAMENTAS ══════════════ */}
+                {/* Sessões salvas e cardio planejado. */}
                 {validSavedWorkouts.length > 0 && (
-                    <Animated.View entering={FadeInDown.delay(230).duration(500)}>
+                    <View>
                         <WorkoutListView
                             workouts={validSavedWorkouts}
                             onWorkoutPress={handleOpenPreview}
                             onDeleteWorkout={deleteWorkout}
                             onToggleFavorite={toggleWorkoutFavorite}
                         />
-                    </Animated.View>
+                    </View>
                 )}
 
-                <Animated.View entering={FadeInDown.delay(280).duration(500)}>
+                <View>
                     <QuickActions />
-                </Animated.View>
+                </View>
 
-                <Animated.View entering={FadeInDown.delay(330).duration(500)}>
+                <View>
                     <CardioSummaryWidget />
-                </Animated.View>
+                </View>
 
-                {/* ══════════════ ZONA 4: INTELIGÊNCIA, MOTIVAÇÃO & COMUNIDADE ══════════════ */}
-                <Animated.View entering={FadeInDown.delay(380).duration(500)}>
+                {extrasReady && <>
+                <PlanMotivationPreview />
+                <AchievementsPreview />
+                <CommunityPreview />
+                <View>
                     <RecentPRCard />
-                </Animated.View>
-
-                <Animated.View entering={FadeInDown.delay(430).duration(500)}>
-                    <DailyInsightCard />
-                </Animated.View>
-
-                <Animated.View entering={FadeInDown.delay(480).duration(500)}>
-                    <CommunityLeaderboardCard />
-                </Animated.View>
-
-                <Animated.View entering={FadeInDown.delay(530).duration(500)}>
-                    <ActivityFeed />
-                </Animated.View>
+                </View>
+                </>}
 
             </ScrollView>
 

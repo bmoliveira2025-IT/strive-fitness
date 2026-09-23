@@ -11,17 +11,19 @@ import { useSavedWorkouts } from '../context/SavedWorkoutsContext';
 import { useTheme } from '../context/ThemeContext';
 import { useWorkoutStore } from '../store/useWorkoutStore';
 import { GradientButton } from '../components/ui/GradientButton';
+import { isCardioExercise, warmupSteps, cardioTargetMinutes } from '../lib/sessionFlow';
 
 const exercisesData = require('../assets/exercises.json');
 
 export default function WorkoutPreviewScreen() {
     const params = useLocalSearchParams<{ id: string, type: 'program' | 'saved', dayIndex?: string }>();
     const router = useRouter();
-    const { savedWorkouts, updateWorkout, setIsCreatingPlan } = useSavedWorkouts();
+    const { savedWorkouts, saveWorkoutWeek, updateWorkout, setIsCreatingPlan } = useSavedWorkouts();
     const { loadWorkout, isWorkoutActive, clearWorkout } = useWorkoutStore();
     const { theme } = useTheme();
     const insets = useSafeAreaInsets();
     const bottomActionClearance = Math.max(insets.bottom, 24) + 28;
+    const program = params.type === 'program' ? PROGRAMS.find(p => p.id === params.id) : undefined;
 
     // Helper to get muscle image with consistent mapping
     const getMuscleImage = (part: string) => {
@@ -50,15 +52,16 @@ export default function WorkoutPreviewScreen() {
     // Resolve Workout Data
     const workout = React.useMemo(() => {
         if (params.type === 'program') {
-            const program = PROGRAMS.find(p => p.id === params.id);
             if (!program) return null;
 
-            const dayIndex = params.dayIndex ? parseInt(params.dayIndex) : 0;
+            const requestedDayIndex = Number(params.dayIndex || 0);
+            const dayIndex = Number.isInteger(requestedDayIndex) && requestedDayIndex >= 0 && requestedDayIndex < program.days.length ? requestedDayIndex : 0;
             const day = program.days[dayIndex];
 
             const exercises = day.exerciseIds.map(id => {
                 const ex = exercisesData.find((e: any) => e.id.toString() === id);
-                return ex ? { ...ex, sets: [{ reps: '10', kg: '0', completed: false }] } : null;
+                return ex ? { ...ex, notes: ex.body_parts?.includes('Cardio') ? `Cardio opcional · meta inicial ${cardioTargetMinutes(program.request.goal)} min. Registre o tempo realizado.` : '',
+                    sets: Array.from({ length: ex.body_parts?.includes('Cardio') ? 1 : program.request.level === 'beginner' ? 2 : 3 }, (_, index) => ({ id: index, reps: ex.body_parts?.includes('Cardio') ? '0' : program.request.goal === 'weight_loss' ? '12' : '10', kg: '', previous: '', completed: false, type: 'N' })) } : null;
             }).filter(Boolean);
 
             return {
@@ -98,6 +101,26 @@ export default function WorkoutPreviewScreen() {
         });
     };
 
+    const handleSaveProgram = () => {
+        if (!program) return;
+        saveWorkoutWeek({
+            name: program.title,
+            daysPerWeek: program.days.length,
+            sessions: program.days.map(day => ({
+                name: `${program.title} · ${day.name}`, label: day.name,
+                exercises: day.exerciseIds.flatMap(id => {
+                    const ex = exercisesData.find((item: any) => String(item.id) === id);
+                    if (!ex) return [];
+                    return [{ id, name: ex.name, image_url: ex.image_url || '', video_url: ex.video_url,
+                        body_parts: ex.body_parts || [], equipment: ex.equipment || [], restTime: 90,
+                        notes: ex.body_parts?.includes('Cardio') ? `Cardio opcional · meta inicial ${cardioTargetMinutes(program.request.goal)} min. Registre o tempo realizado.` : '',
+                        sets: Array.from({ length: ex.body_parts?.includes('Cardio') ? 1 : program.request.level === 'beginner' ? 2 : 3 }, (_, index) => ({ id: Date.now() + index, reps: ex.body_parts?.includes('Cardio') ? '0' : program.request.goal === 'weight_loss' ? '12' : '10', kg: '', previous: '', completed: false, type: 'N' })) }];
+                }),
+            })),
+        });
+        router.push({ pathname: '/workout', params: { tab: 'library' } });
+    };
+
     return (
         <View style={{ backgroundColor: theme.colors.background }} className="flex-1">
             <StatusBar style={theme.mode === 'light' ? 'dark' : 'light'} />
@@ -132,6 +155,19 @@ export default function WorkoutPreviewScreen() {
                 )}
             </View>
 
+            {program && (
+                <View style={{ paddingHorizontal: 16, paddingTop: 14 }}>
+                    <Text style={{ color: theme.colors.textSecondary, fontSize: 12, marginBottom: 8 }}>{program.description}</Text>
+                    <Text style={{ color: theme.colors.text, fontSize: 13, fontWeight: '700', marginBottom: 8 }}>{program.days.length} treinos por semana · {program.request.split}</Text>
+                    <FlatList horizontal data={program.days} keyExtractor={(_, index) => String(index)} showsHorizontalScrollIndicator={false}
+                        renderItem={({ item, index }) => <TouchableOpacity
+                            onPress={() => router.setParams({ dayIndex: String(index) })}
+                            style={{ paddingHorizontal: 13, paddingVertical: 9, borderRadius: 10, marginRight: 7, backgroundColor: Number(params.dayIndex || 0) === index ? theme.colors.primary : theme.colors.card }}>
+                            <Text style={{ color: Number(params.dayIndex || 0) === index ? theme.colors.onPrimary : theme.colors.text, fontSize: 12, fontWeight: '700' }}>{item.name}</Text>
+                        </TouchableOpacity>} />
+                </View>
+            )}
+
             {/* Exercise List */}
             <FlatList
                 style={{ flex: 1 }}
@@ -139,6 +175,14 @@ export default function WorkoutPreviewScreen() {
                 keyExtractor={(exercise: any, index) => `${exercise.id}-${index}`}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 16, paddingBottom: 140 + bottomActionClearance }}
+                ListHeaderComponent={<View style={{ marginBottom: 18 }}>
+                    <Text style={{ color: theme.colors.text, fontSize: 17, fontWeight: '700', marginBottom: 8 }}>1 · Preparar</Text>
+                    <View style={{ backgroundColor: theme.colors.card, borderRadius: 14, padding: 14, borderColor: theme.colors.cardBorder, borderWidth: 1 }}>
+                        {warmupSteps(workout.exercises).map(step => <Text key={step} style={{ color: theme.colors.textSecondary, fontSize: 12, marginBottom: 5 }}>• {step}</Text>)}
+                    </View>
+                    <Text style={{ color: theme.colors.text, fontSize: 17, fontWeight: '700', marginTop: 20 }}>2 · Treinar</Text>
+                </View>}
+                ListFooterComponent={<Text style={{ color: theme.colors.textSecondary, fontSize: 12, marginTop: 4 }}>Depois: desacelere e faça mobilidade leve, se desejar.</Text>}
                 initialNumToRender={5}
                 maxToRenderPerBatch={4}
                 updateCellsBatchingPeriod={50}
@@ -146,6 +190,7 @@ export default function WorkoutPreviewScreen() {
                 removeClippedSubviews
                 renderItem={({ item: exercise }: { item: any }) => (
                     <View className="bg-transparent mb-5">
+                        {isCardioExercise(exercise) && <Text style={{ color: theme.colors.text, fontSize: 17, fontWeight: '700', marginBottom: 8 }}>3 · Finalizar · cardio opcional</Text>}
                         <View className="flex-row items-center">
                             <TouchableOpacity
                                 onPress={() => {
@@ -184,7 +229,7 @@ export default function WorkoutPreviewScreen() {
                                         {exercise.name}
                                     </Text>
                                     <Text style={{ color: theme.colors.textSecondary }} className="text-lg">
-                                        {exercise.sets ? exercise.sets.length : 3} Séries • {exercise.sets && exercise.sets[0] ? exercise.sets[0].reps : '10'} reps
+                                        {isCardioExercise(exercise) ? (exercise.notes || 'Registre o tempo realizado') : `${exercise.sets ? exercise.sets.length : 3} Séries • ${exercise.sets && exercise.sets[0] ? exercise.sets[0].reps : '10'} reps`}
                                     </Text>
                                 </View>
                             </TouchableOpacity>
@@ -205,6 +250,9 @@ export default function WorkoutPreviewScreen() {
                     }}
                     className="border-t absolute bottom-0 left-0 right-0"
                 >
+                    {program && <TouchableOpacity onPress={handleSaveProgram} style={{ alignItems: 'center', paddingVertical: 12, marginBottom: 7, borderRadius: 14, borderColor: theme.colors.primary, borderWidth: 1 }}>
+                        <Text style={{ color: theme.colors.primary, fontWeight: '700' }}>Salvar plano semanal completo</Text>
+                    </TouchableOpacity>}
                     <GradientButton
                         onPress={handleStartWorkout}
                         style={{

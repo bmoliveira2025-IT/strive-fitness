@@ -1,88 +1,31 @@
-export const PROGRAMS = [
-    {
-        id: 'arm-pump',
-        title: 'Arm Pump Extremo',
-        image: require('../assets/images/programs/arm-pump.jpg'),
-        downloads: '10.2k',
-        rating: '5.0',
-        tag: 'Braços',
-        isBookmarked: false,
-        overlayTitle: '',
-        days: [
-            { name: 'Full Arm Pump', exerciseIds: ['6', '107', '134', '1511', '122', '29'] }
-        ]
-    },
-    {
-        id: 'full-body-1h',
-        title: 'Full Body Mastery (1h+)',
-        image: require('../assets/images/programs/full-body-mastery.jpg'),
-        downloads: '5.4k',
-        rating: '4.9',
-        tag: 'Corpo Todo',
-        badge: '1h+',
-        isBookmarked: true,
-        overlayTitle: '',
-        days: [
-            { name: 'Full Body A', exerciseIds: ['18', '2', '4', '176', '107', '122', '212', '222', '182', '1725'] }
-        ]
-    },
-    {
-        id: '2',
-        title: "Strive's 4-Day Bodybuilding split",
-        image: require('../assets/images/programs/bodybuilding.jpg'),
-        downloads: '94.060',
-        rating: '4.4',
-        tag: '4 Dias',
-        isBookmarked: true,
-        overlayTitle: '',
-        days: [
-            { name: 'Dia 1: Peito & Bíceps', exerciseIds: ['2', '136', '1765', '275', '6', '134', '115', '122'] },
-            { name: 'Dia 2: Costas & Tríceps', exerciseIds: ['105', '58', '86', '177', '229', '107', '1511', '84'] },
-            { name: 'Dia 3: Pernas & Panturrilhas', exerciseIds: ['18', '212', '222', '213', '7', '36', '182', '218'] },
-            { name: 'Dia 4: Ombros & Abs', exerciseIds: ['176', '145', '2593', '3726', '74', '1725', '1598', '1455'] }
-        ]
-    },
-    {
-        id: '5',
-        title: '5-Day Split Plan',
-        image: require('../assets/images/programs/5-day-split.jpg'),
-        downloads: '15.390',
-        rating: '4.3',
-        tag: '5 Dias',
-        isBookmarked: true,
-        overlayTitle: '',
-        days: [
-            { name: 'Dia 1: Peito', exerciseIds: ['2', '136', '1765', '117', '275', '204', '132'] },
-            { name: 'Dia 2: Costas', exerciseIds: ['105', '58', '86', '76', '4', '120', '177', '229'] },
-            { name: 'Dia 3: Pernas', exerciseIds: ['18', '212', '222', '213', '7', '36', '182', '218'] },
-            { name: 'Dia 4: Ombros', exerciseIds: ['176', '145', '2593', '3726', '74', '1598', '4970'] },
-            { name: 'Dia 5: Braços & Abs', exerciseIds: ['6', '107', '1768', '134', '1511', '122', '84', '1725'] }
-        ]
-    },
-    {
-        id: '1',
-        title: 'Full Body Workout',
-        image: require('../assets/images/programs/full-body.jpg'),
-        downloads: '88.452',
-        rating: '4.3',
-        tag: null,
-        isBookmarked: false,
-        overlayTitle: '',
-        days: [
-            { name: 'Full Body', exerciseIds: ['18', '2', '4', '176', '107', '6', '1725'] }
-        ]
-    },
-    {
-        id: '4',
-        title: 'JEFF NIPPARD - Hypertrophy',
-        image: require('../assets/images/programs/hypertrophy.jpg'),
-        downloads: '12.756',
-        rating: '4.6',
-        badge: 'Top Picks',
-        isBookmarked: true,
-        overlayTitle: '',
-        days: [
-            { name: 'Hypertrophy A', exerciseIds: ['18', '6', '212', '105', '7', '2', '1725'] }
-        ]
-    }
+import { buildWeeklyTemplate, fillSlots, type ExerciseRecord, type WeeklyWorkoutRequest } from '../lib/workoutGeneration';
+
+const catalog = require('../assets/exercises.json') as ExerciseRecord[];
+
+interface ProgramPreset {
+  id: string;
+  title: string;
+  description: string;
+  audience: 'Homens' | 'Mulheres' | 'Todos';
+  goalLabel: string;
+  icon: 'barbell-outline' | 'body-outline' | 'fitness-outline' | 'flash-outline';
+  accent: string;
+  request: WeeklyWorkoutRequest;
+}
+
+const presets: ProgramPreset[] = [
+  { id: 'massa-homens', title: 'Ganho de massa · Homens', description: 'Quatro treinos semanais com divisão superior/inferior.', audience: 'Homens', goalLabel: 'Ganho de massa', icon: 'barbell-outline', accent: '#6BC6A6', request: { days_per_week: 4, split: 'ABCD', priority_focus: 'balanced', goal: 'hypertrophy', level: 'intermediate', gender: 'male', equipment: [], glute_priority: false } },
+  { id: 'massa-mulheres', title: 'Ganho de massa · Mulheres', description: 'Quatro treinos com dois dias de inferiores e ajustes livres.', audience: 'Mulheres', goalLabel: 'Ganho de massa', icon: 'fitness-outline', accent: '#D7A9CA', request: { days_per_week: 4, split: 'ABCD', priority_focus: 'legs', goal: 'hypertrophy', level: 'intermediate', gender: 'female', equipment: [], glute_priority: false } },
+  { id: 'pernas-gluteos', title: 'Ênfase pernas e glúteos', description: 'Divisão ABCD com prioridade de quadril e joelho nos dias de inferiores.', audience: 'Mulheres', goalLabel: 'Pernas e glúteos', icon: 'body-outline', accent: '#E5A786', request: { days_per_week: 4, split: 'ABCD', priority_focus: 'legs', goal: 'hypertrophy', level: 'intermediate', gender: 'female', equipment: [], glute_priority: true } },
+  { id: 'definicao-homens', title: 'Definição · Homens', description: 'Três sessões de força para manter a massa muscular.', audience: 'Homens', goalLabel: 'Definição', icon: 'flash-outline', accent: '#A6C6E9', request: { days_per_week: 3, split: 'ABC', priority_focus: 'balanced', goal: 'definition', level: 'intermediate', gender: 'male', equipment: [], glute_priority: false } },
+  { id: 'definicao-mulheres', title: 'Definição · Mulheres', description: 'Três sessões de resistência com ênfase ajustável em inferiores.', audience: 'Mulheres', goalLabel: 'Definição', icon: 'flash-outline', accent: '#D7B7ED', request: { days_per_week: 3, split: 'ABC', priority_focus: 'legs', goal: 'definition', level: 'intermediate', gender: 'female', equipment: [], glute_priority: true } },
+  { id: 'perda-peso', title: 'Força para perda de peso', description: 'Três treinos de corpo todo. Para perda de peso, combine com hábitos adequados.', audience: 'Todos', goalLabel: 'Perda de peso', icon: 'fitness-outline', accent: '#D4CB8D', request: { days_per_week: 3, split: 'full_body', priority_focus: 'balanced', goal: 'weight_loss', level: 'beginner', gender: 'unspecified', equipment: [], glute_priority: false } },
 ];
+
+export const PROGRAMS = presets.map(preset => ({
+  ...preset,
+  days: buildWeeklyTemplate(catalog, preset.request).map((day, index) => ({
+    name: `${day.label} · ${day.focus === 'legs' ? 'Pernas' : day.focus === 'upper' ? 'Superiores' : day.focus === 'push' ? 'Empurrar' : day.focus === 'pull' ? 'Puxar' : 'Corpo todo'}`,
+    exerciseIds: [...fillSlots(day.slots, undefined, index).map(item => item.exercise_id), '3499'],
+  })),
+}));

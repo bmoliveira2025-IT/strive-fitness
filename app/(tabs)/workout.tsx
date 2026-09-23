@@ -11,7 +11,7 @@ import { Alert, FlatList, ImageBackground, InteractionManager, Modal, Platform, 
 import { Image } from 'expo-image';
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { TAB_BAR_CONTENT_HEIGHT, tabBarBottomPadding, tabScrollBottomPadding } from '../../constants/tabLayout';
+import { tabScrollBottomPadding } from '../../constants/tabLayout';
 import { ActiveWorkoutBanner } from '../../components/ActiveWorkoutBanner';
 import { PRExplosionAnimation } from '../../components/animations/PRExplosionAnimation';
 import { CreatePlanView } from '../../components/CreatePlanView';
@@ -1957,7 +1957,7 @@ export default function WorkoutScreen() {
                             <DockableActionButton
                                 label="Iniciar treino vazio"
                                 icon="play"
-                                bottom={Platform.OS === 'web' ? 12 : TAB_BAR_CONTENT_HEIGHT + tabBarBottomPadding(Platform.OS, insets.bottom) + 12}
+                                bottom={12}
                                 onPress={() => {
                                     clearWorkout();
                                     setExercises([]);

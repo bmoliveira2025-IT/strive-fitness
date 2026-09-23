@@ -38,7 +38,7 @@ const TabIcon = ({ name, focused, color, primaryColor, isDark }: TabIconProps) =
 export default function TabLayout() {
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
-  // Safe clearance for Android 3-button navigation (anchored items on top)
+  // Keep the system navigation area below the labels on Android and iOS.
   const bottomPadding = tabBarBottomPadding(Platform.OS, insets.bottom);
   const tabHeight = TAB_BAR_CONTENT_HEIGHT + bottomPadding;
   const isDark = theme.mode === 'dark';
@@ -55,9 +55,7 @@ export default function TabLayout() {
         tabBarInactiveTintColor: theme.colors.textMuted,
         tabBarShowLabel: true,
         tabBarStyle: {
-          // On web/PWA the bar must participate in layout; an absolute bar
-          // overlays the final part of every scrollable screen.
-          position: Platform.OS === 'web' ? 'relative' : 'absolute',
+          position: 'relative',
           left: 0,
           right: 0,
           bottom: 0,
@@ -67,7 +65,7 @@ export default function TabLayout() {
           borderLeftWidth: 0,
           borderRightWidth: 0,
           borderBottomWidth: 0,
-          paddingTop: 6,
+          paddingTop: 4,
           paddingBottom: bottomPadding,
           height: tabHeight,
           shadowColor: Palette.ink,
@@ -79,18 +77,19 @@ export default function TabLayout() {
         tabBarLabelStyle: {
           fontFamily: FontFamily.sansSemiBold,
           fontSize: 10,
-          letterSpacing: 0.2,
-          marginTop: 2,
+          letterSpacing: 0,
+          marginTop: 1,
         },
         tabBarIconStyle: {
           marginTop: 0,
         },
         tabBarItemStyle: {
-          justifyContent: 'flex-start',
-          paddingTop: 6,
+          justifyContent: 'center',
+          paddingTop: 0,
           minHeight: Control.preferredTouchSize,
         },
-        tabBarAllowFontScaling: true,
+        // Keep five navigation labels legible on narrow phones and large system fonts.
+        tabBarAllowFontScaling: false,
       }}
     >
       <Tabs.Screen
